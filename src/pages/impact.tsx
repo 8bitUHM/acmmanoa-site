@@ -8,7 +8,7 @@ import Footer from "../components/Footer";
 
 import "../index.css";
 
-export function Index() {
+export function Impact() {
   useEffect(() => {
     initFlowbite();
   }, []);
@@ -17,7 +17,7 @@ export function Index() {
     <>
       <Navbar />
       <div>
-        <h1>THIS IS THE HOME PAGE</h1>
+        <h1>THIS IS THE IMPACT PAGE</h1>
       </div>
       <Footer />
     </>
@@ -26,6 +26,6 @@ export function Index() {
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
-    <Index />
+    <Impact />
   </StrictMode>
 );
