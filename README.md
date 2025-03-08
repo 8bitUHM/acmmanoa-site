@@ -1,7 +1,7 @@
 # **The Association for Computing Machinery at the University of Hawaii at Manoa (ACM)**
 
 This is the ACM website, ported from the old site [here](https://acmmanoa.org/) to Django.  
-The old site repository can be found [here]() (update with the correct link if available).
+The old site repository can be found
 
 ## **Table of Contents**
 1. [Project Structure](#project-structure)
