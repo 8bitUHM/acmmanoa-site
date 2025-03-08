@@ -60,12 +60,19 @@ If Python is not installed, download and install it from [python.org](https://ww
 
 1. **Clone the repository**  
 
-2. **Install dependencies**  
+2. **Create a virtual environment (recommended)**  
+   ```sh
+   python -m venv venv
+   source venv/bin/activate  # On macOS/Linux
+   venv\Scripts\activate  # On Windows
+   ```
+
+3. **Install dependencies**  
    ```sh
    pip install -r requirements.txt
    ```
 
-3. **Create a local settings file**  
+4. **Create a local settings file**  
    Inside the `core/` directory, create a new file named `local_settings.py` and add the following:
 
    ```python
@@ -83,27 +90,27 @@ If Python is not installed, download and install it from [python.org](https://ww
    }
    ```
 
-4. **Create a `.env` file**  
+5. **Create a `.env` file**  
    In the `core/` directory, create a new file named `.env` and add the required environment variables.  
    These variables can be found in the ACM Manoa project Discord channel.
 
-5. **Apply database migrations**  
+6. **Apply database migrations**  
    ```sh
    python manage.py migrate
    ```
 
-6. **Collect static files**  
+7. **Collect static files**  
    ```sh
    python manage.py collectstatic
    ```
 
-7. **Create a superuser (optional, for admin access)**  
+8. **Create a superuser (optional, for admin access)**  
    ```sh
    python manage.py createsuperuser
    ```
    Follow the prompts to set up an admin account.
 
-8. **Run the development server**  
+9. **Run the development server**  
    ```sh
    python manage.py runserver
    ```
