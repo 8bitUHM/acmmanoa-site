@@ -98,7 +98,7 @@ If Python is not installed, download and install it from [python.org](https://ww
 
 5. **Create a `.env` file**  
    In the `core/` directory, create a new file named `.env` and add the required environment variables.  
-   These variables can be found in the *acmmanoa* project Discord channel.
+   These variables can be found in the **acmmanoa** project Discord channel.
 
 6. **Apply database migrations**  
    ```sh
