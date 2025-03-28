@@ -1,47 +1,33 @@
-# Multi-page Application React Template
+# Django Starter Template App with db-file-store, Whitenoise & Deployment to Vercel
 
-This repository is a template repository for quick starting a multi-page react project. It comes equipped with TypeScript and Tailwind CSS
+1. [Contents](#contents)
+3. [How to Use](#how-to-use)
 
-## Overview
+## Contents
 
-The application is built with the following technologies:
+This devplate contains a start Django project with Whitenoise, db-file-store(https://github.com/shortxmas/db_file_store) and deployment to Vercel
 
-- **Vite**: A fast build tool and development server for modern web applications.
-- **React**: A library for building user interfaces.
-- **Tailwind CSS**: A utility-first CSS framework for rapid UI development.
-- **TypeScript**: A strongly typed programming language that builds on JavaScript, providing better tooling and type safety.
-- **Multi-Page Configuration**: The app is configured to handle multiple entry points, enabling better performance and separation of concerns.
+## How to Use
 
-With a **Multi-Page Configuration** setup, we are able to handle routing with different HTML index files in their respective folder routes -- /osint would go to the index.html file in ./osint directory
+1. Make sure you have python installed
+2. Run ```python -c 'from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())'``` to generate a project secret_key then add to .env as SECRET_KEY
+3. Create local_settings.py file in core and add local development configuration
+```
+from pathlib import Path
 
-## Setup
+BASE_DIR = Path(__file__).resolve().parent.parent
 
-1. Install dependencies:
+DEBUG=True
 
-   ```bash
-   npm install
-   ```
+DATABASES = {
+  "default":{
+    'ENGINE': 'django.db.backends.sqlite3',
+    'NAME': BASE_DIR / 'db.sqlite3',
+  }
+}
 
-2. Start the development server:
+```
+3. Run ```pip install -r requirements.txt``` or ```pip3 install -r requirements.txt``` 
+4. Run ```python manage.py runserver``` or ```python3 manage.py runserver``` to start the app locally
+5. Edit the Database config in settings.py starting at line 90 for production database, make sure to use ENV variables as well
 
-   ```bash
-   npm run dev
-   ```
-
-3. Open the application in your browser:
-   - By default, the development server runs on `http://localhost:5173`.
-
-## Adding a new route entry point
-
-1. Within the ./src folder, create your routing folder and its respective index.html -- If I wanted to created a /food routing, create a /food folder in ./src and a index.html file in ./src/food
-2. In the new index.html file, you can copy and paste the contents from the src index.html and change the page entry point on line 11.
-3. Run the dev server with ```npm run dev``` and going to your page route should work as expected, just dont forgot the slash at the end -- `http://localhost:5173/food/`
-4. In order to add this new entry point to the build, edit the vite.config.ts config file to include it -- there is an example of it on line 12
-
-## Important Scripts
-
-The following most used scripts are available:
-
-- `npm run dev`: Starts the development server.
-- `npm run build`: Builds the application for production.
-- `npm run lint`: Lints the codebase.
