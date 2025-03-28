@@ -12,10 +12,14 @@
     <link rel="icon" type="image/x-icon" href="{% static 'website/car_logo.png' %}">
 </head>
 <body>
+    {% include "components/navbar.html" %}
     <div>
-        {% block content %}
-        {% endblock %}
+        <div>
+            {% block content %}
+            {% endblock %}
+        </div>
     </div>
+    {% include "components/footer.html" %}
     <script src="https://cdn.jsdelivr.net/npm/flowbite@2.5.1/dist/flowbite.min.js"></script>
 </body>
 </html>

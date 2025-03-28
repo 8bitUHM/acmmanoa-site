@@ -1,16 +1,22 @@
-# example/views.py
-from datetime import datetime
+from django.shortcuts import render
 
-from django.http import HttpResponse
+def home(request):
+    return render(request, 'pages/home.html')
 
-def index(request):
-    now = datetime.now()
-    html = f'''
-    <html>
-        <body>
-            <h1>Hello from Vercel!</h1>
-            <p>The current time is { now }.</p>
-        </body>
-    </html>
-    '''
-    return HttpResponse(html)
+def about(request):
+    return render(request, 'pages/about.html')
+
+def events(request):
+    return render(request, 'pages/events.html')
+
+def sponsors(request):
+    return render(request, 'pages/sponsors.html')
+
+def icspace(request):
+    return render(request, 'pages/icspace.html')
+
+def sigs(request):
+    return render(request, 'pages/sigs.html')
+
+def impact(request):
+    return render(request, 'pages/impact.html')
