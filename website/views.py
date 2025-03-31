@@ -1,7 +1,8 @@
 from django.shortcuts import render
-
+from .models import Program
 def home(request):
-    return render(request, 'pages/home.html')
+    programs = Program.objects.select_related('image').all()
+    return render(request, 'pages/home.html', {"programs": programs})
 
 def about(request):
     return render(request, 'pages/about.html')
