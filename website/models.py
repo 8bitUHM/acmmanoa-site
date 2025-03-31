@@ -27,3 +27,7 @@ class Program(models.Model):
     
     def __str__(self): 
         return self.name
+     
+    def delete(self, *args, **kwargs): 
+        super(Program, self).delete(*args, **kwargs) 
+        File.objects.filter(filename = self.logo.name).delete()
