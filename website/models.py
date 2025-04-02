@@ -31,3 +31,23 @@ class Program(models.Model):
     def delete(self, *args, **kwargs): 
         super(Program, self).delete(*args, **kwargs) 
         File.objects.filter(filename = self.logo.name).delete()
+
+class CarouselImage(models.Model):
+    image = models.ImageField(
+        upload_to="website.File/bytes/filename/mimetype",
+        null=True,
+        help_text='''
+        Please compress the image and convert type to webp before uploading.
+        https://imagecompressor.com,
+        https://cloudconvert.com/webp-converter
+        '''
+    )
+    caption = models.CharField(max_length=255, blank=True, null=True, help_text="description or title of the image")
+    created_at = models.DateField(auto_now_add=True)
+
+    def __str__(self): 
+        return self.caption if self.caption else f"Image {self.id}"
+
+    def delete(self, *args, **kwargs): 
+        super(CarouselImage, self).delete(*args, **kwargs) 
+        File.objects.filter(filename = self.image.name).delete()
