@@ -47,3 +47,7 @@ class CarouselImage(models.Model):
 
     def __str__(self): 
         return self.caption if self.caption else f"Image {self.id}"
+
+    def delete(self, *args, **kwargs): 
+        super(CarouselImage, self).delete(*args, **kwargs) 
+        File.objects.filter(filename = self.image.name).delete()

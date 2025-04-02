@@ -1,8 +1,10 @@
 from django.shortcuts import render
 from .models import Program
+from .models import CarouselImage
 def home(request):
     programs = Program.objects.select_related('image').all()
-    return render(request, 'pages/home.html', {"programs": programs})
+    carousel_images = CarouselImage.objects.all()
+    return render(request, 'pages/home.html', {"programs": programs, "carousel_images": carousel_images})
 
 def about(request):
     return render(request, 'pages/about.html')
