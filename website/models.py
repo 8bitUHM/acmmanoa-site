@@ -43,7 +43,7 @@ class CarouselImage(models.Model):
         '''
     )
     caption = models.CharField(max_length=255, blank=True, null=True, help_text="description or title of the image")
-    created_at = models.DateField(auto_now_add=True)
+    created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self): 
         return self.caption if self.caption else f"Image {self.id}"
