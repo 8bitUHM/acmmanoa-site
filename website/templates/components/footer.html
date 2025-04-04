@@ -1,56 +1,152 @@
 {% load static %}
-<!-- Footer Placeholder Component -->
-<footer class="bg-[#2b6777] text-white shadow-sm ">
-  <div class="w-full mx-auto max-w-screen-xl p-4 flex flex-col md:flex-row justify-evenly">
 
-    <div class="flex flex-row justify-center text-sm font-medium">
-      <div class="mx-3">
-        <a href="#" class="hover:underline">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-8">
-            <path fill-rule="evenodd"
-              d="M11.47 2.47a.75.75 0 0 1 1.06 0l7.5 7.5a.75.75 0 1 1-1.06 1.06l-6.22-6.22V21a.75.75 0 0 1-1.5 0V4.81l-6.22 6.22a.75.75 0 1 1-1.06-1.06l7.5-7.5Z"
-              clip-rule="evenodd" />
-          </svg>
-
+<footer class="bg-white dark:bg-gray-900">
+  <div class="mx-auto w-full max-w-screen-xl p-4 py-6 lg:py-8">
+    <div class="md:flex md:justify-between">
+      <div class="mb-6 md:mb-0">
+        <a href="https://flowbite.com/" class="flex items-center">
+          <img
+            src="{% static 'website/acm_logo.png' %}"
+            class="h-8 me-3"
+            alt="ACM Logo"
+          />
+          <span
+            class="self-center text-2xl font-semibold whitespace-nowrap dark:text-white"
+            >The Association for Computing Machinery</span
+          >
         </a>
       </div>
-      <div class="mx-3">
-        <a href="mailto:communications@acmmanoa.org" class="hover:underline">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-8">
-            <path d="M1.5 8.67v8.58a3 3 0 0 0 3 3h15a3 3 0 0 0 3-3V8.67l-8.928 5.493a3 3 0 0 1-3.144 0L1.5 8.67Z" />
-            <path
-              d="M22.5 6.908V6.75a3 3 0 0 0-3-3h-15a3 3 0 0 0-3 3v.158l9.714 5.978a1.5 1.5 0 0 0 1.572 0L22.5 6.908Z" />
-          </svg>
-
-        </a>
+      <div class="grid grid-cols-2 gap-8 sm:gap-6 sm:grid-cols-3">
+        <div>
+          <h2
+            class="mb-6 text-sm font-semibold text-gray-900 uppercase dark:text-white"
+          >
+            Resources
+          </h2>
+          <ul class="text-gray-500 dark:text-gray-400 font-medium">
+            <li class="mb-4">
+              <a href="https://flowbite.com/" class="hover:underline"
+                >Flowbite</a
+              >
+            </li>
+            <li>
+              <a href="https://tailwindcss.com/" class="hover:underline"
+                >Tailwind CSS</a
+              >
+            </li>
+          </ul>
+        </div>
+        <div>
+          <h2
+            class="mb-6 text-sm font-semibold text-gray-900 uppercase dark:text-white"
+          >
+            Follow us
+          </h2>
+          <ul class="text-gray-500 dark:text-gray-400 font-medium">
+            <li class="mb-4">
+              <a
+                href="https://github.com/themesberg/flowbite"
+                class="hover:underline"
+                >Github</a
+              >
+            </li>
+            <li>
+              <a href="https://discord.gg/4eeurUVvTy" class="hover:underline"
+                >Discord</a
+              >
+            </li>
+          </ul>
+        </div>
+        <div>
+          <h2
+            class="mb-6 text-sm font-semibold text-gray-900 uppercase dark:text-white"
+          >
+            Contact
+          </h2>
+          <ul class="text-gray-500 dark:text-gray-400 font-medium">
+            <li class="mb-4">
+              <a href="#" class="hover:underline">Privacy Policy</a>
+            </li>
+            <li>
+              <a href="#" class="hover:underline">Terms &amp; Conditions</a>
+            </li>
+          </ul>
+        </div>
       </div>
-      <div class="mx-3">
-        <a href="https://www.instagram.com/uhm_ics/" class="hover:underline">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 50 50" fill="currentColor" class="size-8">
+    </div>
+    <hr class="my-6 border-gray-200 sm:mx-auto dark:border-gray-700 lg:my-8" />
+    <div class="sm:flex sm:items-center sm:justify-between">
+      <span class="text-sm text-gray-500 sm:text-center dark:text-gray-400">
+        © <span id="year"></span>
+        <a href="https://flowbite.com/" class="hover:underline">ACM@MANOA</a> |
+        Built with <3 by 8bitUHM.
+      </span>
+      <div class="flex mt-4 sm:justify-center sm:mt-0">
+        <!-- Social media icons -->
+        <a
+          href="https://github.com/8bitUHM/acmmanoa-site"
+          class="text-gray-500 hover:text-gray-900 dark:hover:text-white ms-5"
+          target="_blank"
+        >
+          <svg
+            class="w-4 h-4"
+            aria-hidden="true"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="currentColor"
+            viewBox="0 0 20 20"
+          >
             <path
-              d="M 16 3 C 8.8324839 3 3 8.8324839 3 16 L 3 34 C 3 41.167516 8.8324839 47 16 47 L 34 47 C 41.167516 47 47 41.167516 47 34 L 47 16 C 47 8.8324839 41.167516 3 34 3 L 16 3 z M 16 5 L 34 5 C 40.086484 5 45 9.9135161 45 16 L 45 34 C 45 40.086484 40.086484 45 34 45 L 16 45 C 9.9135161 45 5 40.086484 5 34 L 5 16 C 5 9.9135161 9.9135161 5 16 5 z M 37 11 A 2 2 0 0 0 35 13 A 2 2 0 0 0 37 15 A 2 2 0 0 0 39 13 A 2 2 0 0 0 37 11 z M 25 14 C 18.936712 14 14 18.936712 14 25 C 14 31.063288 18.936712 36 25 36 C 31.063288 36 36 31.063288 36 25 C 36 18.936712 31.063288 14 25 14 z M 25 16 C 29.982407 16 34 20.017593 34 25 C 34 29.982407 29.982407 34 25 34 C 20.017593 34 16 29.982407 16 25 C 16 20.017593 20.017593 16 25 16 z">
-            </path>
+              fill-rule="evenodd"
+              d="M10 .333A9.911 9.911 0 0 0 6.866 19.65c.5.092.678-.215.678-.477 0-.237-.01-1.017-.014-1.845-2.757.6-3.338-1.169-3.338-1.169a2.627 2.627 0 0 0-1.1-1.451c-.9-.615.07-.6.07-.6a2.084 2.084 0 0 1 1.518 1.021 2.11 2.11 0 0 0 2.884.823c.044-.503.268-.973.63-1.325-2.2-.25-4.516-1.1-4.516-4.9A3.832 3.832 0 0 1 4.7 7.068a3.56 3.56 0 0 1 .095-2.623s.832-.266 2.726 1.016a9.409 9.409 0 0 1 4.962 0c1.89-1.282 2.717-1.016 2.717-1.016.366.83.402 1.768.1 2.623a3.827 3.827 0 0 1 1.02 2.659c0 3.807-2.319 4.644-4.525 4.889a2.366 2.366 0 0 1 .673 1.834c0 1.326-.012 2.394-.012 2.72 0 .263.18.572.681.475A9.911 9.911 0 0 0 10 .333Z"
+              clip-rule="evenodd"
+            />
           </svg>
+          <span class="sr-only">GitHub repository</span>
         </a>
-      </div>
-      <div class="mx-3">
-        <a href="https://github.com/8bitUHM/acmmanoa-site" class="hover:underline">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 30 30" fill="currentColor" class="size-8">
+        <a
+          href="https://discord.gg/acmanoa-438617987701014528"
+          class="text-gray-500 hover:text-gray-900 dark:hover:text-white ms-5"
+          target="_blank"
+        >
+          <svg
+            class="w-4 h-4"
+            aria-hidden="true"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="currentColor"
+            viewBox="0 0 21 16"
+          >
             <path
-              d="M15,3C8.373,3,3,8.373,3,15c0,5.623,3.872,10.328,9.092,11.63C12.036,26.468,12,26.28,12,26.047v-2.051 c-0.487,0-1.303,0-1.508,0c-0.821,0-1.551-0.353-1.905-1.009c-0.393-0.729-0.461-1.844-1.435-2.526 c-0.289-0.227-0.069-0.486,0.264-0.451c0.615,0.174,1.125,0.596,1.605,1.222c0.478,0.627,0.703,0.769,1.596,0.769 c0.433,0,1.081-0.025,1.691-0.121c0.328-0.833,0.895-1.6,1.588-1.962c-3.996-0.411-5.903-2.399-5.903-5.098 c0-1.162,0.495-2.286,1.336-3.233C9.053,10.647,8.706,8.73,9.435,8c1.798,0,2.885,1.166,3.146,1.481C13.477,9.174,14.461,9,15.495,9 c1.036,0,2.024,0.174,2.922,0.483C18.675,9.17,19.763,8,21.565,8c0.732,0.731,0.381,2.656,0.102,3.594 c0.836,0.945,1.328,2.066,1.328,3.226c0,2.697-1.904,4.684-5.894,5.097C18.199,20.49,19,22.1,19,23.313v2.734 c0,0.104-0.023,0.179-0.035,0.268C23.641,24.676,27,20.236,27,15C27,8.373,21.627,3,15,3z">
-            </path>
+              d="M16.942 1.556a16.3 16.3 0 0 0-4.126-1.3 12.04 12.04 0 0 0-.529 1.1 15.175 15.175 0 0 0-4.573 0 11.585 11.585 0 0 0-.535-1.1 16.274 16.274 0 0 0-4.129 1.3A17.392 17.392 0 0 0 .182 13.218a15.785 15.785 0 0 0 4.963 2.521c.41-.564.773-1.16 1.084-1.785a10.63 10.63 0 0 1-1.706-.83c.143-.106.283-.217.418-.33a11.664 11.664 0 0 0 10.118 0c.137.113.277.224.418.33-.544.328-1.116.606-1.71.832a12.52 12.52 0 0 0 1.084 1.785 16.46 16.46 0 0 0 5.064-2.595 17.286 17.286 0 0 0-2.973-11.59ZM6.678 10.813a1.941 1.941 0 0 1-1.8-2.045 1.93 1.93 0 0 1 1.8-2.047 1.919 1.919 0 0 1 1.8 2.047 1.93 1.93 0 0 1-1.8 2.045Zm6.644 0a1.94 1.94 0 0 1-1.8-2.045 1.93 1.93 0 0 1 1.8-2.047 1.918 1.918 0 0 1 1.8 2.047 1.93 1.93 0 0 1-1.8 2.045Z"
+            />
           </svg>
+          <span class="sr-only">Discord community</span>
+        </a>
+        <a
+          href="https://www.instagram.com/manoaacm/"
+          class="text-gray-500 hover:text-gray-900 dark:hover:text-white ms-5"
+          target="_blank"
+        >
+          <svg
+            class="w-4 h-4"
+            aria-hidden="true"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="currentColor"
+            viewBox="2.75 1.6 19 19"
+          >
+            <path
+              fill="currentColor"
+              fill-rule="evenodd"
+              d="M3 8a5 5 0 0 1 5-5h8a5 5 0 0 1 5 5v8a5 5 0 0 1-5 5H8a5 5 0 0 1-5-5V8Zm5-3a3 3 0 0 0-3 3v8a3 3 0 0 0 3 3h8a3 3 0 0 0 3-3V8a3 3 0 0 0-3-3H8Zm7.597 2.214a1 1 0 0 1 1-1h.01a1 1 0 1 1 0 2h-.01a1 1 0 0 1-1-1ZM12 9a3 3 0 1 0 0 6 3 3 0 0 0 0-6Zm-5 3a5 5 0 1 1 10 0 5 5 0 0 1-10 0Z"
+              clip-rule="evenodd"
+            />
+          </svg>
+          <span class="sr-only">Instagram account</span>
         </a>
       </div>
     </div>
-
-    <span class="md:order-first text-sm text-center flex-wrap mt-2">&copy; 2025 ACM@MANOA, All Rights Reserved | Built
-      by
-      <a href="https://8bithawaii.org" class="hover:underline">
-        8bitUHM
-      </a>
-
-    </span>
-
   </div>
 </footer>
+
+<script>
+  document.getElementById("year").textContent = new Date().getFullYear();
+</script>
