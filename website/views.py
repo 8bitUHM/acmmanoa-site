@@ -3,7 +3,7 @@ from .models import Program
 from .models import CarouselImage
 def home(request):
     programs = Program.objects.select_related('image').all()
-    carousel_images = CarouselImage.objects.all()
+    carousel_images = CarouselImage.objects.all().order_by('-created_at')
     return render(request, 'pages/home.html', {"programs": programs, "carousel_images": carousel_images})
 
 def about(request):
