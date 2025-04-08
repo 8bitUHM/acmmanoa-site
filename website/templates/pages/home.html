@@ -14,7 +14,8 @@
       <img src="{{ program.logo.url }}" alt="Program image" class="mx-auto">
       <p class="text-xl md:text-lg font-semibold">{{ program.name }}</p>
       {% if program.link_url %}
-      <a href="{{ program.link_url }}" target="_blank" rel="noopener noreferrer">
+      <a href="{{ program.link_url }}" class="text-blue-600 hover:text-black transition-colors duration-200"
+        target="_blank" rel="noopener noreferrer">
         {% if program.link_name %}
         {{ program.link_name }}
         {% else %}
