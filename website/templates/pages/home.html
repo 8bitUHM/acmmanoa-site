@@ -5,6 +5,32 @@
 <div class="container mx-auto p-8 text-center">
 
   <h1 class="text-4xl font-bold">Home Page</h1>
+
+  <!-- Programs -->
+  <h2 class="text-2xl mt-4">Our Programs</h2>
+  <div class="flex flex-row justify-evenly mt-8">
+    {% for program in programs %}
+    <div class="flex flex-col">
+      <img src="{{ program.logo.url }}" alt="Program image" class="w-32 h-32 sm:w-64 sm:h-64 rounded-full">
+      <p class="text-xl md:text-lg font-semibold">{{ program.name }}</p>
+      {% if program.link_url %}
+      <a href="{{ program.link_url }}" class="text-blue-600 hover:text-black transition-colors duration-200"
+        target="_blank" rel="noopener noreferrer">
+        {% if program.link_name %}
+        {{ program.link_name }}
+        {% else %}
+        {{ program.link_url }}
+        {% endif %}
+      </a>
+      {% endif %}
+    </div>
+    {% empty %}
+    <p>No programs available.</p>
+    {% endfor %}
+  </div>
+
+  <!-- Images -->
+  <h2 class="text-2xl mt-4">Images</h2>
   <div class="carousel mt-8">
     {% for image in carousel_images %}
     <div class="carousel-item">
@@ -18,5 +44,8 @@
     <p>No images available.</p>
     {% endfor %}
   </div>
+
+
+
 </div>
 {% endblock %}
