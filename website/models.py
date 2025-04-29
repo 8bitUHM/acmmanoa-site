@@ -64,7 +64,7 @@ class Event(models.Model):
         '''
     )
     description = models.TextField()
-    event_date = models.DateTimeField()
+    event_date = models.DateTimeField(help_text="It is in 24-hour format")
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self): 
