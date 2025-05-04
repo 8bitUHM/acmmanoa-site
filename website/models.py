@@ -51,3 +51,25 @@ class CarouselImage(models.Model):
     def delete(self, *args, **kwargs): 
         super(CarouselImage, self).delete(*args, **kwargs) 
         File.objects.filter(filename = self.image.name).delete()
+
+class Event(models.Model):
+    title = models.CharField(max_length=255, unique=True, help_text="name or headline of the event")
+    image = models.ImageField(
+        upload_to="website.File/bytes/filename/mimetype",
+        null=True,
+        help_text='''
+        Please compress the image and convert type to webp before uploading.
+        https://imagecompressor.com,
+        https://cloudconvert.com/webp-converter
+        '''
+    )
+    description = models.TextField()
+    event_date = models.DateTimeField(help_text="It is in 24-hour format")
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self): 
+        return self.title
+
+    def delete(self, *args, **kwargs):
+        super(Event, self).delete(*args, **kwargs)
+        File.objects.filter(filename = self.image.name).delete()
