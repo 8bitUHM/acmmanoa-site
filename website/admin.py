@@ -1,7 +1,5 @@
 from django.contrib import admin
-from .models import Program
-from .models import CarouselImage
-from .models import Event
+from .models import Program, CarouselImage, Event
 
 # Register your models here.
 
