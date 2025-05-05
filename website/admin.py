@@ -3,6 +3,7 @@ from .models import Program
 from .models import CarouselImage
 from .models import Event
 from .models import Sponsor
+from .models import ACMKekuhaupioCohort
 
 # Register your models here.
 
@@ -21,4 +22,8 @@ class EventAdmin(admin.ModelAdmin):
 
 @admin.register(Sponsor)
 class SponsorAdmin(admin.ModelAdmin):
+    readonly_fields = ['created_at']
+
+@admin.register(ACMKekuhaupioCohort)
+class ACMKekuhaupioCohort(admin.ModelAdmin):
     readonly_fields = ['created_at']
