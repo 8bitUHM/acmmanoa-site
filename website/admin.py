@@ -2,6 +2,7 @@ from django.contrib import admin
 from .models import Program
 from .models import CarouselImage
 from .models import Event
+from .models import Sponsor
 
 # Register your models here.
 
@@ -17,3 +18,7 @@ class CarouselImageAdmin(admin.ModelAdmin):
 @admin.register(Event)
 class EventAdmin(admin.ModelAdmin):
     pass
+
+@admin.register(Sponsor)
+class SponsorAdmin(admin.ModelAdmin):
+    readonly_fields = ['created_at']

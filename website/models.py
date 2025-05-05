@@ -1,4 +1,5 @@
 from django.db import models
+from datetime import datetime
 
 # Create your models here.
 class File(models.Model): 
@@ -8,6 +9,28 @@ class File(models.Model):
 
     def __str__(self): 
         return self.filename
+    
+
+class Sponsor(models.Model):
+    created_at = models.DateTimeField(editable=False, auto_now_add=True)
+    name = models.CharField(max_length=125, unique=True, help_text="Name of Sponsor (Organization and/or Individual)")
+    website = models.URLField(verbose_name='Website Link', blank=True, help_text="Enter link to organization's website")
+    image = models.ImageField(
+        upload_to="website.File/bytes/filename/mimetype",
+        null=True,
+        help_text='''
+        Please compress the image and convert type to webp before uploading.
+        https://imagecompressor.com,
+        https://cloudconvert.com/webp-converter
+        '''
+    )
+
+    def __str__(self): 
+        return self.name
+     
+    def delete(self, *args, **kwargs): 
+        super(Sponsor, self).delete(*args, **kwargs) 
+        File.objects.filter(filename = self.image.name).delete()
     
 
 class Program(models.Model):
