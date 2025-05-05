@@ -96,3 +96,30 @@ class Event(models.Model):
     def delete(self, *args, **kwargs):
         super(Event, self).delete(*args, **kwargs)
         File.objects.filter(filename = self.image.name).delete()
+
+class ACMKekuhaupioCohort(models.Model):
+    name = models.CharField(max_length=200)
+    semester = models.CharField(max_length=20, help_text="Please enter sememster that they participated in. E.g Fall 2024")
+    accomplishments = models.TextField(help_text="Summary of what they achieved in the program")
+    created_at = models.DateTimeField(editable=False, auto_now_add=True)
+    comments = models.TextField(blank=True, help_text="Reflections or notes goes here")
+    image = models.ImageField(
+        upload_to="website.File/bytes/filename/mimetype",
+        null=True,
+        help_text='''
+        Please compress the image and convert type to webp before uploading.
+        https://imagecompressor.com,
+        https://cloudconvert.com/webp-converter
+        ''',
+        blank=True
+    )
+
+    def __str__(self): 
+        return self.name
+
+    def delete(self, *args, **kwargs):
+        super(ACMKekuhaupioCohort, self).delete(*args, **kwargs)
+        File.objects.filter(filename = self.image.name).delete()
+    
+    class Meta: 
+        verbose_name = "ACM Kekuhaupio Cohort"
