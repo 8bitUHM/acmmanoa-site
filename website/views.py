@@ -1,6 +1,8 @@
 from django.shortcuts import render
 from .models import Program
 from .models import CarouselImage
+from .models import Sponsor
+
 def home(request):
     # programs = Program.objects.select_related('image').all()
     programs = Program.objects.all()
@@ -14,7 +16,8 @@ def events(request):
     return render(request, 'pages/events.html')
 
 def sponsors(request):
-    return render(request, 'pages/sponsors.html')
+    sponsors = Sponsor.objects.defer('created_at').all()
+    return render(request, 'pages/sponsors.html', {"sponsors": sponsors})
 
 def icspace(request):
     return render(request, 'pages/icspace.html')
