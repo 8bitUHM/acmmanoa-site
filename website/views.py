@@ -1,6 +1,6 @@
 from django.shortcuts import render
-from .models import Program
-from .models import CarouselImage
+from .models import Program, CarouselImage, Event
+
 def home(request):
     # programs = Program.objects.select_related('image').all()
     programs = Program.objects.all()
@@ -11,7 +11,8 @@ def about(request):
     return render(request, 'pages/about.html')
 
 def events(request):
-    return render(request, 'pages/events.html')
+    events = Event.objects.all().order_by('-event_date')
+    return render(request, 'pages/events.html', {"events": events})
 
 def sponsors(request):
     return render(request, 'pages/sponsors.html')
