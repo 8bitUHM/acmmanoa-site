@@ -1,9 +1,5 @@
 from django.contrib import admin
-from .models import Program
-from .models import CarouselImage
-from .models import Event
-from .models import Sponsor
-from .models import ACMKekuhaupioCohort
+from .models import Program, CarouselImage, Event, Sponsor, ACMKekuhaupioCohort
 
 # Register your models here.
 
