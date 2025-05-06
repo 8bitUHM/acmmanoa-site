@@ -11,7 +11,7 @@ def about(request):
     return render(request, 'pages/about.html')
 
 def events(request):
-    events = Event.objects.all()
+    events = Event.objects.all().order_by('-event_date')
     return render(request, 'pages/events.html', {"events": events})
 
 def sponsors(request):
