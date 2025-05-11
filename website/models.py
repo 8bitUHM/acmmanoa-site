@@ -123,3 +123,18 @@ class ACMKekuhaupioCohort(models.Model):
     
     class Meta: 
         verbose_name = "ACM Kekuhaupio Cohort"
+
+class Leadership(models.Model):
+    name = models.CharField(max_length=200)
+    title = models.CharField(max_length=50)
+    image = models.ImageField(
+        upload_to="website.File/bytes/filename/mimetype",
+        null=True,
+        help_text='''
+        Please compress the image and convert type to webp before uploading.
+        https://imagecompressor.com,
+        https://cloudconvert.com/webp-converter
+        ''',
+        blank=True)
+    bio = models.CharField(max_length=200,
+                            help_text="(optional) Enter a short biography or background description about faculty member.")
