@@ -1,7 +1,6 @@
 from django.shortcuts import render
-from .models import Program, CarouselImage, Event
+from .models import Program, CarouselImage, Event, Sponsor
 
-from .models import Sponsor
 
 def home(request):
     # programs = Program.objects.select_related('image').all()
