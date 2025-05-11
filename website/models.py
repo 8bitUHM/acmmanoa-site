@@ -138,3 +138,10 @@ class Leadership(models.Model):
         blank=True)
     bio = models.CharField(max_length=200,
                             help_text="(optional) Enter a short biography or background description about faculty member.")
+    
+    def __str__(self):
+        return self.name
+    
+    def delete(self, *args, **kwargs):
+        super(Leadership, self).delete(*args, **kwargs)
+        File.objects.filter(filename = self.image.name).delete()
