@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Program, CarouselImage, Event, Sponsor, ACMKekuhaupioCohort
+from .models import Program, CarouselImage, Event, Sponsor, ACMKekuhaupioCohort, Leadership
 
 # Register your models here.
 
@@ -23,3 +23,7 @@ class SponsorAdmin(admin.ModelAdmin):
 @admin.register(ACMKekuhaupioCohort)
 class ACMKekuhaupioCohort(admin.ModelAdmin):
     readonly_fields = ['created_at']
+
+@admin.register(Leadership)
+class LeadershipAdmin(admin.ModelAdmin):
+    pass
