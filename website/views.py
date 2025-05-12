@@ -25,3 +25,6 @@ def sigs(request):
 
 def impact(request):
     return render(request, 'pages/impact.html')
+
+def cohorts(request):
+    return render(request, 'pages/cohorts.html')
