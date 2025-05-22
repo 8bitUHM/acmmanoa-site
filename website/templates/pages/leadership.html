@@ -6,9 +6,12 @@
     <h1 class="text-4xl font-bold">Leadership</h1>
 
     {% for leader in leaders %}
-    <div class="mb-8 border-b pb-4">
+    <div class="mb-8 pb-4">
         {% if leader.image %}
-        <img src="{{ leader.image.url }}" alt="{{ leader.name }}" class="w-full h-auto mb-4">
+        <div class="flex justify-center">
+            <img src="{{ leader.image.url }}" alt="{{ leader.name }}"
+                class="mb-4 w-24 h-24 rounded-full object-cover object-center">
+        </div>
         {% endif %}
         <h2 class="text-2xl font-semibold">{{ leader.name }}</h2>
         <p class="text-gray-600 text-sm mb-2">{{ leader.title }}</p>
