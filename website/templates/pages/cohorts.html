@@ -4,5 +4,49 @@
 {% block content %}
 <main class="container mx-auto text-left p-8">
   <h1 class="text-green-800 text-4xl font-bold">Cohorts</h1>
+  <div id="cohorts" class="mt-5 flex flex-col justify-center gap-2 md:gap-5">
+     <div> 
+      {% for semester in semesters %}
+        <button type="button" class="text-md md:text-xl text-slate-600 font-light mr-2 last:mr-0">{{semester}}</button>
+      {% endfor %}
+     </div>
+    <div class="max-w-full grid auto-rows-[15rem] gap-2 grid-cols-1 md:grid-cols-3">
+      {% for cohort in cohorts %}
+        <figure
+          id="{{cohort.name}}"
+          class="size-full rounded-md shadow-md bg-center bg-cover px-2 py-3 aspect-square
+                 {% if cohort.image %}bg-[url({{cohort.image.url}})] text-white
+                 {% else %}text-black border border-gray-900{% endif %} grid grid-rows-3"
+        >
+         {% if cohort.image %}
+          <div>
+            <hgroup>
+              <h2>{{cohort.name}}</h2>
+              <p>{{cohort.semester}}
+            </hgroup>
+          </div>
+         {% else %}
+         <div class="grid grid-rows-subgrid row-span-3">
+            <hgroup>
+              <h2 class="text-lg font-bold text-blue-700">{{cohort.name}}</h2>
+              <p class="text-sm font-medium text-gray-500">{{cohort.semester}}</p>
+
+            </hgroup>
+            <code class="text-lime-700">
+              /*
+              {% if cohort.comments %}
+                {{cohort.comments}}
+              {% else %}
+                NO COMMENTS
+              {% endif %}
+              */
+            </code>
+            <p class="bg-blue-200 text-black p-2 rounded-lg text-pretty">{{cohort.accomplishments}}</p>
+          </div>
+         {% endif %}
+        </figure>
+      {% endfor %}
+    </div>
+  </div>
 </main>
 {% endblock %}
