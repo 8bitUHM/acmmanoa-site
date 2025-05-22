@@ -134,10 +134,8 @@ class Leadership(models.Model):
         Please compress the image and convert type to webp before uploading.
         https://imagecompressor.com,
         https://cloudconvert.com/webp-converter
-        ''',
-        blank=True)
-    bio = models.CharField(max_length=200,
-                            help_text="(optional) Enter a short biography or background description about faculty member.")
+        ''')
+    bio = models.CharField(max_length=200, help_text="(optional) Enter a short biography or background description about faculty member.", null=True, blank=True)
     
     def __str__(self):
         return self.name

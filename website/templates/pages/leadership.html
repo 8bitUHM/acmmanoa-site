@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Leadership | ACM{% endblock %}
+{% block content %}
+<div class="container mx-auto p-8 text-center">
+    <h1 class="text-4xl font-bold">Leadership</h1>
+
+    {% for leader in leaders %}
+    <div class="mb-8 border-b pb-4">
+        {% if leader.image %}
+        <img src="{{ leader.image.url }}" alt="{{ leader.name }}" class="w-full h-auto mb-4">
+        {% endif %}
+        <h2 class="text-2xl font-semibold">{{ leader.name }}</h2>
+        <p class="text-gray-600 text-sm mb-2">{{ leader.title }}</p>
+    </div>
+    {% empty %}
+    <p>No events found.</p>
+    {% endfor %}
+</div>
+{% endblock %}
