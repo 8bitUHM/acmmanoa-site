@@ -11,7 +11,7 @@ def about(request):
     return render(request, 'pages/about.html')
 
 def leadership(request):
-    leaders = Leadership.objects.all()
+    leaders = Leadership.objects.all().order_by('title')
     return render(request, 'pages/leadership.html', {"leaders": leaders})
 
 def events(request):

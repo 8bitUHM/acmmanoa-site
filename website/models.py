@@ -125,8 +125,21 @@ class ACMKekuhaupioCohort(models.Model):
         verbose_name = "ACM Kekuhaupio Cohort"
 
 class Leadership(models.Model):
+    TITLE_CHOICES = [
+        ('1', 'President'),
+        ('2', 'Vice President'),
+        ('3', 'Director of Membership'),
+        ('4', 'Operations Director'),
+        ('5', 'Public Relations Director'),
+        ('6', 'Finance Coordinator'),
+        ('7', 'Operations Coordinator'),
+        ('8', 'Marketing Manager'),
+        ('9', 'Server Administrator & Webmaster'),
+        ('10', 'Faculty Sponsor'),
+    ]
+
     name = models.CharField(max_length=200)
-    title = models.CharField(max_length=50)
+    title = models.CharField(max_length=50, choices=TITLE_CHOICES)
     image = models.ImageField(
         upload_to="website.File/bytes/filename/mimetype",
         null=True,
@@ -139,6 +152,9 @@ class Leadership(models.Model):
     
     def __str__(self):
         return self.name
+
+    def get_title_display_name(self):
+        return dict(self.TITLE_CHOICES).get(self.title, self.title)
     
     def delete(self, *args, **kwargs):
         super(Leadership, self).delete(*args, **kwargs)
