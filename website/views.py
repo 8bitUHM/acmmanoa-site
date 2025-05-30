@@ -8,11 +8,8 @@ def home(request):
     return render(request, 'pages/home.html', {"programs": programs, "carousel_images": carousel_images})
 
 def about(request):
-    return render(request, 'pages/about.html')
-
-def leadership(request):
     leaders = Leadership.objects.all().order_by('title')
-    return render(request, 'pages/leadership.html', {"leaders": leaders})
+    return render(request, 'pages/about.html', {"leaders": leaders})
 
 def events(request):
     events = Event.objects.all().order_by('-event_date')

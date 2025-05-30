@@ -149,6 +149,10 @@ class Leadership(models.Model):
         https://cloudconvert.com/webp-converter
         ''')
     bio = models.CharField(max_length=200, help_text="(optional) Enter a short biography or background description about faculty member.", null=True, blank=True)
+
+    class Meta:
+        verbose_name = "Leadership"
+        verbose_name_plural = "Leadership"
     
     def __str__(self):
         return self.name
