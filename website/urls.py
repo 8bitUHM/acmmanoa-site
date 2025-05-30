@@ -10,5 +10,5 @@ urlpatterns = [
     path('sponsors/', sponsors, name='sponsors'),
     path('icspace/', icspace, name='icspace'),
     path('sigs/', sigs, name='sigs'),
-    path('impact/', impact, name='impact'),
+    path('impact/', impact, name='impact')
 ]
