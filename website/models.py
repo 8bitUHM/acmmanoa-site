@@ -163,3 +163,14 @@ class Leadership(models.Model):
     def delete(self, *args, **kwargs):
         super(Leadership, self).delete(*args, **kwargs)
         File.objects.filter(filename = self.image.name).delete()
+
+class FAQ(models.Model):
+    question = models.CharField(max_length=100, unique=True, help_text="Question that is asked frequently")
+    answer = models.TextField(help_text="The answer to the question")
+    created_at = models.DateTimeField(editable=False, auto_now_add=True)
+
+    class Meta: 
+        verbose_name = "F.A.Q."
+    
+    def __str__(self): 
+        return self.question
