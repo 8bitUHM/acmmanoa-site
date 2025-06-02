@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Program, CarouselImage, Event, Sponsor, ACMKekuhaupioCohort, Leadership
+from .models import Program, CarouselImage, Event, Sponsor, ACMKekuhaupioCohort, Leadership, FAQ
 
 # Register your models here.
 
@@ -26,4 +26,8 @@ class ACMKekuhaupioCohort(admin.ModelAdmin):
 
 @admin.register(Leadership)
 class LeadershipAdmin(admin.ModelAdmin):
+    pass
+
+@admin.register(FAQ)
+class FAQ(admin.ModelAdmin):
     pass
