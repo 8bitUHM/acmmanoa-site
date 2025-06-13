@@ -1,6 +1,8 @@
 # example/urls.py
 from django.urls import path
 
+# test commit
+
 from website.views import home, about, events, sponsors, icspace, sigs, impact
 
 urlpatterns = [
