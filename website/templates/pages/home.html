@@ -16,14 +16,13 @@
     <div class="text-center mb-12">
       <h2 class="text-5xl font-bold mb-6">Our Programs</h2>
       <p class="text-lg text-gray-600 max-w-3xl mx-auto">
-        Discover the diverse range of programs and initiatives we offer to foster innovation, learning, and community in computer science and technology.
-      </p>
+        ACM at UH Mānoa offers a range of student-led committees and special interest groups (SIGs) focused on areas like programming, cybersecurity, game development, and more. Whether you're exploring new interests or diving deeper into your passion, there's a place for you here.      </p>
     </div>
 
-    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-8 md:gap-12">
+    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6 md:gap-8 max-w-5xl mx-auto">
       {% for program in programs %}
       <div class="flex flex-col items-center p-4">
-        <div class="relative w-32 h-32 sm:w-40 sm:h-40 md:w-48 md:h-48 mb-4">
+        <div class="relative w-20 h-20 sm:w-28 sm:h-28 md:w-32 md:h-32 mb-4">
           <img 
             src="{{ program.logo.url }}" 
             alt="{{ program.name }}" 
