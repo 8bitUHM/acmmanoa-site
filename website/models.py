@@ -34,7 +34,7 @@ class Sponsor(models.Model):
     
 
 class Program(models.Model):
-    name = models.CharField(max_length=100, unique=True, help_text="Name of Club/Program")
+    name = models.CharField(max_length=175, unique=True, help_text="Name of Club/Program")
     logo = models.ImageField(
         upload_to="website.File/bytes/filename/mimetype",
         null=True,
@@ -44,8 +44,10 @@ class Program(models.Model):
         https://cloudconvert.com/webp-converter
         '''
     )
-    link_url = models.URLField(help_text="Enter full link to the club/program website", blank=True)
-    link_name = models.CharField(max_length=100, help_text="Short label for the URL, e.g \"Visit Site\"", blank=True)
+    slug = models.SlugField(default='', unique=True)
+    about = models.TextField(help_text="Description or overview of program", blank=True)
+    website = models.URLField(help_text="Enter full link to the club/program website", blank=True)
+    link_name = models.CharField(max_length=150, help_text="Short label for the URL, e.g \"Visit Site\"", blank=True)
 
     
     def __str__(self): 
@@ -53,6 +55,28 @@ class Program(models.Model):
      
     def delete(self, *args, **kwargs): 
         super(Program, self).delete(*args, **kwargs) 
+        File.objects.filter(filename = self.logo.name).delete()
+
+class ProgramLeadership(models.Model):
+    program = models.ForeignKey(Program, on_delete=models.CASCADE)
+    name = models.CharField(max_length=150)
+    role = models.CharField(max_length=90)
+    logo = models.ImageField(
+        upload_to="website.File/bytes/filename/mimetype",
+        null=True,
+        blank=True,
+        help_text='''
+        Please compress the image and convert type to webp before uploading.
+        https://imagecompressor.com,
+        https://cloudconvert.com/webp-converter
+        '''
+    )
+
+    def __str__(self): 
+        return self.name
+     
+    def delete(self, *args, **kwargs): 
+        super(ProgramLeadership, self).delete(*args, **kwargs) 
         File.objects.filter(filename = self.logo.name).delete()
 
 class CarouselImage(models.Model):
