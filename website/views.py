@@ -1,15 +1,16 @@
 from django.shortcuts import render
-from .models import Program, CarouselImage, Event, Sponsor, ACMKekuhaupioCohort
-
+from .models import Program, CarouselImage, Event, Sponsor, Leadership, FAQ
 
 def home(request):
     # programs = Program.objects.select_related('image').all()
     programs = Program.objects.all()
     carousel_images = CarouselImage.objects.all().order_by('-created_at')
-    return render(request, 'pages/home.html', {"programs": programs, "carousel_images": carousel_images})
+    questions = FAQ.objects.all().order_by('created_at')
+    return render(request, 'pages/home.html', {"programs": programs, "carousel_images": carousel_images, "questions": questions})
 
 def about(request):
-    return render(request, 'pages/about.html')
+    leaders = Leadership.objects.all().order_by('title')
+    return render(request, 'pages/about.html', {"leaders": leaders})
 
 def events(request):
     events = Event.objects.all().order_by('-event_date')

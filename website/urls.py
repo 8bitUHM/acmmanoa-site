@@ -12,4 +12,5 @@ urlpatterns = [
     path('sigs/', sigs, name='sigs'),
     path('impact/', impact, name='impact'),
     path('cohorts', cohorts, name='cohorts'),
+    path('impact/', impact, name='impact')
 ]

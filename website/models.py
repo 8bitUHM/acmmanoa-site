@@ -125,8 +125,21 @@ class ACMKekuhaupioCohort(models.Model):
         verbose_name = "ACM Kekuhaupio Cohort"
 
 class Leadership(models.Model):
+    TITLE_CHOICES = [
+        ('1', 'President'),
+        ('2', 'Vice President'),
+        ('3', 'Director of Membership'),
+        ('4', 'Operations Director'),
+        ('5', 'Public Relations Director'),
+        ('6', 'Finance Coordinator'),
+        ('7', 'Operations Coordinator'),
+        ('8', 'Marketing Manager'),
+        ('9', 'Server Administrator & Webmaster'),
+        ('10', 'Faculty Sponsor'),
+    ]
+
     name = models.CharField(max_length=200)
-    title = models.CharField(max_length=50)
+    title = models.CharField(max_length=50, choices=TITLE_CHOICES)
     image = models.ImageField(
         upload_to="website.File/bytes/filename/mimetype",
         null=True,
@@ -134,14 +147,30 @@ class Leadership(models.Model):
         Please compress the image and convert type to webp before uploading.
         https://imagecompressor.com,
         https://cloudconvert.com/webp-converter
-        ''',
-        blank=True)
-    bio = models.CharField(max_length=200,
-                            help_text="(optional) Enter a short biography or background description about faculty member.")
+        ''')
+    bio = models.CharField(max_length=200, help_text="(optional) Enter a short biography or background description about faculty member.", null=True, blank=True)
+
+    class Meta:
+        verbose_name = "Leadership"
+        verbose_name_plural = "Leadership"
     
     def __str__(self):
         return self.name
+
+    def get_title_display_name(self):
+        return dict(self.TITLE_CHOICES).get(self.title, self.title)
     
     def delete(self, *args, **kwargs):
         super(Leadership, self).delete(*args, **kwargs)
         File.objects.filter(filename = self.image.name).delete()
+
+class FAQ(models.Model):
+    question = models.CharField(max_length=100, unique=True, help_text="Question that is asked frequently")
+    answer = models.TextField(help_text="The answer to the question")
+    created_at = models.DateTimeField(editable=False, auto_now_add=True)
+
+    class Meta: 
+        verbose_name = "F.A.Q."
+    
+    def __str__(self): 
+        return self.question
