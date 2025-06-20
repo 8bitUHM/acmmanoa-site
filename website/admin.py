@@ -10,7 +10,7 @@ class ProgramLeadershipInline(admin.StackedInline):
 @admin.register(Program)
 class ProgramAdmin(admin.ModelAdmin):
     inlines = [ProgramLeadershipInline]
-    prepopulated_fields = { "slug": ["name"]}
+    prepopulated_fields = { "slug": ["name"] }
 
 @admin.register(CarouselImage)
 class CarouselImageAdmin(admin.ModelAdmin):
