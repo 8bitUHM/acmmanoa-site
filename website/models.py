@@ -72,6 +72,9 @@ class ProgramLeadership(models.Model):
         '''
     )
 
+    class Meta:
+        verbose_name_plural = "Program Leadership"
+
     def __str__(self): 
         return self.name
      
