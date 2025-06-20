@@ -1,12 +1,16 @@
 from django.contrib import admin
-from .models import Program, CarouselImage, Event, Sponsor, ACMKekuhaupioCohort, Leadership, FAQ
+from .models import *
 
 # Register your models here.
 
+class ProgramLeadershipInline(admin.StackedInline):
+    model = ProgramLeadership
+    extra = 1
+
 @admin.register(Program)
 class ProgramAdmin(admin.ModelAdmin):
-    # Leaving this here in case we want additional functionality
-    pass
+    inlines = [ProgramLeadershipInline]
+    prepopulated_fields = { "slug": ["name"] }
 
 @admin.register(CarouselImage)
 class CarouselImageAdmin(admin.ModelAdmin):
