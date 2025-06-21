@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from .models import Program, CarouselImage, Event, Sponsor, Leadership, FAQ
+from .models import *
 
 def home(request):
     # programs = Program.objects.select_related('image').all()
