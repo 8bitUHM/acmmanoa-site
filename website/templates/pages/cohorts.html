@@ -8,23 +8,21 @@
   <div id="cohorts" class="mt-5 flex flex-col justify-center gap-2 md:gap-5">
     <div class="max-w-5xl grid grid-cols-1 auto-rows-[20rem] md:grid-cols-2 lg:grid-cols-3 gap-6">
       {% for cohort in cohorts %}
+        {% if cohort.image %}
         <button
           type="button"
           id="{{cohort.name|cut:' '}}"
           class="size-full rounded-md shadow-md bg-center bg-cover object-center aspect-square
-                 {% if cohort.image %}bg-[url({{cohort.image.url}})] overflow-clip
-                 {% else %}text-black border border-gray-900{% endif %} group
-                 cursor-pointer focus:outline-green-800 focus:outline-5"
-          tabindex="0"
+                 {% if cohort.image %}bg-[url({{cohort.image.url}})] overflow-clip{% endif %}
+                 group text-black border border-gray-900 cursor-pointer focus:outline-green-800 focus:outline-5"
           aria-label="click me to find out more about {{cohort.name}}"
           aria-expanded="false"
         >
-         {% if cohort.image %}
           <div 
             class="size-full rounded-md text-[hsla(0,0%,100%,1)]
                    bg-[hsla(0,4%,17%,0.73)] px-2 py-3 grid grid-rows-[3rem_5rem_5rem] 
-                   gap-5 translate-y-[80%] group-hover:translate-y-[60%]
-                   transition-transform duration-300 group-focus-within:translate-y-[60%]"
+                   gap-5 translate-y-[80%] supports-[hover]:group-hover:translate-y-[60%]
+                   transition-transform duration-300 "
             >
             <hgroup class="justify-items-center">
               <h2 class="text-xl font-medium">{{cohort.name}}</h2>
@@ -39,10 +37,33 @@
                 <h3>Comments</h3>
                 <p class="text-sm">{{cohort.comments}}</p>
              </div>
-           {% endif %}
+          {% endif %}
           </div>
-         {% endif %}
         </button>
+         {% else %}
+          <article
+            id="{{cohort.name|cut:' '}}"
+            class="size-full rounded-md shadow-md aspect-square overflow-clip text-black border border-gray-900"
+          >
+          <div 
+            class="size-full rounded-md px-2 py-3 grid grid-rows-[3rem_5rem_5rem] gap-5"
+            >
+            <hgroup class="justify-items-center">
+              <h2 class="text-xl font-medium">{{cohort.name}}</h2>
+              <p class="text-sm font-light">{{cohort.semester}}
+            </hgroup>
+            <div id="accomplishments-{{cohort.name|cut:' '}}" class="text-left">
+              <h3 class="leading-7">Accomplishments</h3>
+              <p class="text-sm">{{cohort.accomplishments}}</p>
+            </div>
+           {% if cohort.comments %} 
+             <div id="comments-{{cohort.name|cut:' '}}" class="text-left">
+                <h3>Comments</h3>
+                <p class="text-sm">{{cohort.comments}}</p>
+             </div>
+            {% endif %}
+          </article>
+         {% endif %}
       {% endfor %}
     </div>
   </div>
