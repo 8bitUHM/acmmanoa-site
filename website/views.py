@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from .models import Program, CarouselImage, Event, Sponsor, Leadership, FAQ
+from .models import *
 
 def home(request):
     # programs = Program.objects.select_related('image').all()
@@ -28,3 +28,8 @@ def sigs(request):
 
 def impact(request):
     return render(request, 'pages/impact.html')
+
+def cohorts(request):
+    cohorts = ACMKekuhaupioCohort.objects.defer('created_at').all().order_by('-image', '-comments')
+    semesters = ACMKekuhaupioCohort.objects.all().values_list('semester', flat=True).distinct()
+    return render(request, 'pages/cohorts.html', {"cohorts": cohorts, "semesters": semesters})
