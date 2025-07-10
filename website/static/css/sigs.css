@@ -21,6 +21,10 @@ a:has(.sig-header) {
     transform: scaleX(100%);
   }
 
+  &:focus-visible > .sig-header::after {
+    transform: scaleX(100%);
+  }
+
 }
 
 #sig-container > a {
@@ -32,7 +36,7 @@ a:has(.sig-header) {
 
 }
 
-#sig-container:has(a:hover, a:focus-visible) a:not(:hover) {
+#sig-container:has(a:hover, a:focus-visible) a:not(:hover, :focus-visible) {
 
     opacity: 0.6;
     scale: 0.8;
