@@ -1,5 +1,6 @@
 from django.db import models
 from datetime import datetime
+from django.core.validators import MaxLengthValidator
 
 # Create your models here.
 class File(models.Model): 
@@ -15,7 +16,7 @@ class Sponsor(models.Model):
     created_at = models.DateTimeField(editable=False, auto_now_add=True)
     name = models.CharField(max_length=125, unique=True, help_text="Name of Sponsor (Organization and/or Individual)")
     website = models.URLField(verbose_name='Website Link', blank=True, help_text="Enter link to organization's website")
-    # details = models.TextField(help_text="details of the sponsor", null=True, blank=True, default="")
+    details = models.TextField(help_text="Details of the sponsor (max 250 characters)", null=True, blank=True, default="", validators=[MaxLengthValidator(250)])
     image = models.ImageField(
         upload_to="website.File/bytes/filename/mimetype",
         null=True,
