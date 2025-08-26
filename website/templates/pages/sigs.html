@@ -7,39 +7,51 @@
 
 {% block content %}
 <main class="grid place-items-center gap-6">
-  <hgroup class="m-4 p-3 justify-items-center content-center max-w-3xl">
-    <h1 class="text-4xl font-bold mb-5">Special Interest Programs</h1>
-    <p class="font-medium text-lg">
-      Special Interest Programs or SIGs are clubs/organizations within
-      ACM that focus on a particular area, topic, or activity. These range from
-      web development to ballroom dancing. Please click on a SIG if you are
-      interested in learning more about it.
-    </p>
-  </hgroup>
+  {% if sig %}
+    {% comment %} Individual Sig {% endcomment %}
+    <div class="grid place-items-center">
+      
+      <hgroup class="max-w-full">
+        <h1 class="text-5xl uppercase font-bold">aloha we are {{sig.name}}</h1>
+        <p>{{sig.about}}</p>
+      </hgroup>
+    </div>
+  {% else %}
+    {% comment %} List of Sigs {% endcomment %}
+    <hgroup class="m-4 p-3 justify-items-center content-center max-w-3xl">
+      <h1 class="text-4xl font-bold mb-5">Special Interest Programs</h1>
+      <p class="font-medium text-lg">
+        Special Interest Programs or SIGs are clubs/organizations within
+        ACM that focus on a particular area, topic, or activity. These range from
+        web development to ballroom dancing. Please click on a SIG if you are
+        interested in learning more about it.
+      </p>
+    </hgroup>
 
-  <div
-    class="justify-items-center content-center"
-  >
-    <h2 class="text-3xl font-bold mb-5">View SIGs</h2>
     <div
-      id="sig-container"
-      class="grid gap-4 md:grid-cols-2 lg:grid-cols-3 py-4"
+      class="justify-items-center content-center"
     >
-      {% for sig in sigs %}
-        <a
-          class="max-w-6xl gap-5 flex flex-col justify-stretch items-center p-3 shadow-md"
-          href="{% url 'sig_detail' sig.slug %}"
-        >
-          <h2 class="relative text-lg w-fit sig-header font-bold">{{sig.name}}</h2>
-          <img
-          alt="{{sig.name|lower}} logo"
-          src="{{sig.logo.url}}"
-          class="object-center max-w-[250px] w-full"
-          />
-        </a>
-      {% endfor %}
+      <h2 class="text-3xl font-bold mb-5">View SIGs</h2>
+      <div
+        id="sig-container"
+        class="grid gap-4 md:grid-cols-2 lg:grid-cols-3 py-4"
+      >
+        {% for sig in sigs %}
+          <a
+            class="max-w-6xl gap-5 flex flex-col justify-stretch items-center p-3 shadow-md"
+            href="{% url 'sig_detail' sig.slug %}"
+          >
+            <h2 class="relative text-lg w-fit sig-header font-bold">{{sig.name}}</h2>
+            <img
+              alt="{{sig.name|lower}} logo"
+              src="{{sig.logo.url}}"
+              class="object-center max-w-[250px] w-full"
+            />
+          </a>
+        {% endfor %}
+      </div>
     </div>
 
-  </div>
+  {% endif %}
 </main>
 {% endblock %}

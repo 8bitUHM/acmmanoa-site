@@ -45,10 +45,8 @@ class Program(models.Model):
         '''
     )
     slug = models.SlugField(default='', unique=True)
-    about = models.TextField(help_text="Description or overview of program", blank=True)
-    website = models.URLField(help_text="Enter full link to the club/program website", blank=True)
-    link_name = models.CharField(max_length=150, help_text="Short label for the URL, e.g \"Visit Site\"", blank=True)
-
+    about = models.TextField(help_text="Description or overview of program")
+    website = models.URLField(help_text="Enter full link to the external club/program website", blank=True)
     
     def __str__(self): 
         return self.name
@@ -61,7 +59,7 @@ class ProgramLeadership(models.Model):
     program = models.ForeignKey(Program, on_delete=models.CASCADE)
     name = models.CharField(max_length=150)
     role = models.CharField(max_length=90)
-    logo = models.ImageField(
+    profile = models.ImageField(
         upload_to="website.File/bytes/filename/mimetype",
         null=True,
         blank=True,
