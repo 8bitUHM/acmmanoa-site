@@ -2,11 +2,11 @@ from django.shortcuts import render
 from .models import *
 
 def home(request):
-    # programs = Program.objects.select_related('image').all()
-    programs = Program.objects.all()
+    # sigs = SIGS.objects.select_related('image').all()
+    sigs = SIGS.objects.all()
     carousel_images = CarouselImage.objects.all().order_by('-created_at')
     questions = FAQ.objects.all().order_by('created_at')
-    return render(request, 'pages/home.html', {"programs": programs, "carousel_images": carousel_images, "questions": questions})
+    return render(request, 'pages/home.html', {"programs": sigs, "carousel_images": carousel_images, "questions": questions})
 
 def about(request):
     leaders = Leadership.objects.all().order_by('title')
