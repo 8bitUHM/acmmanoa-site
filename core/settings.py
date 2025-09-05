@@ -188,13 +188,13 @@ except ImportError:
 
 JAZZMIN_SETTINGS = {
     # title of the window (Will default to current_admin_site.site_title if absent or None)
-    "site_title": "ACM",
+    "site_title": "ACM at UH Mānoa",
 
     # Title on the login screen (19 chars max) (defaults to current_admin_site.site_header if absent or None)
-    "site_header": "ACM",
+    "site_header": "ACM at UH Mānoa",
 
     # Title on the brand (19 chars max) (defaults to current_admin_site.site_header if absent or None)
-    "site_brand": "ACM",
+    "site_brand": "ACM at UH Mānoa",
 
     # Logo to use for your site, must be present in static files, used for brand on top left
     "site_logo": "website/acm_logo.png",
@@ -212,10 +212,10 @@ JAZZMIN_SETTINGS = {
     "site_icon": None,
 
     # Welcome text on the login screen
-    "welcome_sign": "Welcome to the ACM Admin Portal",
+    "welcome_sign": "Welcome to the ACM at UH Mānoa Admin Portal",
 
     # Copyright on the footer
-    "copyright": "ACM@MANOA",
+    "copyright": "ACM at UH Mānoa",
 
     # List of model admins to search from the search bar, search bar omitted if excluded
     # If you want to use a single search field you dont need to use a list, you can use a simple string 

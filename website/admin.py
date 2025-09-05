@@ -3,13 +3,13 @@ from .models import *
 
 # Register your models here.
 
-class ProgramLeadershipInline(admin.StackedInline):
-    model = ProgramLeadership
+class SIGSLeadershipInline(admin.StackedInline):
+    model = SIGSLeadership
     extra = 1
 
-@admin.register(Program)
-class ProgramAdmin(admin.ModelAdmin):
-    inlines = [ProgramLeadershipInline]
+@admin.register(SIGS)
+class SIGSAdmin(admin.ModelAdmin):
+    inlines = [SIGSLeadershipInline]
     prepopulated_fields = { "slug": ["name"] }
 
 @admin.register(CarouselImage)
