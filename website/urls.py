@@ -1,7 +1,7 @@
 # example/urls.py
 from django.urls import path
 
-from website.views import home, about, events, sponsors, icspace, sigs, impact, cohorts
+from website.views import home, about, events, sponsors, icspace, sigs, impact, cohorts, programs_list
 
 urlpatterns = [
     path('', home, name='home'),
@@ -12,5 +12,6 @@ urlpatterns = [
     path('sigs/', sigs, name='sigs'),
     path('impact/', impact, name='impact'),
     path('cohorts', cohorts, name='cohorts'),
-    path('impact/', impact, name='impact')
+    path('impact/', impact, name='impact'),
+    path('programs/', programs_list, name="programs_list")
 ]

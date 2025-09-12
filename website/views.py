@@ -33,3 +33,6 @@ def cohorts(request):
     cohorts = ACMKekuhaupioCohort.objects.defer('created_at').all().order_by('-image', '-comments')
     semesters = ACMKekuhaupioCohort.objects.all().values_list('semester', flat=True).distinct()
     return render(request, 'pages/cohorts.html', {"cohorts": cohorts, "semesters": semesters})
+
+def programs_list(request):
+    return render(request, 'pages/list.html')
