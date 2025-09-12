@@ -5,7 +5,7 @@ from django.core.files import File as DjangoFile
 from .models import (
     File,
     Sponsor,
-    Program,
+    SIGS,
     CarouselImage,
     Event,
     ACMKekuhaupioCohort,
@@ -86,43 +86,43 @@ class SponsorModelTest(TestCase):
         # Check associated file is deleted
         self.assertEqual(File.objects.filter(filename=image_path).count(), 0)
 
-class ProgramModelTest(TestCase):
+class SIGSModelTest(TestCase):
     def setUp(self):
         self.image_content = SimpleUploadedFile(
-            "test_program.webp",
+            "test_sigs.webp",
             b"file_content",
             content_type="image/webp"
         )
-        self.program = Program.objects.create(
-            name="Test Program",
-            link_url="https://example.com",
+        self.sigs = SIGS.objects.create(
+            name="Test SIG",
+            website="https://example.com",
             link_name="Visit Test",
             logo=self.image_content
         )
 
-    def test_program_creation(self):
-        self.assertEqual(self.program.name, "Test Program")
-        self.assertEqual(self.program.link_url, "https://example.com")
-        self.assertEqual(self.program.link_name, "Visit Test")
-        self.assertEqual(str(self.program), "Test Program")
-        self.assertTrue(self.program.logo.name.endswith('test_program.webp'))
+    def test_sigs_creation(self):
+        self.assertEqual(self.sigs.name, "Test SIG")
+        self.assertEqual(self.sigs.website, "https://example.com")
+        self.assertEqual(self.sigs.link_name, "Visit Test")
+        self.assertEqual(str(self.sigs), "Test SIG")
+        self.assertTrue(self.sigs.logo.name.endswith('test_sigs.webp'))
 
-    def test_program_update(self):
-        self.program.name = "Updated Program"
-        self.program.link_name = "Updated Link"
-        self.program.save()
+    def test_sigs_update(self):
+        self.sigs.name = "Updated SIG"
+        self.sigs.link_name = "Updated Link"
+        self.sigs.save()
         
-        updated_program = Program.objects.get(id=self.program.id)
-        self.assertEqual(updated_program.name, "Updated Program")
-        self.assertEqual(updated_program.link_name, "Updated Link")
+        updated_sigs = SIGS.objects.get(id=self.sigs.id)
+        self.assertEqual(updated_sigs.name, "Updated SIG")
+        self.assertEqual(updated_sigs.link_name, "Updated Link")
 
-    def test_program_deletion(self):
-        logo_path = self.program.logo.name
-        program_id = self.program.id
-        self.program.delete()
+    def test_sigs_deletion(self):
+        logo_path = self.sigs.logo.name
+        sigs_id = self.sigs.id
+        self.sigs.delete()
         
-        with self.assertRaises(Program.DoesNotExist):
-            Program.objects.get(id=program_id)
+        with self.assertRaises(SIGS.DoesNotExist):
+            SIGS.objects.get(id=sigs_id)
         self.assertEqual(File.objects.filter(filename=logo_path).count(), 0)
 
 class CarouselImageModelTest(TestCase):

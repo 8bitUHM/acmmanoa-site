@@ -1,5 +1,6 @@
 from django.db import models
 from datetime import datetime
+from django.core.validators import MaxLengthValidator
 
 # Create your models here.
 class File(models.Model): 
@@ -15,9 +16,11 @@ class Sponsor(models.Model):
     created_at = models.DateTimeField(editable=False, auto_now_add=True)
     name = models.CharField(max_length=125, unique=True, help_text="Name of Sponsor (Organization and/or Individual)")
     website = models.URLField(verbose_name='Website Link', blank=True, help_text="Enter link to organization's website")
+    details = models.TextField(help_text="Details of the sponsor (max 250 characters)", null=True, blank=True, default="", validators=[MaxLengthValidator(250)])
     image = models.ImageField(
         upload_to="website.File/bytes/filename/mimetype",
         null=True,
+        blank=True,
         help_text='''
         Please compress the image and convert type to webp before uploading.
         https://imagecompressor.com,
@@ -33,8 +36,8 @@ class Sponsor(models.Model):
         File.objects.filter(filename = self.image.name).delete()
     
 
-class Program(models.Model):
-    name = models.CharField(max_length=175, unique=True, help_text="Name of Club/Program")
+class SIGS(models.Model):
+    name = models.CharField(max_length=175, unique=True, help_text="Name of SIG")
     logo = models.ImageField(
         upload_to="website.File/bytes/filename/mimetype",
         null=True,
@@ -45,18 +48,28 @@ class Program(models.Model):
         '''
     )
     slug = models.SlugField(default='', unique=True)
+<<<<<<< HEAD
     about = models.TextField(help_text="Description or overview of program")
     website = models.URLField(help_text="Enter full link to the external club/program website", blank=True)
+=======
+    about = models.TextField(help_text="Description or overview of SIG", blank=True)
+    website = models.URLField(help_text="Enter full link to the SIG website", blank=True)
+    link_name = models.CharField(max_length=150, help_text="Short label for the URL, e.g \"Visit Site\"", blank=True)
+
+    class Meta:
+        verbose_name = "SIG"
+        verbose_name_plural = "SIGS"
+>>>>>>> f62fd3aa37db3d15e4947824e20fe435ec4e361e
     
     def __str__(self): 
         return self.name
      
     def delete(self, *args, **kwargs): 
-        super(Program, self).delete(*args, **kwargs) 
+        super(SIGS, self).delete(*args, **kwargs) 
         File.objects.filter(filename = self.logo.name).delete()
 
-class ProgramLeadership(models.Model):
-    program = models.ForeignKey(Program, on_delete=models.CASCADE)
+class SIGSLeadership(models.Model):
+    sigs = models.ForeignKey(SIGS, on_delete=models.CASCADE)
     name = models.CharField(max_length=150)
     role = models.CharField(max_length=90)
     profile = models.ImageField(
@@ -71,13 +84,14 @@ class ProgramLeadership(models.Model):
     )
 
     class Meta:
-        verbose_name_plural = "Program Leadership"
+        verbose_name = "SIGS Leadership"
+        verbose_name_plural = "SIGS Leadership"
 
     def __str__(self): 
         return self.name
      
     def delete(self, *args, **kwargs): 
-        super(ProgramLeadership, self).delete(*args, **kwargs) 
+        super(SIGSLeadership, self).delete(*args, **kwargs) 
         File.objects.filter(filename = self.logo.name).delete()
 
 class CarouselImage(models.Model):
