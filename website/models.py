@@ -48,10 +48,6 @@ class SIGS(models.Model):
         '''
     )
     slug = models.SlugField(default='', unique=True)
-<<<<<<< HEAD
-    about = models.TextField(help_text="Description or overview of program")
-    website = models.URLField(help_text="Enter full link to the external club/program website", blank=True)
-=======
     about = models.TextField(help_text="Description or overview of SIG", blank=True)
     website = models.URLField(help_text="Enter full link to the SIG website", blank=True)
     link_name = models.CharField(max_length=150, help_text="Short label for the URL, e.g \"Visit Site\"", blank=True)
@@ -59,7 +55,6 @@ class SIGS(models.Model):
     class Meta:
         verbose_name = "SIG"
         verbose_name_plural = "SIGS"
->>>>>>> f62fd3aa37db3d15e4947824e20fe435ec4e361e
     
     def __str__(self): 
         return self.name
