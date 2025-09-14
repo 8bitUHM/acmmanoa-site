@@ -29,4 +29,14 @@ class Migration(migrations.Migration):
             name='website',
             field=models.URLField(blank=True, help_text='Enter full link to the external club/program website'),
         ),
+        migrations.AddField(
+            model_name='sponsor',
+            name='description',
+            field=models.TextField(blank=True, null=True),
+        ),
+        migrations.AlterField(
+            model_name='sponsor',
+            name='image',
+            field=models.ImageField(blank=True, default='website/handshake.png', help_text='\n        Please compress the image and convert type to webp before uploading.\n        https://imagecompressor.com,\n        https://cloudconvert.com/webp-converter\n        ', null=True, upload_to='website.File/bytes/filename/mimetype'),
+        ),
     ]

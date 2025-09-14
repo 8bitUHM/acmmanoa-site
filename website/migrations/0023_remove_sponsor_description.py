@@ -6,7 +6,7 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('website', '0022_sponsor_description_alter_sponsor_image'),
+        ('website', '0022_rename_logo_programleadership_profile_and_more'),
     ]
 
     operations = [
