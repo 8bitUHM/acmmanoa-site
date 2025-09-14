@@ -24,11 +24,11 @@ def icspace(request):
     return render(request, 'pages/icspace.html')
 
 def sigs_index(request):
-    sigs = Program.objects.all()
+    sigs = SIGS.objects.all()
     return render(request, 'pages/sigs.html', {"sigs": sigs})
 
 def sig_detail(request, slug):
-    sig = get_object_or_404(Program, slug=slug)
+    sig = get_object_or_404(SIGS, slug=slug)
     return render(request, 'pages/sigs.html', {"sig": sig})
 
 def impact(request):
