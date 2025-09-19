@@ -67,7 +67,7 @@ class SIGSLeadership(models.Model):
     sigs = models.ForeignKey(SIGS, on_delete=models.CASCADE)
     name = models.CharField(max_length=150)
     role = models.CharField(max_length=90)
-    logo = models.ImageField(
+    profile = models.ImageField(
         upload_to="website.File/bytes/filename/mimetype",
         null=True,
         blank=True,

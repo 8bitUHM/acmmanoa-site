@@ -11,44 +11,56 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.CreateModel(
+        migrations.RenameModel(
+            old_name='Program',
+            new_name='SIGS'
+        ),
+        migrations.AddField(
+            model_name='SIGS',
+            name='link_name',
+            field=models.CharField(blank=True, help_text='Short label for the URL, e.g "Visit Site"', max_length=150),
+        ),
+        migrations.AlterField(
+            model_name='SIGS',
+            name='name',
+            field=models.CharField(help_text='Name of SIG', max_length=175, unique=True)
+        ),
+        migrations.AlterField(
+            model_name='SIGS',
+            name='about',
+            field=models.TextField(blank=True, help_text='Description or overview of SIG')
+        ),
+        migrations.AlterField(
+            model_name='SIGS',
+            name='website',
+            field=models.URLField(blank=True, help_text='Enter full link to the SIG website')
+        ),
+        migrations.AlterModelOptions(
             name='SIGS',
-            fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(help_text='Name of SIG', max_length=175, unique=True)),
-                ('logo', models.ImageField(help_text='\n        Please compress the image and convert type to webp before uploading.\n        https://imagecompressor.com,\n        https://cloudconvert.com/webp-converter\n        ', null=True, upload_to='website.File/bytes/filename/mimetype')),
-                ('slug', models.SlugField(default='', unique=True)),
-                ('about', models.TextField(blank=True, help_text='Description or overview of SIG')),
-                ('website', models.URLField(blank=True, help_text='Enter full link to the SIG website')),
-                ('link_name', models.CharField(blank=True, help_text='Short label for the URL, e.g "Visit Site"', max_length=150)),
-            ],
             options={
-                'verbose_name': 'SIG',
-                'verbose_name_plural': 'SIGS',
-            },
+                'verbose_name':'SIG',
+                'verbose_name_plural':'SIGS'
+            }
         ),
-        migrations.CreateModel(
+        migrations.RenameModel(
+            old_name='ProgramLeadership',
+            new_name='SIGSLeadership'
+        ),
+        migrations.RenameField(
+            model_name='SIGSLeadership',
+            old_name='program',
+            new_name='sigs'
+        ),
+        migrations.AlterField(
+            model_name='SIGSLeadership',
+            name='sigs',
+            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='website.sigs')
+        ),
+        migrations.AlterModelOptions(
             name='SIGSLeadership',
-            fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=150)),
-                ('role', models.CharField(max_length=90)),
-                ('logo', models.ImageField(blank=True, help_text='\n        Please compress the image and convert type to webp before uploading.\n        https://imagecompressor.com,\n        https://cloudconvert.com/webp-converter\n        ', null=True, upload_to='website.File/bytes/filename/mimetype')),
-                ('sigs', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='website.sigs')),
-            ],
             options={
-                'verbose_name': 'SIGS Leadership',
-                'verbose_name_plural': 'SIGS Leadership',
-            },
-        ),
-        migrations.RemoveField(
-            model_name='programleadership',
-            name='program',
-        ),
-        migrations.DeleteModel(
-            name='Program',
-        ),
-        migrations.DeleteModel(
-            name='ProgramLeadership',
+                'verbose_name':'SIGS Leadership', 
+                'verbose_name_plural':'SIGS Leadership'
+            }
         ),
     ]

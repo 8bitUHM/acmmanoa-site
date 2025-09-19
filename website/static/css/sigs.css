@@ -1,0 +1,44 @@
+.sig-header {
+  position: relative;
+
+  &::after {
+    position: absolute;
+    bottom: -5px;
+    left: 0px;
+    width: 100%;
+    height: 0.25rem;
+    border-radius: 999999px;
+    content: '';
+    background-color: black;
+    transform: scaleX(0);
+    transition: transform 300ms ease-in-out;
+  }
+}
+
+a:has(.sig-header) {
+  
+  &:hover > .sig-header::after {
+    transform: scaleX(100%);
+  }
+
+  &:focus-visible > .sig-header::after {
+    transform: scaleX(100%);
+  }
+
+}
+
+#sig-container > a {
+
+  transition: 
+    scale 300ms ease-in-out,
+    opacity 300ms ease-in-out;
+  opacity: 1;
+
+}
+
+#sig-container:has(a:hover, a:focus-visible) a:not(:hover, :focus-visible) {
+
+    opacity: 0.6;
+    scale: 0.8;
+
+}

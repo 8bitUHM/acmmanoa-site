@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from .models import *
 
 def home(request):
@@ -23,8 +23,13 @@ def sponsors(request):
 def icspace(request):
     return render(request, 'pages/icspace.html')
 
-def sigs(request):
-    return render(request, 'pages/sigs.html')
+def sigs_index(request):
+    sigs = SIGS.objects.all()
+    return render(request, 'pages/sigs.html', {"sigs": sigs})
+
+def sig_detail(request, slug):
+    sig = get_object_or_404(SIGS, slug=slug)
+    return render(request, 'pages/sigs.html', {"sig": sig})
 
 def impact(request):
     return render(request, 'pages/impact.html')
