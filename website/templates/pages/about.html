@@ -2,137 +2,195 @@
 {% load static %}
 {% block title %}About | ACM at UH Mānoa{% endblock %}
 {% block content %}
-<div class="container mx-auto p-8 text-center">
-
-  <h1 class="text-4xl font-bold mb-4 tracking-[1px]" style="font-family: 'Barlow', sans-serif;">About ACM Manoa</h1>
-
-  <div class="px-4 sm:px-8 md:px-20" style="font-family: 'Barlow', sans-serif;">
-    <h2 class="text-2xl font-normal mb-4 tracking-[1px] border-b pb-2">
-      OVERVIEW
-    </h2>
-
-    <div class="text-lg text-left">
-      <p class="mb-4">
-        The Association for Computing Machinery at UH Manoa (ACM Manoa) is the largest computer science student
-        organization at the University of Hawaii at Manoa. As an official student chapter of the international ACM and a
-        Registered Independent Organization (RIO), ACM Manoa welcomes students of all backgrounds and experience levels
-        who share a passion for computing.
-      </p>
-      <p class="mb-4">
-        Since its establishment, ACM Manoa has evolved into a dynamic and inclusive community focused on innovation,
-        collaboration, and professional growth. Guided by clearly defined goals, the organization makes strategic
-        decisions that foster long-term development and leadership in the tech industry.
-      </p>
-      <p class="mb-4">
-        A core feature of ACM Manoa’s structure is its Special Interest Groups (SIGs), which empower members to lead
-        initiatives based on their specific interests. This model encourages student-led projects and events, enriching
-        the overall experience and ensuring that the organization continues to grow in alignment with the evolving
-        interests of its members.
+<main class="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50">
+  <!-- Hero Section -->
+  <div class="bg-gradient-to-r from-blue-600 to-indigo-700 text-white py-20 px-4">
+    <div class="max-w-7xl mx-auto text-center">
+      <h1 class="text-6xl md:text-7xl font-bold mb-6 tracking-tight">About ACM Manoa</h1>
+      <p class="text-xl md:text-2xl text-blue-100 max-w-4xl mx-auto leading-relaxed">
+        The largest computer science student organization at the University of Hawaii at Manoa
       </p>
     </div>
   </div>
 
-  <h2 class="text-2xl font-normal mb-4 tracking-[1px] border-b pb-2" style="font-family: 'Barlow', sans-serif;">
-    Leadership
-  </h2>
-
-  <div class="flex flex-wrap justify-center">
-    {% for leader in leaders %}
-    {% if leader.get_title_display_name != "Faculty Sponsor" %}
-    <div class="basis-1/2 sm:basis-1/3 md:basis-1/4 lg:basis-1/5 px-4 mb-8">
-      {% if leader.image %}
-      <div class="flex justify-center">
-        <img src="{{ leader.image.url }}" alt="{{ leader.name }}"
-          class="mb-4 w-36 h-36 rounded-full object-cover object-center" loading="lazy">
+  <!-- Main Content -->
+  <div class="max-w-7xl mx-auto px-4 py-16">
+    <!-- Overview Section -->
+    <section class="mb-20">
+      <div class="text-center mb-16">
+        <h2 class="text-5xl font-bold mb-4 text-gray-800">Overview</h2>
+        <div class="w-24 h-1 bg-gradient-to-r from-blue-500 to-indigo-500 mx-auto rounded-full"></div>
       </div>
-      {% endif %}
-      <h2 class="text-2xl font-semibold">{{ leader.name }}</h2>
-      <p class="text-sm mb-2">{{ leader.get_title_display_name }}</p>
-      {% if leader.bio %}
-      <p class="text-gray-500 text-sm mb-2">{{ leader.bio }}</p>
-      {% endif %}
-    </div>
-    {% endif %}
-
-    {% empty %}
-    <p>No events found.</p>
-    {% endfor %}
-  </div>
-
-  <h2 class="text-2xl font-normal mb-4 tracking-[1px] border-b pb-2" style="font-family: 'Barlow', sans-serif;">
-    Faculty
-    Sponsors
-  </h2>
-
-  <div class="flex flex-wrap justify-center">
-    {% for leader in leaders %}
-    {% if leader.get_title_display_name == "Faculty Sponsor" %}
-    <div class="basis-1/2 sm:basis-1/3 md:basis-1/4 lg:basis-1/5 px-4 mb-8">
-      {% if leader.image %}
-      <div class="flex justify-center">
-        <img src="{{ leader.image.url }}" alt="{{ leader.name }}"
-          class="mb-4 w-36 h-36 rounded-full object-cover object-center" loading="lazy">
+      
+      <div class="bg-white rounded-3xl shadow-xl p-12 border border-gray-100">
+        <div class="max-w-4xl mx-auto text-lg text-gray-600 leading-relaxed space-y-6">
+          <p>
+            The Association for Computing Machinery at UH Manoa (ACM Manoa) is the largest computer science student
+            organization at the University of Hawaii at Manoa. As an official student chapter of the international ACM and a
+            Registered Independent Organization (RIO), ACM Manoa welcomes students of all backgrounds and experience levels
+            who share a passion for computing.
+          </p>
+          <p>
+            Since its establishment, ACM Manoa has evolved into a dynamic and inclusive community focused on innovation,
+            collaboration, and professional growth. Guided by clearly defined goals, the organization makes strategic
+            decisions that foster long-term development and leadership in the tech industry.
+          </p>
+          <p>
+            A core feature of ACM Manoa's structure is its Special Interest Groups (SIGs), which empower members to lead
+            initiatives based on their specific interests. This model encourages student-led projects and events, enriching
+            the overall experience and ensuring that the organization continues to grow in alignment with the evolving
+            interests of its members.
+          </p>
+        </div>
       </div>
-      {% endif %}
-      <h2 class="text-2xl font-semibold">{{ leader.name }}</h2>
-      <p class="text-sm mb-2">{{ leader.get_title_display_name }}</p>
-      {% if leader.bio %}
-      <p class="text-gray-500 text-sm mb-2">{{ leader.bio }}</p>
-      {% endif %}
-    </div>
-    {% endif %}
+    </section>
 
-    {% empty %}
-    <p>No events found.</p>
-    {% endfor %}
+    <!-- Leadership Section -->
+    <section class="mb-20">
+      <div class="text-center mb-16">
+        <h2 class="text-5xl font-bold mb-4 text-gray-800">Leadership Team</h2>
+        <div class="w-24 h-1 bg-gradient-to-r from-blue-500 to-indigo-500 mx-auto rounded-full"></div>
+      </div>
+      
+      <div class="grid gap-8 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        {% for leader in leaders %}
+        {% if leader.get_title_display_name != "Faculty Sponsor" %}
+        <div class="group bg-white rounded-2xl shadow-lg p-8 text-center hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 border border-gray-100">
+          {% if leader.image %}
+          <div class="mb-6">
+            <div class="relative inline-block">
+              <img 
+                src="{{ leader.image.url }}" 
+                alt="{{ leader.name }} profile" 
+                class="w-32 h-32 rounded-full mx-auto object-cover border-4 border-white shadow-lg group-hover:scale-110 transition-transform duration-300"
+                loading="lazy"
+              />
+              <div class="absolute inset-0 rounded-full bg-gradient-to-tr from-blue-400/20 to-indigo-400/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+            </div>
+          </div>
+          {% endif %}
+          <h3 class="text-2xl font-bold text-gray-800 mb-3 group-hover:text-blue-600 transition-colors duration-300">{{ leader.name }}</h3>
+          <p class="text-lg text-blue-600 font-semibold bg-blue-50 px-4 py-2 rounded-full inline-block mb-3">{{ leader.get_title_display_name }}</p>
+          {% if leader.bio %}
+          <p class="text-gray-600 text-sm leading-relaxed">{{ leader.bio }}</p>
+          {% endif %}
+        </div>
+        {% endif %}
+        {% empty %}
+        <p class="col-span-full text-center text-gray-500">No leadership information available.</p>
+        {% endfor %}
+      </div>
+    </section>
+
+    <!-- Faculty Sponsors Section -->
+    <section class="mb-20">
+      <div class="text-center mb-16">
+        <h2 class="text-5xl font-bold mb-4 text-gray-800">Faculty Sponsors</h2>
+        <div class="w-24 h-1 bg-gradient-to-r from-blue-500 to-indigo-500 mx-auto rounded-full"></div>
+      </div>
+      
+      <div class="grid gap-8 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        {% for leader in leaders %}
+        {% if leader.get_title_display_name == "Faculty Sponsor" %}
+        <div class="group bg-white rounded-2xl shadow-lg p-8 text-center hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 border border-gray-100">
+          {% if leader.image %}
+          <div class="mb-6">
+            <div class="relative inline-block">
+              <img 
+                src="{{ leader.image.url }}" 
+                alt="{{ leader.name }} profile" 
+                class="w-32 h-32 rounded-full mx-auto object-cover border-4 border-white shadow-lg group-hover:scale-110 transition-transform duration-300"
+                loading="lazy"
+              />
+              <div class="absolute inset-0 rounded-full bg-gradient-to-tr from-blue-400/20 to-indigo-400/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+            </div>
+          </div>
+          {% endif %}
+          <h3 class="text-2xl font-bold text-gray-800 mb-3 group-hover:text-blue-600 transition-colors duration-300">{{ leader.name }}</h3>
+          <p class="text-lg text-blue-600 font-semibold bg-blue-50 px-4 py-2 rounded-full inline-block mb-3">{{ leader.get_title_display_name }}</p>
+          {% if leader.bio %}
+          <p class="text-gray-600 text-sm leading-relaxed">{{ leader.bio }}</p>
+          {% endif %}
+        </div>
+        {% endif %}
+        {% empty %}
+        <p class="col-span-full text-center text-gray-500">No faculty sponsor information available.</p>
+        {% endfor %}
+      </div>
+    </section>
+
+    <!-- Mission Statement Section -->
+    <section class="mb-20">
+      <div class="text-center mb-16">
+        <h2 class="text-5xl font-bold mb-4 text-gray-800">Mission Statement</h2>
+        <div class="w-24 h-1 bg-gradient-to-r from-blue-500 to-indigo-500 mx-auto rounded-full"></div>
+      </div>
+      
+      <div class="bg-white rounded-3xl shadow-xl p-12 border border-gray-100">
+        <div class="max-w-4xl mx-auto text-lg text-gray-600 leading-relaxed">
+          <p>
+            ACM Manoa exists to bridge the gap between students and Hawaii's growing IT industry by fostering a supportive
+            and dynamic environment for aspiring computing professionals. Guided by its vision to empower every UH Manoa
+            Information & Computer Science graduate to thrive locally, the organization is committed to three core goals: social,
+            professional, and technical enrichment. Through community-building events, career-focused engagements, and
+            hands-on technical experiences, ACM Manoa cultivates well-rounded individuals prepared to lead and innovate within
+            Hawaii's tech landscape and beyond.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Discord Section -->
+    <section class="mb-20">
+      <div class="text-center mb-16">
+        <h2 class="text-5xl font-bold mb-4 text-gray-800">Join Our Community</h2>
+        <div class="w-24 h-1 bg-gradient-to-r from-blue-500 to-indigo-500 mx-auto rounded-full"></div>
+      </div>
+      
+      <div class="bg-gradient-to-r from-indigo-600 to-purple-700 rounded-3xl p-12 text-white text-center">
+        <div class="max-w-2xl mx-auto">
+          <div class="mb-8">
+            <img src="{% static 'website/discord.png' %}" alt="Discord Logo" class="mx-auto w-24 h-24" />
+          </div>
+          
+          <h3 class="text-3xl font-bold mb-4">Join Our Discord Server</h3>
+          <p class="text-xl text-indigo-100 mb-8">
+            Connect with fellow students, get updates on events, and join the conversation!
+          </p>
+          
+          <a 
+            href="https://discord.gg/acmanoa-438617987701014528" 
+            target="_blank"
+            rel="noopener noreferrer"
+            class="inline-flex items-center px-8 py-4 bg-white text-indigo-600 font-bold text-lg rounded-xl hover:bg-indigo-50 transition-all duration-300 transform hover:scale-105 shadow-lg"
+          >
+            Join Discord Server
+            <svg class="ml-3 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
+            </svg>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section class="mb-20">
+      <div class="bg-white rounded-3xl shadow-xl p-12 border border-gray-100 text-center">
+        <h3 class="text-3xl font-bold text-gray-800 mb-6">Get Involved</h3>
+        <p class="text-lg text-gray-600 mb-8 max-w-2xl mx-auto">
+          If you're interested in becoming a board member, don't hesitate to email the ACM president Kyla Lee for more information.
+        </p>
+        <a 
+          href="mailto:president@acmmanoa.org" 
+          class="inline-flex items-center px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-colors duration-200"
+        >
+          <svg class="mr-2 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+          </svg>
+          president@acmmanoa.org
+        </a>
+      </div>
+    </section>
   </div>
-
-  <div class="px-4 sm:px-8 md:px-20" style="font-family: 'Barlow', sans-serif;">
-    <h2 class="text-2xl font-normal mb-4 tracking-[1px] border-b pb-2">
-      Mission statement
-    </h2>
-    <div class="text-lg text-left">
-      <p class="mb-4">
-        ACM Manoa exists to bridge the gap between students and Hawaii’s growing IT industry by fostering a supportive
-        and
-        dynamic environment for aspiring computing professionals. Guided by its vision to empower every UH Manoa
-        Information
-        & Computer Science graduate to thrive locally, the organization is committed to three core goals: social,
-        professional, and technical enrichment. Through community-building events, career-focused engagements, and
-        hands-on
-        technical experiences, ACM Manoa cultivates well-rounded individuals prepared to lead and innovate within
-        Hawaii’s
-        tech landscape and beyond.
-      </p>
-    </div>
-  </div>
-
-  <div class="px-4 sm:px-8 md:px-20" style="font-family: 'Barlow', sans-serif;">
-    <h2 class="text-2xl font-normal mb-4 tracking-[1px] border-b pb-2">
-      💬 Join Our Discord!!
-    </h2>
-
-    <div class="flex justify-center mb-8">
-      <img src="{% static 'website/discord.png' %}" alt="ACM Logo" />
-    </div>
-
-    <a href="https://discord.gg/acmanoa-438617987701014528" class="text-blue-600 underline decoration-2">
-      <strong class="text-3xl">
-        Join Our Discord Server
-      </strong>
-    </a>
-
-    <div class="text-lg text-left mt-8">
-      <p class="mb-8">If you’re interested in becoming a board member, don’t hesitate to email the ACM president Kyla
-        Lee at
-        <a href="mailto:president@acmmanoa.org" class="text-blue-600 underline decoration-2">president@acmmanoa.org</a>
-        for more information.
-      </p>
-    </div>
-
-
-  </div>
-
-
-</div>
+</main>
 {% endblock %}

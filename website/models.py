@@ -1,6 +1,6 @@
 from django.db import models
 from datetime import datetime
-from django.core.validators import MaxLengthValidator
+from django.core.validators import MaxLengthValidator, RegexValidator
 
 # Create your models here.
 class File(models.Model): 
@@ -51,6 +51,15 @@ class SIGS(models.Model):
     about = models.TextField(help_text="Description or overview of SIG", blank=True)
     website = models.URLField(help_text="Enter full link to the SIG website", blank=True)
     link_name = models.CharField(max_length=150, help_text="Short label for the URL, e.g \"Visit Site\"", blank=True)
+    primary_color = models.CharField(
+        max_length=7, 
+        default='#3B82F6', 
+        help_text="Primary color for this SIG (hex color code, e.g., #3B82F6 for blue)",
+        validators=[RegexValidator(
+            regex='^#[0-9A-Fa-f]{6}$',
+            message='Enter a valid hex color code (e.g., #3B82F6)'
+        )]
+    )
 
     class Meta:
         verbose_name = "SIG"
@@ -58,6 +67,36 @@ class SIGS(models.Model):
     
     def __str__(self): 
         return self.name
+    
+    def get_secondary_color(self):
+        """Generate a secondary color that complements the primary color"""
+        # Convert hex to RGB
+        hex_color = self.primary_color.lstrip('#')
+        r = int(hex_color[0:2], 16)
+        g = int(hex_color[2:4], 16)
+        b = int(hex_color[4:6], 16)
+        
+        # Create a darker/lighter version for gradients
+        # Reduce brightness by 20% for secondary color
+        r = max(0, int(r * 0.8))
+        g = max(0, int(g * 0.8))
+        b = max(0, int(b * 0.8))
+        
+        return f"#{r:02x}{g:02x}{b:02x}"
+    
+    def get_light_color(self):
+        """Generate a light version of the primary color for backgrounds"""
+        hex_color = self.primary_color.lstrip('#')
+        r = int(hex_color[0:2], 16)
+        g = int(hex_color[2:4], 16)
+        b = int(hex_color[4:6], 16)
+        
+        # Create a very light version (90% white + 10% color)
+        r = min(255, int(255 * 0.9 + r * 0.1))
+        g = min(255, int(255 * 0.9 + g * 0.1))
+        b = min(255, int(255 * 0.9 + b * 0.1))
+        
+        return f"#{r:02x}{g:02x}{b:02x}"
      
     def delete(self, *args, **kwargs): 
         super(SIGS, self).delete(*args, **kwargs) 
@@ -87,7 +126,7 @@ class SIGSLeadership(models.Model):
      
     def delete(self, *args, **kwargs): 
         super(SIGSLeadership, self).delete(*args, **kwargs) 
-        File.objects.filter(filename = self.logo.name).delete()
+        File.objects.filter(filename = self.profile.name).delete()
 
 class CarouselImage(models.Model):
     image = models.ImageField(

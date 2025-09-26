@@ -1,6 +1,11 @@
 {% load static %}
 
-<nav class="bg-white relative after:absolute after:bottom-0 after:left-0 after:right-0 after:h-1 after:bg-gradient-to-r after:from-blue-500 after:via-blue-600 after:to-blue-700">
+<nav class="bg-white relative after:absolute after:bottom-0 after:left-0 after:right-0 after:h-1" {% if sig_colors %}style="--after-bg: linear-gradient(to right, {{ sig_colors.primary }}, {{ sig_colors.secondary }}, {{ sig_colors.primary }});"{% else %}style="--after-bg: linear-gradient(to right, #3B82F6, #1D4ED8, #3B82F6);"{% endif %}>
+  <style>
+    nav::after {
+      background: var(--after-bg) !important;
+    }
+  </style>
   <div class="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
     <a href="/" class="flex items-center space-x-3 rtl:space-x-reverse">
       <img src="{% static 'website/acm_logo.png' %}" class="h-16" alt="ACM Logo" />
@@ -20,23 +25,28 @@
         class="text-xl font-medium flex flex-col p-4 md:p-0 mt-4 border border-gray-100 rounded-lg bg-gray-50 md:flex-row md:space-x-8 rtl:space-x-reverse md:mt-0 md:border-0 md:bg-white">
         <li>
           <a href="/about"
-            class="block py-2 px-3 text-gray-900 rounded-sm hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 duration-150">About</a>
+            class="block py-2 px-3 text-gray-900 rounded-sm hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:p-0 duration-150"
+            {% if sig_colors %}onmouseover="this.style.color='{{ sig_colors.primary }}'" onmouseout="this.style.color='rgb(17, 24, 39)'"{% else %}onmouseover="this.style.color='#1D4ED8'" onmouseout="this.style.color='rgb(17, 24, 39)'"{% endif %}>About</a>
         </li>
         <li>
           <a href="/events"
-            class="block py-2 px-3 text-gray-900 rounded-sm hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 duration-150">Events</a>
+            class="block py-2 px-3 text-gray-900 rounded-sm hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:p-0 duration-150"
+            {% if sig_colors %}onmouseover="this.style.color='{{ sig_colors.primary }}'" onmouseout="this.style.color='rgb(17, 24, 39)'"{% else %}onmouseover="this.style.color='#1D4ED8'" onmouseout="this.style.color='rgb(17, 24, 39)'"{% endif %}>Events</a>
         </li>
         <li>
           <a href="/sponsors"
-            class="block py-2 px-3 text-gray-900 rounded-sm hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 duration-150">Sponsors</a>
+            class="block py-2 px-3 text-gray-900 rounded-sm hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:p-0 duration-150"
+            {% if sig_colors %}onmouseover="this.style.color='{{ sig_colors.primary }}'" onmouseout="this.style.color='rgb(17, 24, 39)'"{% else %}onmouseover="this.style.color='#1D4ED8'" onmouseout="this.style.color='rgb(17, 24, 39)'"{% endif %}>Sponsors</a>
         </li>
         <li>
           <a href="/icspace"
-            class="block py-2 px-3 text-gray-900 rounded-sm hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 duration-150">ICSpace</a>
+            class="block py-2 px-3 text-gray-900 rounded-sm hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:p-0 duration-150"
+            {% if sig_colors %}onmouseover="this.style.color='{{ sig_colors.primary }}'" onmouseout="this.style.color='rgb(17, 24, 39)'"{% else %}onmouseover="this.style.color='#1D4ED8'" onmouseout="this.style.color='rgb(17, 24, 39)'"{% endif %}>ICSpace</a>
         </li>
         <li>
           <a href="/sigs"
-            class="block py-2 px-3 text-gray-900 rounded-sm hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 duration-150">SIGS</a>
+            class="block py-2 px-3 text-gray-900 rounded-sm hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:p-0 duration-150"
+            {% if sig_colors %}onmouseover="this.style.color='{{ sig_colors.primary }}'" onmouseout="this.style.color='rgb(17, 24, 39)'"{% else %}onmouseover="this.style.color='#1D4ED8'" onmouseout="this.style.color='rgb(17, 24, 39)'"{% endif %}>SIGS</a>
         </li>
         <!-- <li>
           <a href="/cohorts"
@@ -44,7 +54,8 @@
         </li> -->
         <li>
           <a href="/impact"
-            class="block py-2 px-3 text-gray-900 rounded-sm hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 duration-150">Impact</a>
+            class="block py-2 px-3 text-gray-900 rounded-sm hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:p-0 duration-150"
+            {% if sig_colors %}onmouseover="this.style.color='{{ sig_colors.primary }}'" onmouseout="this.style.color='rgb(17, 24, 39)'"{% else %}onmouseover="this.style.color='#1D4ED8'" onmouseout="this.style.color='rgb(17, 24, 39)'"{% endif %}>Impact</a>
         </li>
       </ul>
     </div>

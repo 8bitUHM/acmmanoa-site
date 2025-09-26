@@ -32,28 +32,24 @@
 
     <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6 md:gap-8 max-w-5xl mx-auto">
       {% for program in programs %}
-      <div class="flex flex-col items-center p-4">
+      <a href="{% url 'sig_detail' program.slug %}" class="group flex flex-col items-center p-4">
         <div class="relative w-20 h-20 sm:w-28 sm:h-28 md:w-32 md:h-32 mb-4">
           <img 
             src="{{ program.logo.url }}" 
             alt="{{ program.name }}" 
-            class="absolute inset-0 w-full h-full object-cover rounded-full border-2 border-gray-200 hover:border-blue-500 transition-colors duration-200"
+            class="absolute inset-0 w-full h-full object-cover rounded-full border-2 border-gray-200 group-hover:scale-110 transition-all duration-300"
+            style="--sig-color: {{ program.primary_color }};"
+            onmouseover="this.style.borderColor='var(--sig-color)'"
+            onmouseout="this.style.borderColor='rgb(229, 231, 235)'"
           >
         </div>
-        <p class="text-lg font-semibold mb-2 text-center">{{ program.name }}</p>
-        {% if program.link_url %}
-        <a href="{{ program.link_url }}" 
-           class="text-blue-600 hover:text-blue-800 transition-colors duration-200 text-center"
-           target="_blank" 
-           rel="noopener noreferrer">
-          {% if program.link_name %}
-          {{ program.link_name }}
-          {% else %}
-          {{ program.link_url }}
-          {% endif %}
-        </a>
-        {% endif %}
-      </div>
+        <p 
+          class="text-lg font-semibold mb-2 text-center group-hover:scale-105 transition-all duration-300"
+          style="--sig-color: {{ program.primary_color }};"
+          onmouseover="this.style.color='var(--sig-color)'"
+          onmouseout="this.style.color='rgb(17, 24, 39)'"
+        >{{ program.name }}</p>
+      </a>
       {% empty %}
       <p class="col-span-full text-center text-gray-500">No SIGS available.</p>
       {% endfor %}

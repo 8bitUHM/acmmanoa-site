@@ -29,7 +29,17 @@ def sigs_index(request):
 
 def sig_detail(request, slug):
     sig = get_object_or_404(SIGS, slug=slug)
-    return render(request, 'pages/sigs.html', {"sig": sig})
+    leadership = SIGSLeadership.objects.filter(sigs=sig).order_by('name')
+    sig_colors = {
+        'primary': sig.primary_color,
+        'secondary': sig.get_secondary_color(),
+        'light': sig.get_light_color()
+    }
+    return render(request, 'pages/sigs.html', {
+        "sig": sig, 
+        "leadership": leadership,
+        "sig_colors": sig_colors
+    })
 
 def impact(request):
     return render(request, 'pages/impact.html')
