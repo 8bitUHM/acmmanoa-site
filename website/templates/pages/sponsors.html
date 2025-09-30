@@ -2,45 +2,179 @@
 {% load static %}
 {% block title %}Sponsors | ACM at UH Mānoa{% endblock %}
 {% block content %}
-<main class="container mx-auto p-8 text-left">
-  <h1 class="text-4xl font-extrabold text-green-700 leading-12">Sponsors</h1>
-  <p class="mt-4 font-normal text-pretty md:w-[79ch]">
-    Mahalo nui loa to all our amazing sponsors for helping to make ACM possible.
-    Our sponsors provide us with the resources we need to reach our goals, and we are incredibly grateful for their
-    generosity.
-    We would like to express our deepest appreciation to them for their continued support.
-  </p>
+<main class="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50">
+  <!-- Hero Section -->
+  <div class="bg-gradient-to-r from-blue-600 to-indigo-700 text-white py-20 px-4">
+    <div class="max-w-7xl mx-auto text-center">
+      <h1 class="text-6xl md:text-7xl font-bold mb-6 tracking-tight">Our Sponsors</h1>
+      <p class="text-xl md:text-2xl text-blue-100 max-w-4xl mx-auto leading-relaxed">
+        Mahalo nui loa to all our amazing sponsors for helping to make ACM possible
+      </p>
+      <div class="mt-8">
+        <div class="inline-flex items-center px-6 py-3 bg-white/10 backdrop-blur-sm rounded-xl text-white font-semibold">
+          <svg class="mr-3 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+          </svg>
+          Thank You for Your Support
+        </div>
+      </div>
+    </div>
+  </div>
 
-  <div
-    class="mt-20 max-w-screen-lg grid grid-flow-row mx-auto grid-cols-1 gap-6 auto-rows-[20rem] md:grid-cols-3 md:gap-5">
-    {% for sponsor in sponsors %}
-    <figure id="{{sponsor.name}}" class="shadow-md border border-t-4 border-t-gray-900 p-5 relative transition-transform duration-300 ease-in-out 
-         hover:scale-105 hover:shadow-lg">
-      {% if sponsor.image %}
-      <img src="{{sponsor.image.url}}" class="w-full h-full object-scale-down object-center" />
+  <!-- Main Content -->
+  <div class="max-w-7xl mx-auto px-4 py-16">
+    <!-- Appreciation Section -->
+    <section class="mb-20">
+      <div class="bg-white rounded-3xl shadow-xl p-12 border border-gray-100">
+        <div class="max-w-4xl mx-auto text-center">
+          <h2 class="text-4xl font-bold mb-8 text-gray-800">Deepest Appreciation</h2>
+          <div class="w-24 h-1 bg-gradient-to-r from-blue-500 to-indigo-500 mx-auto rounded-full mb-12"></div>
+          
+          <div class="text-lg text-gray-600 leading-relaxed space-y-6">
+            <p>
+              Our sponsors provide us with the resources we need to reach our goals, and we are incredibly grateful for their generosity. We would like to express our deepest appreciation to them for their continued support.
+            </p>
+            <p>
+              Through their partnership, we are able to create meaningful experiences, support student development, and advance the field of computing at the University of Hawaii at Manoa.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Sponsors Grid Section -->
+    <section class="mb-20">
+      <div class="text-center mb-16">
+        <h2 class="text-5xl font-bold mb-4 text-gray-800">Our Valued Partners</h2>
+        <div class="w-24 h-1 bg-gradient-to-r from-blue-500 to-indigo-500 mx-auto rounded-full"></div>
+      </div>
+      
+      {% if sponsors %}
+      <div class="grid gap-8 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        {% for sponsor in sponsors %}
+        <div class="group bg-white rounded-2xl shadow-lg p-8 text-center hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 border border-gray-100">
+          <!-- Sponsor Logo/Image -->
+          <div class="mb-6">
+            {% if sponsor.image %}
+            <div class="w-32 h-32 mx-auto mb-4 flex items-center justify-center">
+              <img 
+                src="{{sponsor.image.url}}" 
+                alt="{{sponsor.name}} logo" 
+                class="max-w-full max-h-full object-contain group-hover:scale-110 transition-transform duration-300"
+              />
+            </div>
+            {% else %}
+            <div class="w-32 h-32 mx-auto mb-4 bg-gradient-to-br from-blue-100 to-indigo-100 rounded-2xl flex items-center justify-center">
+              <img 
+                src="{% static 'website/handshake.png' %}" 
+                alt="Default sponsor icon" 
+                class="w-16 h-16 object-contain opacity-60"
+              />
+            </div>
+            {% endif %}
+          </div>
+          
+          <!-- Sponsor Name -->
+          <h3 class="text-xl font-bold text-gray-800 mb-3 group-hover:text-blue-600 transition-colors duration-300">{{sponsor.name}}</h3>
+          
+          <!-- Sponsor Details -->
+          {% if sponsor.details %}
+          <p class="text-gray-600 text-sm leading-relaxed mb-4">{{sponsor.details}}</p>
+          {% endif %}
+          
+          <!-- Website Link -->
+          {% if sponsor.website %}
+          <a 
+            href="{{sponsor.website}}" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            class="inline-flex items-center px-4 py-2 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-colors duration-200"
+          >
+            <svg class="mr-2 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
+            </svg>
+            Visit Website
+          </a>
+          {% endif %}
+        </div>
+        {% endfor %}
+      </div>
       {% else %}
-      <img src="{% static 'website/handshake.png' %}" alt="ACM Logo" />
+      <div class="text-center py-16">
+        <div class="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6">
+          <svg class="w-12 h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+          </svg>
+        </div>
+        <h3 class="text-2xl font-bold text-gray-600 mb-4">No Sponsors Yet</h3>
+        <p class="text-gray-500">We're always looking for partners to support our mission. Contact us to learn about sponsorship opportunities.</p>
+      </div>
       {% endif %}
+    </section>
 
-      <p class="text-sm text-green-800 font-medium absolute top-2 left-3">{{sponsor.name}}</p>
-
-      {% if sponsor.website or sponsor.details %}
-      <figcaption class="absolute inset-0 bg-black bg-opacity-70 text-white flex flex-col justify-center items-center text-center 
-                     p-4 opacity-0 transition-opacity duration-300 ease-in-out hover:opacity-100">
-        {% if sponsor.details %}
-        <p class="text-lg">{{sponsor.details}}</p>
-        {% endif %}
-
-        {% if sponsor.website %}
-        <a href="{{sponsor.website}}" target="_blank"
-          class="mt-3 px-3 py-1 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors">
-          Visit Website
-        </a>
-        {% endif %}
-      </figcaption>
-      {% endif %}
-    </figure>
-    {% endfor %}
+    <!-- Become a Sponsor Section -->
+    <section class="mb-20">
+      <div class="bg-gradient-to-r from-blue-600 to-indigo-700 rounded-3xl p-12 text-white text-center">
+        <div class="max-w-4xl mx-auto">
+          <h2 class="text-5xl font-bold mb-6">Become a Sponsor</h2>
+          <p class="text-xl text-blue-100 mb-8 leading-relaxed">
+            Join our community of supporters and help us create meaningful experiences for students in Information and Computer Sciences at the University of Hawaii at Manoa.
+          </p>
+          
+          <div class="bg-white/10 backdrop-blur-sm rounded-2xl p-8 mb-8">
+            <h3 class="text-2xl font-bold mb-4">Why Sponsor ACM at UH Mānoa?</h3>
+            <div class="grid gap-6 md:grid-cols-2 text-left">
+              <div class="space-y-4">
+                <div class="flex items-start">
+                  <div class="w-6 h-6 bg-white/20 rounded-full flex items-center justify-center mr-3 mt-0.5 flex-shrink-0">
+                    <svg class="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
+                      <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                    </svg>
+                  </div>
+                  <span class="text-blue-100">Connect with talented students and future tech leaders</span>
+                </div>
+                <div class="flex items-start">
+                  <div class="w-6 h-6 bg-white/20 rounded-full flex items-center justify-center mr-3 mt-0.5 flex-shrink-0">
+                    <svg class="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
+                      <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                    </svg>
+                  </div>
+                  <span class="text-blue-100">Support innovation and research in computing</span>
+                </div>
+              </div>
+              <div class="space-y-4">
+                <div class="flex items-start">
+                  <div class="w-6 h-6 bg-white/20 rounded-full flex items-center justify-center mr-3 mt-0.5 flex-shrink-0">
+                    <svg class="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
+                      <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                    </svg>
+                  </div>
+                  <span class="text-blue-100">Build your brand presence in the tech community</span>
+                </div>
+                <div class="flex items-start">
+                  <div class="w-6 h-6 bg-white/20 rounded-full flex items-center justify-center mr-3 mt-0.5 flex-shrink-0">
+                    <svg class="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
+                      <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                    </svg>
+                  </div>
+                  <span class="text-blue-100">Contribute to Hawaii's growing tech ecosystem</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <a 
+            href="mailto:president@acmmanoa.org" 
+            class="inline-flex items-center px-8 py-4 bg-white text-blue-600 font-bold text-lg rounded-xl hover:bg-blue-50 transition-all duration-300 transform hover:scale-105 shadow-lg"
+          >
+            <svg class="mr-3 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+            </svg>
+            Contact Us About Sponsorship
+          </a>
+        </div>
+      </div>
+    </section>
   </div>
 </main>
 {% endblock %}
