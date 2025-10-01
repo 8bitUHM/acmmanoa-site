@@ -10,7 +10,12 @@ def home(request):
 
 def about(request):
     leaders = Leadership.objects.all().order_by('title')
-    return render(request, 'pages/about.html', {"leaders": leaders})
+    try:
+        president = Leadership.objects.get(title='1')  # '1' is President in TITLE_CHOICES
+        president_name = president.name
+    except Leadership.DoesNotExist:
+        president_name = None
+    return render(request, 'pages/about.html', {"leaders": leaders, "president_name": president_name})
 
 def events(request):
     events = Event.objects.all().order_by('-event_date')
@@ -29,7 +34,7 @@ def sigs_index(request):
 
 def sig_detail(request, slug):
     sig = get_object_or_404(SIGS, slug=slug)
-    leadership = SIGSLeadership.objects.filter(sigs=sig).order_by('name')
+    leadership = SIGSLeadership.objects.filter(sigs=sig).order_by('id')
     sig_colors = {
         'primary': sig.primary_color,
         'secondary': sig.get_secondary_color(),
