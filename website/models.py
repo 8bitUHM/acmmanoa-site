@@ -201,14 +201,12 @@ class Leadership(models.Model):
     TITLE_CHOICES = [
         ('1', 'President'),
         ('2', 'Vice President'),
-        ('3', 'Director of Membership'),
-        ('4', 'Operations Director'),
+        ('3', 'Operations Director'),
+        ('4', 'Finance Director'),
         ('5', 'Public Relations Director'),
-        ('6', 'Finance Coordinator'),
-        ('7', 'Operations Coordinator'),
-        ('8', 'Marketing Manager'),
-        ('9', 'Server Administrator & Webmaster'),
-        ('10', 'Faculty Sponsor'),
+        ('6', 'Webmaster'),
+        ('7', 'Director of Membership'),
+        ('8', 'Faculty Sponsor'),
     ]
 
     name = models.CharField(max_length=200)
