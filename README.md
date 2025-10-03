@@ -1,143 +1,96 @@
-# **The Association for Computing Machinery at the University of Hawaii at Manoa (ACM)**
+# ACM at UH Mānoa Website
 
-This is the ACM website, ported from the old site [here](https://acmmanoa.org/) to Django.  
-The old site repository can be found [here](https://github.com/ACManoa/acmanoa.github.io)
+This is the official website for the Association for Computing Machinery (ACM) chapter at the University of Hawaiʻi at Mānoa.
 
-## **Table of Contents**
-1. [Project Structure](#project-structure)
-2. [Getting the App Running](#getting-the-app-running)
+## 🚀 Deployment
+
+This project is configured for automated deployment to AWS Lightsail using GitHub Actions and Docker Compose.
+
+### Quick Start
+
+1. **Local Development**:
+   ```bash
+   docker-compose -f docker-compose.lightsail.yml up -d
+   ```
+
+2. **Production Deployment**:
+   - Push to `main` branch
+   - GitHub Actions automatically deploys to AWS Lightsail
+
+### 📁 Project Structure
+
+- `docker-compose.lightsail.yml` - Production deployment configuration
+- `nginx.lightsail.conf` - Nginx reverse proxy configuration
+- `lightsail-setup.sh` - AWS Lightsail instance setup script
+- `LIGHTSAIL_DEPLOYMENT_GUIDE.md` - Complete deployment guide
+
+### 🔧 Technologies
+
+- **Backend**: Django 4.2
+- **Frontend**: Tailwind CSS
+- **Database**: PostgreSQL
+- **Web Server**: Nginx + Gunicorn
+- **Deployment**: Docker Compose on AWS Lightsail
+- **CI/CD**: GitHub Actions
+
+### 📖 Documentation
+
+See `LIGHTSAIL_DEPLOYMENT_GUIDE.md` for complete deployment instructions.
 
 ---
 
-## **Project Structure**
-
-The project is organized into several components:
-
-- **`core/`**: The main Django project directory.
-  - `settings.py`: Configuration settings for the project, including database settings, middleware, installed apps, and other configurations.
-  - `urls.py`: URL configuration for the project, mapping URLs to views.
-
-- **`db_file_storage/`**: A file storage system that allows storing files as raw bytes and mimetypes in the database.
-
-- **`website/`**: The Django app for the website.
-  - `migrations/`: Database migration files.
-  - `static/`: Static files (CSS, JavaScript, images).
-  - `templates/`: HTML templates.
-  - `admin.py`: Admin interface configuration.
-  - `forms.py`: Defines forms for user input and validation.
-  - `models.py`: Defines database structure and interactions.
-  - `serializers.py`: Converts complex data types into JSON, XML, or other formats.
-  - `tests.py`: Unit tests.
-  - `urls.py`: URL configuration for the website app.
-  - `views.py`: Handles HTTP requests and returns responses.
-
-- **Project root files:**
-  - `manage.py`: Django’s command-line utility for administrative tasks.
-  - `requirements.txt`: Contains project dependencies.
-
----
-
-## **Getting the App Running**
+## **Development Setup**
 
 ### **Prerequisites**
-Ensure you have **Python 3.8+** installed. You can check your Python version with:
+- Python 3.12+
+- Docker & Docker Compose
+- Node.js 18+ (for Tailwind CSS)
 
-```sh
-python --version
-```
+### **Local Development**
 
-or
-
-```sh
-python3 --version
-```
-
-If Python is not installed, download and install it from [python.org](https://www.python.org/downloads/).
-
----
-
-### **Setup Instructions**
-
-1. **Clone the repository**  
-   Open a terminal and run:
-
-   ```sh
+1. **Clone the repository**:
+   ```bash
    git clone https://github.com/your-repo/acmmanoa-site.git
    cd acmmanoa-site
    ```
 
-2. **Create a virtual environment (recommended)**  
-   ```sh
-   python -m venv venv
-   source venv/bin/activate  # On macOS/Linux
-   venv\Scripts\activate  # On Windows
+2. **Create environment file**:
+   ```bash
+   cp .env.example .env
+   # Edit .env with your settings
    ```
 
-3. **Install dependencies**  
-   ```sh
+3. **Run with Docker**:
+   ```bash
+   docker-compose -f docker-compose.lightsail.yml up -d
+   ```
+
+4. **Access the application**:
+   - Website: http://localhost:8000
+   - Admin: http://localhost:8000/admin
+
+### **Manual Setup (Alternative)**
+
+1. **Install dependencies**:
+   ```bash
    pip install -r requirements.txt
+   cd theme/static_src && npm install
    ```
 
-4. **Create a local settings file**  
-   Inside the `core/` directory, create a new file named `local_settings.py` and add the following:
-
-   ```python
-   from pathlib import Path
-
-   BASE_DIR = Path(__file__).resolve().parent.parent
-
-   DEBUG = True
-
-   DATABASES = {
-       "default": {
-           "ENGINE": "django.db.backends.sqlite3",
-           "NAME": BASE_DIR / "db.sqlite3",
-       }
-   }
+2. **Build Tailwind CSS**:
+   ```bash
+   cd theme/static_src && npm run build
    ```
 
-5. **Create a `.env` file**  
-   In the `core/` directory, create a new file named `.env` and add the required environment variables.  
-   These variables can be found in the **acmmanoa** project Discord channel.
-
-6. **Apply database migrations**  
-   ```sh
+3. **Run migrations**:
+   ```bash
    python manage.py migrate
    ```
 
-7. **Collect static files**  
-   ```sh
-   python manage.py collectstatic
-   ```
-
-8. **Create a superuser (optional, for admin access)**  
-   ```sh
-   python manage.py createsuperuser
-   ```
-   Follow the prompts to set up an admin account.
-
-9. **Run the development server**  
-   ```sh
+4. **Start development server**:
+   ```bash
    python manage.py runserver
    ```
-   The app should now be running locally at **[http://127.0.0.1:8000](http://127.0.0.1:8000/)**.
-
----
-
-### **Development Notes**
-- The **admin panel** is accessible at **[http://127.0.0.1:8000/admin/](http://127.0.0.1:8000/admin/)**.
-- If you make changes to the models, run:
-
-  ```sh
-  python manage.py makemigrations
-  python manage.py migrate
-  ```
-
-- If you add new static files, re-run:
-
-  ```sh
-  python manage.py collectstatic
-  ```
 
 ---
 

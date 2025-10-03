@@ -1,9 +1,21 @@
-.vercel
-*.log
-*.pyc
-__pycache__
+# Database
 db.sqlite3
-media
+*.db
+
+# Media files
+media/
+
+# Logs
+*.log
+logs/
+
+# Python
+*.pyc
+__pycache__/
+*.pyo
+*.pyd
+.Python
+*.so
 
 # Environments 
 .env 
@@ -14,7 +26,32 @@ ENV/
 env.bak/ 
 venv.bak/ 
 
+# Local settings (keep template)
 local_settings.py
 
+# Static files (will be collected during build)
 /static/       
 !*/static/
+
+# Docker
+.dockerignore
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Backup files
+*.bak
+*.backup
+
+# SSL certificates
+ssl/
+*.pem
+*.key
+*.crt

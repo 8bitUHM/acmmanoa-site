@@ -234,6 +234,7 @@ class Leadership(models.Model):
     image = models.ImageField(
         upload_to="website.File/bytes/filename/mimetype",
         null=True,
+        blank=True,
         help_text='''
         Please compress the image and convert type to webp before uploading.
         https://imagecompressor.com,

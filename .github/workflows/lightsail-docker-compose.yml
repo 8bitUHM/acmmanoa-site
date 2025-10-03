@@ -1,0 +1,118 @@
+name: Deploy to AWS Lightsail with Docker Compose
+
+on:
+  push:
+    branches: [ main ]
+
+env:
+  AWS_REGION: us-east-1
+  LIGHTSAIL_INSTANCE: acmmanoa-lightsail
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.12'
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+
+    - name: Install Python dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+
+    - name: Install Node.js dependencies
+      run: |
+        cd theme/static_src
+        npm install
+
+    - name: Build Tailwind CSS
+      run: |
+        cd theme/static_src
+        npm run build
+
+    - name: Run Django tests
+      run: |
+        python manage.py test
+      env:
+        SECRET_KEY: test-secret-key
+        DEBUG: True
+
+  deploy:
+    needs: test
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ${{ env.AWS_REGION }}
+
+    - name: Create deployment package
+      run: |
+        tar -czf deployment.tar.gz \
+          --exclude='.git' \
+          --exclude='node_modules' \
+          --exclude='__pycache__' \
+          --exclude='.env' \
+          --exclude='db.sqlite3' \
+          .
+
+    - name: Upload to Lightsail instance
+      run: |
+        # Get the public IP of the Lightsail instance
+        INSTANCE_IP=$(aws lightsail get-instance --instance-name $LIGHTSAIL_INSTANCE --query 'instance.publicIpAddress' --output text)
+        
+        # Upload the deployment package
+        scp -o StrictHostKeyChecking=no -i ~/.ssh/lightsail-key deployment.tar.gz ubuntu@$INSTANCE_IP:/home/ubuntu/
+        
+        # SSH into the instance and deploy
+        ssh -o StrictHostKeyChecking=no -i ~/.ssh/lightsail-key ubuntu@$INSTANCE_IP << 'EOF'
+          # Stop existing containers
+          docker-compose -f docker-compose.lightsail.yml down
+          
+          # Extract new code
+          tar -xzf deployment.tar.gz
+          
+          # Set environment variables
+          export SECRET_KEY="${{ secrets.SECRET_KEY }}"
+          export POSTGRES_PASSWORD="${{ secrets.POSTGRES_PASSWORD }}"
+          export ALLOWED_HOSTS="${{ secrets.ALLOWED_HOSTS }}"
+          
+          # Build and start containers
+          docker-compose -f docker-compose.lightsail.yml up --build -d
+          
+          # Run database migrations
+          docker-compose -f docker-compose.lightsail.yml exec -T web python manage.py migrate
+          
+          # Collect static files
+          docker-compose -f docker-compose.lightsail.yml exec -T web python manage.py collectstatic --noinput
+          
+          # Clean up
+          rm deployment.tar.gz
+        EOF
+
+    - name: Notify deployment status
+      if: always()
+      run: |
+        if [ ${{ job.status }} == 'success' ]; then
+          echo "✅ Deployment to AWS Lightsail successful!"
+        else
+          echo "❌ Deployment to AWS Lightsail failed!"
+        fi
