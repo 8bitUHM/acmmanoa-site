@@ -6,6 +6,7 @@ from .models import (
     File,
     Sponsor,
     SIGS,
+    SIGSLeadership,
     CarouselImage,
     Event,
     ACMKekuhaupioCohort,
@@ -74,6 +75,15 @@ class SponsorModelTest(TestCase):
         self.assertEqual(updated_sponsor.name, "Updated Sponsor")
         self.assertEqual(updated_sponsor.website, "https://updated.com")
 
+    def test_sponsor_without_optional_fields(self):
+        sponsor_minimal = Sponsor.objects.create(
+            name="Minimal Sponsor"
+        )
+        self.assertEqual(sponsor_minimal.name, "Minimal Sponsor")
+        self.assertEqual(sponsor_minimal.website, "")
+        self.assertEqual(sponsor_minimal.details, "")
+        self.assertFalse(sponsor_minimal.image.name)  # Check if image field is empty
+
     def test_sponsor_deletion(self):
         image_path = self.sponsor.image.name
         sponsor_id = self.sponsor.id
@@ -85,6 +95,21 @@ class SponsorModelTest(TestCase):
         
         # Check associated file is deleted
         self.assertEqual(File.objects.filter(filename=image_path).count(), 0)
+
+    def test_sponsor_unique_name(self):
+        with self.assertRaises(Exception):
+            Sponsor.objects.create(
+                name="Test Sponsor"  # Same name as existing
+            )
+
+    def test_sponsor_details_max_length(self):
+        long_details = "x" * 251  # Exceeds 250 character limit
+        sponsor = Sponsor(
+            name="Long Details Sponsor",
+            details=long_details
+        )
+        with self.assertRaises(Exception):
+            sponsor.full_clean()  # This will trigger validation
 
 class SIGSModelTest(TestCase):
     def setUp(self):
@@ -124,6 +149,94 @@ class SIGSModelTest(TestCase):
         with self.assertRaises(SIGS.DoesNotExist):
             SIGS.objects.get(id=sigs_id)
         self.assertEqual(File.objects.filter(filename=logo_path).count(), 0)
+
+    def test_sigs_unique_constraints(self):
+        # Test unique name constraint
+        with self.assertRaises(Exception):
+            SIGS.objects.create(
+                name="Test SIG",  # Same name as existing
+                slug="different-slug"
+            )
+        
+        # Test unique slug constraint
+        with self.assertRaises(Exception):
+            SIGS.objects.create(
+                name="Different Name",
+                slug="test-sig"  # Same slug as existing
+            )
+
+class SIGSLeadershipModelTest(TestCase):
+    def setUp(self):
+        self.sigs = SIGS.objects.create(
+            name="Test SIG",
+            slug="test-sig"
+        )
+        self.image_content = SimpleUploadedFile(
+            "test_leader.webp",
+            b"file_content",
+            content_type="image/webp"
+        )
+        self.leader = SIGSLeadership.objects.create(
+            sigs=self.sigs,
+            name="Test Leader",
+            role="President",
+            profile=self.image_content
+        )
+
+    def test_sigs_leadership_creation(self):
+        self.assertEqual(self.leader.sigs, self.sigs)
+        self.assertEqual(self.leader.name, "Test Leader")
+        self.assertEqual(self.leader.role, "President")
+        self.assertEqual(str(self.leader), "Test Leader")
+        self.assertTrue(self.leader.profile.name.endswith('test_leader.webp'))
+
+    def test_sigs_leadership_without_image(self):
+        leader_no_image = SIGSLeadership.objects.create(
+            sigs=self.sigs,
+            name="Leader No Image",
+            role="Vice President"
+        )
+        self.assertEqual(leader_no_image.name, "Leader No Image")
+        self.assertEqual(leader_no_image.role, "Vice President")
+        self.assertFalse(leader_no_image.profile.name)  # Check if profile field is empty
+
+    def test_sigs_leadership_update(self):
+        self.leader.name = "Updated Leader"
+        self.leader.role = "Vice President"
+        self.leader.save()
+        
+        updated_leader = SIGSLeadership.objects.get(id=self.leader.id)
+        self.assertEqual(updated_leader.name, "Updated Leader")
+        self.assertEqual(updated_leader.role, "Vice President")
+
+    def test_sigs_leadership_deletion(self):
+        profile_path = self.leader.profile.name
+        leader_id = self.leader.id
+        self.leader.delete()
+        
+        with self.assertRaises(SIGSLeadership.DoesNotExist):
+            SIGSLeadership.objects.get(id=leader_id)
+        self.assertEqual(File.objects.filter(filename=profile_path).count(), 0)
+
+    def test_sigs_leadership_cascade_delete(self):
+        # Test that leadership is deleted when SIGS is deleted
+        leader_id = self.leader.id
+        self.sigs.delete()
+        
+        with self.assertRaises(SIGSLeadership.DoesNotExist):
+            SIGSLeadership.objects.get(id=leader_id)
+
+    def test_sigs_leadership_relationship(self):
+        # Test multiple leaders for same SIG
+        leader2 = SIGSLeadership.objects.create(
+            sigs=self.sigs,
+            name="Second Leader",
+            role="Secretary"
+        )
+        
+        self.assertEqual(self.sigs.sigsleadership_set.count(), 2)
+        self.assertIn(self.leader, self.sigs.sigsleadership_set.all())
+        self.assertIn(leader2, self.sigs.sigsleadership_set.all())
 
 class CarouselImageModelTest(TestCase):
     def setUp(self):
@@ -205,6 +318,37 @@ class EventModelTest(TestCase):
             Event.objects.get(id=event_id)
         self.assertEqual(File.objects.filter(filename=image_path).count(), 0)
 
+    def test_event_without_optional_fields(self):
+        event_minimal = Event.objects.create(
+            title="Minimal Event",
+            slug="minimal-event",
+            description="Minimal description",
+            event_date=timezone.now() + timedelta(days=1)
+        )
+        self.assertEqual(event_minimal.title, "Minimal Event")
+        self.assertEqual(event_minimal.slug, "minimal-event")
+        self.assertEqual(event_minimal.location, "")
+        self.assertFalse(event_minimal.image.name)  # Check if image field is empty
+
+    def test_event_unique_constraints(self):
+        # Test unique title constraint
+        with self.assertRaises(Exception):
+            Event.objects.create(
+                title="Test Event",  # Same title as existing
+                slug="different-slug",
+                description="Different description",
+                event_date=timezone.now() + timedelta(days=3)
+            )
+        
+        # Test unique slug constraint
+        with self.assertRaises(Exception):
+            Event.objects.create(
+                title="Different Title",
+                slug="test-event",  # Same slug as existing
+                description="Different description",
+                event_date=timezone.now() + timedelta(days=3)
+            )
+
 class ACMKekuhaupioCohortModelTest(TestCase):
     def setUp(self):
         self.image_content = SimpleUploadedFile(
@@ -279,6 +423,17 @@ class LeadershipModelTest(TestCase):
         self.assertEqual(updated_leader.title, "2")
         self.assertEqual(updated_leader.get_title_display_name(), "Vice President")
 
+    def test_leadership_without_optional_fields(self):
+        leader_minimal = Leadership.objects.create(
+            name="Minimal Leader",
+            title="2"  # Vice President
+        )
+        self.assertEqual(leader_minimal.name, "Minimal Leader")
+        self.assertEqual(leader_minimal.title, "2")
+        self.assertEqual(leader_minimal.get_title_display_name(), "Vice President")
+        self.assertIsNone(leader_minimal.bio)
+        self.assertFalse(leader_minimal.image.name)  # Check if image field is empty
+
     def test_leadership_deletion(self):
         image_path = self.leader.image.name
         leader_id = self.leader.id
@@ -287,6 +442,15 @@ class LeadershipModelTest(TestCase):
         with self.assertRaises(Leadership.DoesNotExist):
             Leadership.objects.get(id=leader_id)
         self.assertEqual(File.objects.filter(filename=image_path).count(), 0)
+
+    def test_leadership_invalid_title(self):
+        # Test with invalid title choice
+        leader = Leadership(
+            name="Invalid Leader",
+            title="99"  # Invalid choice
+        )
+        with self.assertRaises(Exception):
+            leader.full_clean()  # This will trigger validation
 
 class FAQModelTest(TestCase):
     def setUp(self):
@@ -316,3 +480,76 @@ class FAQModelTest(TestCase):
         
         with self.assertRaises(FAQ.DoesNotExist):
             FAQ.objects.get(id=faq_id)
+
+    def test_faq_unique_question(self):
+        with self.assertRaises(Exception):
+            FAQ.objects.create(
+                question="Test Question?",  # Same question as existing
+                answer="Different Answer"
+            )
+
+    def test_faq_long_question(self):
+        long_question = "x" * 101  # Exceeds 100 character limit
+        faq = FAQ(
+            question=long_question,
+            answer="Test Answer"
+        )
+        with self.assertRaises(Exception):
+            faq.full_clean()  # This will trigger validation
+
+
+# Additional validation and edge case tests
+class ModelValidationTest(TestCase):
+    def test_sigs_hex_color_validation(self):
+        # Test valid hex colors
+        valid_colors = ["#FF5733", "#3B82F6", "#00FF00", "#000000", "#FFFFFF"]
+        for color in valid_colors:
+            sigs = SIGS.objects.create(
+                name=f"SIG {color}",
+                slug=f"sig-{color.replace('#', '')}",
+                primary_color=color
+            )
+            self.assertEqual(sigs.primary_color, color)
+
+    def test_sigs_invalid_hex_color(self):
+        # Test invalid hex colors - these should raise validation errors
+        invalid_colors = ["#GGGGGG", "FF5733", "#FF573", "#FF57333", "red"]
+        for color in invalid_colors:
+            sigs = SIGS(
+                name=f"Invalid SIG {color}",
+                slug=f"invalid-sig-{hash(color)}",
+                primary_color=color
+            )
+            with self.assertRaises(Exception):
+                sigs.full_clean()  # This will trigger validation
+
+    def test_sponsor_details_max_length(self):
+        # Test bio field max length (250 characters)
+        long_details = "x" * 251  # Exceeds 250 character limit
+        sponsor = Sponsor(
+            name="Long Details Sponsor",
+            details=long_details
+        )
+        with self.assertRaises(Exception):
+            sponsor.full_clean()  # This will trigger validation
+
+    def test_leadership_bio_max_length(self):
+        # Test bio field max length (200 characters)
+        long_bio = "x" * 201  # Exceeds 200 character limit
+        leader = Leadership(
+            name="Long Bio Leader",
+            title="1",
+            bio=long_bio
+        )
+        with self.assertRaises(Exception):
+            leader.full_clean()  # This will trigger validation
+
+    def test_faq_question_max_length(self):
+        # Test question field max length (100 characters)
+        long_question = "x" * 101  # Exceeds 100 character limit
+        faq = FAQ(
+            question=long_question,
+            answer="Test Answer"
+        )
+        with self.assertRaises(Exception):
+            faq.full_clean()  # This will trigger validation
