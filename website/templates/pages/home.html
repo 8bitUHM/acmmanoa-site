@@ -2,138 +2,373 @@
 {% load static %}
 {% block title %}ACM at UH Mānoa{% endblock %}
 {% block content %}
-<!-- Hero Section - Full Screen -->
-<div class="min-h-screen flex flex-col justify-center items-center relative" style="min-height: calc(100vh - 80px);">
-  <div class="text-center mb-16">
-    <h1 class="text-5xl md:text-6xl font-bold mb-6">Welcome to ACM!</h1>
-    <p class="text-xl text-gray-600 max-w-3xl mx-auto">
-      The Association for Computing Machinery at the University of Hawai'i at Mānoa
-    </p>
+
+<!-- Hero Section -->
+<section class="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-br from-blue-50 via-white to-indigo-50" style="min-height: 95vh;">
+  <!-- Animated Background Elements -->
+  <div class="absolute inset-0">
+    <div class="absolute top-20 left-10 w-72 h-72 bg-blue-200 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-blob"></div>
+    <div class="absolute top-40 right-10 w-72 h-72 bg-purple-200 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-blob animation-delay-2000"></div>
+    <div class="absolute -bottom-8 left-20 w-72 h-72 bg-pink-200 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-blob animation-delay-4000"></div>
   </div>
   
-  <!-- Animated Bouncing Arrow -->
-  <div class="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce cursor-pointer" onclick="scrollToNextSection()">
-    <svg class="w-12 h-12 text-gray-600 hover:text-blue-600 transition-colors duration-200" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-      <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.5" fill="none"/>
-      <path d="M8 12l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
-    </svg>
-  </div>
-</div>
-
-<!-- Main Content -->
-<div class="container mx-auto p-4 md:p-8">
-  <!-- SIGS Section -->
-  <section class="mb-20" id="programs-section">
-    <div class="text-center mb-12">
-      <h2 class="text-5xl font-bold mb-6">Our SIGS</h2>
-      <p class="text-lg text-gray-600 max-w-3xl mx-auto">
-        ACM at UH Mānoa offers a range of student-led Special Interest Groups (SIGs) focused on areas like programming, cybersecurity, game development, and more. Whether you're exploring new interests or diving deeper into your passion, there's a place for you here.      </p>
+  <div class="relative z-10 max-w-7xl mx-auto px-6 text-center flex flex-col justify-center min-h-full">
+    <div class="mb-4">
+      <div class="inline-flex items-center justify-center mb-4 transform hover:scale-105 transition-transform duration-300">
+        <img src="{% static 'website/acm_logo.png' %}" alt="ACM Logo" class="w-48 h-48 drop-shadow-lg">
+      </div>
     </div>
-
-    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6 md:gap-8 max-w-5xl mx-auto">
-      {% for program in programs %}
-      <a href="{% url 'sig_detail' program.slug %}" class="group flex flex-col items-center p-4">
-        <div class="relative w-20 h-20 sm:w-28 sm:h-28 md:w-32 md:h-32 mb-4">
-          <img 
-            src="{{ program.logo.url }}" 
-            alt="{{ program.name }}" 
-            class="absolute inset-0 w-full h-full object-cover rounded-full border-2 border-gray-200 group-hover:scale-110 transition-all duration-300"
-            style="--sig-color: {{ program.primary_color }};"
-            onmouseover="this.style.borderColor='var(--sig-color)'"
-            onmouseout="this.style.borderColor='rgb(229, 231, 235)'"
-          >
-        </div>
-        <p 
-          class="text-lg font-semibold mb-2 text-center group-hover:scale-105 transition-all duration-300"
-          style="--sig-color: {{ program.primary_color }};"
-          onmouseover="this.style.color='var(--sig-color)'"
-          onmouseout="this.style.color='rgb(17, 24, 39)'"
-        >{{ program.name }}</p>
+    
+    <h1 class="text-5xl md:text-7xl font-bold text-gray-900 mb-6 leading-tight">
+      Welcome to
+      <span class="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+        ACM at UH Mānoa
+      </span>
+    </h1>
+    
+    <p class="text-xl md:text-2xl text-gray-600 mb-8 max-w-3xl mx-auto leading-relaxed">
+      The Association for Computing Machinery at the University of Hawai'i at Mānoa
+    </p>
+    
+    <p class="text-lg text-gray-500 mb-12 max-w-2xl mx-auto">
+      Empowering students through technology, innovation, and community. Join us in shaping the future of computing.
+    </p>
+    
+    <div class="flex flex-col sm:flex-row gap-4 justify-center items-center mb-16">
+        <a href="#" onclick="scrollToSection('programs'); return false;" class="group bg-blue-600 text-white px-8 py-4 rounded-xl font-semibold hover:bg-blue-700 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1 flex items-center">
+          <span>Explore Programs</span>
+          <svg class="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+          </svg>
+        </a>
+      <a href="#gallery" class="group border-2 border-gray-300 text-gray-700 px-8 py-4 rounded-xl font-semibold hover:border-blue-600 hover:text-blue-600 transition-all duration-300 flex items-center">
+        <span>View Events</span>
+        <svg class="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+        </svg>
       </a>
-      {% empty %}
-      <p class="col-span-full text-center text-gray-500">No SIGS available.</p>
-      {% endfor %}
     </div>
-  </section>
+    
+    <!-- Stats -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
+      <div class="bg-white/60 backdrop-blur-sm rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300">
+        <div class="text-3xl font-bold text-blue-600 mb-2">10+</div>
+        <div class="text-gray-600 font-medium">Special Interest Groups</div>
+      </div>
+      <div class="bg-white/60 backdrop-blur-sm rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300">
+        <div class="text-3xl font-bold text-purple-600 mb-2">500+</div>
+        <div class="text-gray-600 font-medium">Active Members</div>
+      </div>
+      <div class="bg-white/60 backdrop-blur-sm rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300">
+        <div class="text-3xl font-bold text-indigo-600 mb-2">50+</div>
+        <div class="text-gray-600 font-medium">Events Annually</div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Scroll Indicator -->
+  <div class="absolute bottom-12 left-1/2 transform -translate-x-1/2 animate-bounce cursor-pointer z-20" onclick="scrollToSection('programs')">
+    <div class="w-12 h-12 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110">
+      <svg class="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>
+      </svg>
+    </div>
+  </div>
+</section>
 
-  <!-- Images Section -->
-  <section class="mb-20">
-    <div class="text-center mb-12">
-      <h2 class="text-4xl font-bold mb-6">Gallery</h2>
-      <p class="text-lg text-gray-600 max-w-3xl mx-auto">
-        Take a look at our recent events, workshops, and community activities.
+<!-- Programs Section -->
+<section id="programs" class="py-20 bg-white" style="min-height: 100vh;">
+  <div class="max-w-7xl mx-auto px-6">
+    <div class="text-center mb-16">
+      <h2 class="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
+        Our <span class="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">Programs</span>
+      </h2>
+      <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+        Discover our diverse range of Special Interest Groups, each focused on cutting-edge areas of computing and technology.
       </p>
     </div>
-
-    <div class="carousel mt-8">
-      {% for image in carousel_images %}
-      <div class="carousel-item bg-white rounded-lg shadow-sm p-4">
-        <img src="{{ image.image.url }}" alt="Carousel Image" class="mx-auto rounded-lg">
-        {% if image.caption %}
-        <p class="text-xl font-semibold mt-4">{{ image.caption }}</p>
-        {% endif %}
-        <p class="text-sm text-gray-500 mt-2">Uploaded on: {{ image.created_at|date:"F d, Y" }}</p>
+    
+    {% if programs %}
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+      {% for program in programs %}
+      <div class="group bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 border border-gray-100 overflow-hidden">
+        <div class="p-8">
+          <div class="flex items-center mb-6">
+            <div class="w-16 h-16 bg-gradient-to-br from-blue-100 to-purple-100 rounded-xl flex items-center justify-center mr-4 group-hover:scale-110 transition-transform duration-300">
+              <img src="{{ program.logo.url }}" alt="{{ program.name }}" class="w-10 h-10 object-cover rounded-lg">
+            </div>
+            <div>
+              <h3 class="text-xl font-bold text-gray-900 group-hover:text-blue-600 transition-colors duration-300">{{ program.name }}</h3>
+              {% if program.about %}
+              <p class="text-gray-500 text-sm mt-1 line-clamp-2">{{ program.about|truncatewords:12 }}</p>
+              {% endif %}
+            </div>
+          </div>
+          
+          <a href="{% url 'sig_detail' program.slug %}" class="inline-flex items-center text-blue-600 font-semibold group-hover:text-blue-700 transition-colors duration-300">
+            Learn More
+            <svg class="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+            </svg>
+          </a>
+        </div>
       </div>
-      {% empty %}
-      <p class="text-center text-gray-500">No images available.</p>
       {% endfor %}
     </div>
-  </section>
+    {% else %}
+    <div class="text-center py-16">
+      <div class="bg-gray-50 rounded-2xl p-12 max-w-md mx-auto">
+        <svg class="w-16 h-16 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
+        </svg>
+        <p class="text-gray-500 text-lg">No programs available at the moment.</p>
+        <p class="text-gray-400 text-sm mt-2">Check back soon for updates!</p>
+      </div>
+    </div>
+    {% endif %}
+  </div>
+</section>
+
+<!-- Gallery Section -->
+<section id="gallery" class="py-20 bg-gradient-to-br from-gray-50 to-blue-50" style="min-height: 95vh;">
+  <div class="max-w-7xl mx-auto px-6">
+    <div class="text-center mb-16">
+      <h2 class="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
+        Event <span class="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">Gallery</span>
+      </h2>
+      <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+        Take a look at our recent events, workshops, and community activities that make our community vibrant.
+      </p>
+    </div>
+    
+    {% if carousel_images %}
+    <div class="relative">
+      <!-- Main Carousel -->
+      <div id="gallery-carousel" class="relative overflow-hidden rounded-3xl shadow-2xl">
+        <div class="carousel-container flex transition-transform duration-700 ease-in-out">
+          {% for image in carousel_images %}
+          <div class="carousel-slide min-w-full relative">
+            <div class="aspect-video relative">
+              <img src="{{ image.image.url }}" alt="{{ image.caption|default:'ACM Event' }}" class="w-full h-full object-cover">
+              <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
+              {% if image.caption %}
+              <div class="absolute bottom-8 left-8 right-8 text-white">
+                <h3 class="text-2xl font-bold mb-2">{{ image.caption }}</h3>
+                <p class="text-gray-300">{{ image.created_at|date:"F d, Y" }}</p>
+              </div>
+              {% endif %}
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+        
+        <!-- Navigation -->
+        <button id="prev-btn" class="absolute left-6 top-1/2 transform -translate-y-1/2 bg-white/90 hover:bg-white text-gray-800 p-3 rounded-full transition-all duration-300 shadow-lg">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+          </svg>
+        </button>
+        <button id="next-btn" class="absolute right-6 top-1/2 transform -translate-y-1/2 bg-white/90 hover:bg-white text-gray-800 p-3 rounded-full transition-all duration-300 shadow-lg">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+          </svg>
+        </button>
+      </div>
+      
+      <!-- Thumbnails -->
+      <div class="flex justify-center mt-8 space-x-3 overflow-x-auto pb-2">
+        {% for image in carousel_images %}
+        <button class="thumbnail-btn flex-shrink-0 w-20 h-16 rounded-xl overflow-hidden border-2 border-transparent hover:border-blue-500 transition-all duration-300 {% if forloop.first %}border-blue-500{% endif %}" data-slide="{{ forloop.counter0 }}">
+          <img src="{{ image.image.url }}" alt="Thumbnail" class="w-full h-full object-cover">
+        </button>
+        {% endfor %}
+      </div>
+    </div>
+    {% else %}
+    <div class="text-center py-16">
+      <div class="bg-white rounded-2xl p-12 max-w-md mx-auto shadow-lg">
+        <svg class="w-16 h-16 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+        </svg>
+        <p class="text-gray-500 text-lg">No images available at the moment.</p>
+        <p class="text-gray-400 text-sm mt-2">Check back soon for updates!</p>
+      </div>
+    </div>
+    {% endif %}
+  </div>
+</section>
 
   <!-- FAQ Section -->
-  <section class="mb-20">
-    <div class="text-center mb-12">
-      <h2 class="text-4xl font-bold mb-6">Frequently Asked Questions</h2>
-      <p class="text-lg text-gray-600 max-w-3xl mx-auto">
+  <section class="py-20 bg-white" style="min-height: 95vh;">
+  <div class="max-w-4xl mx-auto px-6">
+    <div class="text-center mb-16">
+      <h2 class="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
+        Frequently Asked <span class="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">Questions</span>
+      </h2>
+      <p class="text-xl text-gray-600 max-w-3xl mx-auto">
         Find answers to common questions about ACM and our activities.
       </p>
     </div>
-
-    <div id="accordion-open" data-accordion="closed" class="max-w-4xl mx-auto">
+    
+    {% if questions %}
+    <div id="accordion-open" data-accordion="closed" class="space-y-4">
       {% for question in questions %}
-      <h2 id="accordion-open-heading-{{ forloop.counter }}">
-        <button type="button"
-          class="flex items-center justify-between w-full p-5 font-medium text-left text-gray-500 border border-gray-200 rounded-t-xl focus:ring-4 focus:ring-gray-200 gap-3 hover:bg-gray-50"
-          data-accordion-target="#accordion-open-body-{{ forloop.counter }}" 
-          aria-expanded="false"
-          aria-controls="accordion-open-body-{{ forloop.counter }}">
-          <span class="flex items-center">
-            <svg class="w-5 h-5 me-2 shrink-0" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-              <path fill-rule="evenodd"
-                d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z"
-                clip-rule="evenodd"></path>
+      <div class="bg-white rounded-2xl border border-gray-200 overflow-hidden hover:border-gray-300 transition-all duration-300 shadow-sm hover:shadow-md">
+        <h2 id="accordion-open-heading-{{ forloop.counter }}">
+          <button type="button"
+            class="flex items-center justify-between w-full p-6 font-medium text-left text-gray-900 hover:bg-gray-50 transition-colors duration-200"
+            data-accordion-target="#accordion-open-body-{{ forloop.counter }}" 
+            aria-expanded="false"
+            aria-controls="accordion-open-body-{{ forloop.counter }}">
+            <span class="flex items-center">
+              <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center mr-4">
+                <svg class="w-4 h-4 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd"></path>
+                </svg>
+              </div>
+              {{ question.question }}
+            </span>
+            <svg data-accordion-icon class="w-5 h-5 rotate-180 shrink-0 text-gray-400 transition-transform duration-200" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
+              <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5 5 1 1 5" />
             </svg>
-            {{ question.question }}
-          </span>
-          <svg data-accordion-icon class="w-3 h-3 rotate-180 shrink-0" aria-hidden="true"
-            xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
-            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-              d="M9 5 5 1 1 5" />
-          </svg>
-        </button>
-      </h2>
-      <div id="accordion-open-body-{{ forloop.counter }}" class="hidden"
-        aria-labelledby="accordion-open-heading-{{ forloop.counter }}">
-        <div class="p-5 border border-gray-200">
-          <p class="text-gray-500">{{ question.answer }}</p>
+          </button>
+        </h2>
+        <div id="accordion-open-body-{{ forloop.counter }}" class="hidden" aria-labelledby="accordion-open-heading-{{ forloop.counter }}">
+          <div class="px-6 pb-6 border-t border-gray-100">
+            <div class="pt-4">
+              <p class="text-gray-600 leading-relaxed">{{ question.answer }}</p>
+            </div>
+          </div>
         </div>
       </div>
-      {% empty %}
-      <p class="text-center text-gray-500">No questions available.</p>
       {% endfor %}
     </div>
-  </section>
-</div>
+    {% else %}
+    <div class="text-center py-16">
+      <div class="bg-gray-50 rounded-2xl p-12 max-w-md mx-auto">
+        <svg class="w-16 h-16 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+        </svg>
+        <p class="text-gray-500 text-lg">No questions available at the moment.</p>
+        <p class="text-gray-400 text-sm mt-2">Check back soon for updates!</p>
+      </div>
+    </div>
+    {% endif %}
+  </div>
+</section>
 
+<!-- Custom Styles -->
+<style>
+@keyframes blob {
+  0% {
+    transform: translate(0px, 0px) scale(1);
+  }
+  33% {
+    transform: translate(30px, -50px) scale(1.1);
+  }
+  66% {
+    transform: translate(-20px, 20px) scale(0.9);
+  }
+  100% {
+    transform: translate(0px, 0px) scale(1);
+  }
+}
+
+.animate-blob {
+  animation: blob 7s infinite;
+}
+
+.animation-delay-2000 {
+  animation-delay: 2s;
+}
+
+.animation-delay-4000 {
+  animation-delay: 4s;
+}
+
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+</style>
+
+<!-- JavaScript -->
 <script>
-function scrollToNextSection() {
-  const programsSection = document.getElementById('programs-section');
-  if (programsSection) {
-    programsSection.scrollIntoView({ 
-      behavior: 'smooth',
-      block: 'start'
+// Smooth scrolling function
+function scrollToSection(sectionId) {
+  const section = document.getElementById(sectionId);
+  if (section) {
+    const navbarHeight = 80; // Account for navbar height
+    const elementPosition = section.offsetTop;
+    const offsetPosition = elementPosition - navbarHeight;
+    
+    window.scrollTo({
+      top: offsetPosition,
+      behavior: 'smooth'
     });
   }
 }
+
+// Gallery Carousel functionality
+document.addEventListener('DOMContentLoaded', function() {
+  const galleryContainer = document.querySelector('.carousel-container');
+  const gallerySlides = document.querySelectorAll('#gallery-carousel .carousel-slide');
+  const prevBtn = document.getElementById('prev-btn');
+  const nextBtn = document.getElementById('next-btn');
+  const thumbnailBtns = document.querySelectorAll('.thumbnail-btn');
+  
+  if (!galleryContainer || gallerySlides.length === 0) return;
+  
+  let currentSlide = 0;
+  const totalSlides = gallerySlides.length;
+  
+  function updateGallerySlide() {
+    const translateX = -currentSlide * 100;
+    galleryContainer.style.transform = `translateX(${translateX}%)`;
+    
+    // Update thumbnail buttons
+    thumbnailBtns.forEach((btn, index) => {
+      btn.classList.toggle('border-blue-500', index === currentSlide);
+      btn.classList.toggle('border-transparent', index !== currentSlide);
+    });
+  }
+  
+  function nextSlide() {
+    currentSlide = (currentSlide + 1) % totalSlides;
+    updateGallerySlide();
+  }
+  
+  function prevSlide() {
+    currentSlide = (currentSlide - 1 + totalSlides) % totalSlides;
+    updateGallerySlide();
+  }
+  
+  // Event listeners
+  if (nextBtn) nextBtn.addEventListener('click', nextSlide);
+  if (prevBtn) prevBtn.addEventListener('click', prevSlide);
+  
+  // Thumbnail navigation
+  thumbnailBtns.forEach((btn, index) => {
+    btn.addEventListener('click', () => {
+      currentSlide = index;
+      updateGallerySlide();
+    });
+  });
+  
+  // Keyboard navigation
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowLeft') prevSlide();
+    if (e.key === 'ArrowRight') nextSlide();
+  });
+  
+  // Auto-advance gallery carousel every 8 seconds
+  if (totalSlides > 1) {
+    setInterval(nextSlide, 8000);
+  }
+});
 </script>
+
 {% endblock %}

@@ -1,63 +1,61 @@
 {% load static %}
 
-<nav class="bg-white relative after:absolute after:bottom-0 after:left-0 after:right-0 after:h-1" {% if sig_colors %}style="--after-bg: linear-gradient(to right, {{ sig_colors.primary }}, {{ sig_colors.secondary }}, {{ sig_colors.primary }});"{% else %}style="--after-bg: linear-gradient(to right, #3B82F6, #1D4ED8, #3B82F6);"{% endif %}>
+<nav class="bg-white/95 backdrop-blur-sm shadow-sm sticky top-0 z-50 relative after:absolute after:bottom-0 after:left-0 after:right-0 after:h-1" {% if sig_colors %}style="--after-bg: linear-gradient(to right, {{ sig_colors.primary }}, {{ sig_colors.secondary }}, {{ sig_colors.primary }});"{% else %}style="--after-bg: linear-gradient(to right, #3B82F6, #1D4ED8, #3B82F6);"{% endif %}>
   <style>
     nav::after {
       background: var(--after-bg) !important;
     }
   </style>
-  <div class="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
-    <a href="/" class="flex items-center space-x-3 rtl:space-x-reverse">
-      <img src="{% static 'website/acm_logo.png' %}" class="h-16" alt="ACM Logo" />
-      <span class="self-center text-2xl font-semibold whitespace-nowrap text-gray-900 pb-1.5">at UH Mānoa</span>
-    </a>
-    <button data-collapse-toggle="navbar-default" type="button"
-      class="inline-flex items-center p-2 w-10 h-10 justify-center text-sm text-gray-500 rounded-lg md:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200"
-      aria-controls="navbar-default" aria-expanded="false">
-      <span class="sr-only">Open main menu</span>
-      <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 17 14">
-        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-          d="M1 1h15M1 7h15M1 13h15" />
-      </svg>
-    </button>
-    <div class="hidden w-full md:block md:w-auto" id="navbar-default">
-      <ul
-        class="text-xl font-medium flex flex-col p-4 md:p-0 mt-4 border border-gray-100 rounded-lg bg-gray-50 md:flex-row md:space-x-8 rtl:space-x-reverse md:mt-0 md:border-0 md:bg-white">
-        <li>
-          <a href="/about"
-            class="block py-2 px-3 text-gray-900 rounded-sm hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:p-0 duration-150"
-            {% if sig_colors %}onmouseover="this.style.color='{{ sig_colors.primary }}'" onmouseout="this.style.color='rgb(17, 24, 39)'"{% else %}onmouseover="this.style.color='#1D4ED8'" onmouseout="this.style.color='rgb(17, 24, 39)'"{% endif %}>About</a>
-        </li>
-        <li>
-          <a href="/events"
-            class="block py-2 px-3 text-gray-900 rounded-sm hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:p-0 duration-150"
-            {% if sig_colors %}onmouseover="this.style.color='{{ sig_colors.primary }}'" onmouseout="this.style.color='rgb(17, 24, 39)'"{% else %}onmouseover="this.style.color='#1D4ED8'" onmouseout="this.style.color='rgb(17, 24, 39)'"{% endif %}>Events</a>
-        </li>
-        <li>
-          <a href="/sponsors"
-            class="block py-2 px-3 text-gray-900 rounded-sm hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:p-0 duration-150"
-            {% if sig_colors %}onmouseover="this.style.color='{{ sig_colors.primary }}'" onmouseout="this.style.color='rgb(17, 24, 39)'"{% else %}onmouseover="this.style.color='#1D4ED8'" onmouseout="this.style.color='rgb(17, 24, 39)'"{% endif %}>Sponsors</a>
-        </li>
-        <li>
-          <a href="/icspace"
-            class="block py-2 px-3 text-gray-900 rounded-sm hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:p-0 duration-150"
-            {% if sig_colors %}onmouseover="this.style.color='{{ sig_colors.primary }}'" onmouseout="this.style.color='rgb(17, 24, 39)'"{% else %}onmouseover="this.style.color='#1D4ED8'" onmouseout="this.style.color='rgb(17, 24, 39)'"{% endif %}>ICSpace</a>
-        </li>
-        <li>
-          <a href="/sigs"
-            class="block py-2 px-3 text-gray-900 rounded-sm hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:p-0 duration-150"
-            {% if sig_colors %}onmouseover="this.style.color='{{ sig_colors.primary }}'" onmouseout="this.style.color='rgb(17, 24, 39)'"{% else %}onmouseover="this.style.color='#1D4ED8'" onmouseout="this.style.color='rgb(17, 24, 39)'"{% endif %}>SIGS</a>
-        </li>
-        <!-- <li>
-          <a href="/cohorts"
-            class="block py-2 px-3 text-gray-900 rounded-sm hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0">Cohorts</a>
-        </li> -->
-        <li>
-          <a href="/impact"
-            class="block py-2 px-3 text-gray-900 rounded-sm hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:p-0 duration-150"
-            {% if sig_colors %}onmouseover="this.style.color='{{ sig_colors.primary }}'" onmouseout="this.style.color='rgb(17, 24, 39)'"{% else %}onmouseover="this.style.color='#1D4ED8'" onmouseout="this.style.color='rgb(17, 24, 39)'"{% endif %}>Impact</a>
-        </li>
-      </ul>
+  <div class="max-w-7xl mx-auto px-6">
+    <div class="flex items-center justify-between h-20">
+      <!-- Logo and Brand -->
+      <a href="/" class="flex items-center space-x-3 group">
+        <img src="{% static 'website/acm_logo.png' %}" class="h-12 w-auto drop-shadow-sm group-hover:drop-shadow-md transition-all duration-300 group-hover:scale-105" alt="ACM Logo" />
+        <span class="text-xl font-semibold text-gray-900 group-hover:text-blue-600 transition-colors duration-300">at UH Mānoa</span>
+      </a>
+      
+      <!-- Desktop Navigation -->
+      <div class="hidden md:flex items-center space-x-8">
+        <a href="/about" class="text-gray-700 hover:text-blue-600 font-medium transition-colors duration-300 relative group">
+          About
+          <span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-blue-600 transition-all duration-300 group-hover:w-full"></span>
+        </a>
+        <a href="/events" class="text-gray-700 hover:text-blue-600 font-medium transition-colors duration-300 relative group">
+          Events
+          <span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-blue-600 transition-all duration-300 group-hover:w-full"></span>
+        </a>
+        <a href="/sponsors" class="text-gray-700 hover:text-blue-600 font-medium transition-colors duration-300 relative group">
+          Sponsors
+          <span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-blue-600 transition-all duration-300 group-hover:w-full"></span>
+        </a>
+        <a href="/icspace" class="text-gray-700 hover:text-blue-600 font-medium transition-colors duration-300 relative group">
+          ICSpace
+          <span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-blue-600 transition-all duration-300 group-hover:w-full"></span>
+        </a>
+        <a href="/sigs" class="text-gray-700 hover:text-blue-600 font-medium transition-colors duration-300 relative group">
+          SIGS
+          <span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-blue-600 transition-all duration-300 group-hover:w-full"></span>
+        </a>
+      </div>
+      
+      <!-- Mobile Menu Button -->
+      <button data-collapse-toggle="navbar-mobile" type="button" class="md:hidden inline-flex items-center justify-center w-10 h-10 text-gray-500 rounded-lg hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 transition-colors duration-300" aria-controls="navbar-mobile" aria-expanded="false">
+        <span class="sr-only">Open main menu</span>
+        <svg class="w-6 h-6" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 17 14">
+          <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 1h15M1 7h15M1 13h15" />
+        </svg>
+      </button>
+    </div>
+    
+    <!-- Mobile Navigation -->
+    <div class="hidden md:hidden" id="navbar-mobile">
+      <div class="px-2 pt-2 pb-3 space-y-1 bg-white border-t border-gray-100">
+        <a href="/about" class="block px-3 py-2 text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded-lg font-medium transition-colors duration-300">About</a>
+        <a href="/events" class="block px-3 py-2 text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded-lg font-medium transition-colors duration-300">Events</a>
+        <a href="/sponsors" class="block px-3 py-2 text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded-lg font-medium transition-colors duration-300">Sponsors</a>
+        <a href="/icspace" class="block px-3 py-2 text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded-lg font-medium transition-colors duration-300">ICSpace</a>
+        <a href="/sigs" class="block px-3 py-2 text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded-lg font-medium transition-colors duration-300">SIGS</a>
+      </div>
     </div>
   </div>
 </nav>

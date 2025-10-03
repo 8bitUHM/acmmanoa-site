@@ -1,4 +1,5 @@
 from django.shortcuts import render, get_object_or_404
+from django.http import Http404
 from .models import *
 
 def home(request):
@@ -50,10 +51,16 @@ def sig_detail(request, slug):
         "sig_colors": sig_colors
     })
 
-def impact(request):
-    return render(request, 'pages/impact.html')
+# def cohorts(request):
+#     cohorts = ACMKekuhaupioCohort.objects.defer('created_at').all().order_by('-image', '-comments')
+#     semesters = ACMKekuhaupioCohort.objects.all().values_list('semester', flat=True).distinct()
+#     return render(request, 'pages/cohorts.html', {"cohorts": cohorts, "semesters": semesters})
 
 def cohorts(request):
-    cohorts = ACMKekuhaupioCohort.objects.defer('created_at').all().order_by('-image', '-comments')
-    semesters = ACMKekuhaupioCohort.objects.all().values_list('semester', flat=True).distinct()
-    return render(request, 'pages/cohorts.html', {"cohorts": cohorts, "semesters": semesters})
+    raise Http404("Page not found")
+
+# def impact(request):
+#     return render(request, 'pages/impact.html')
+
+def impact(request):
+    raise Http404("Page not found")
