@@ -28,6 +28,10 @@ class SIGSAdmin(admin.ModelAdmin):
         ('Website & Links', {
             'fields': ('website', 'link_name')
         }),
+        ('Social Media', {
+            'fields': ('discord_link', 'instagram_link', 'github_link', 'linkedin_link'),
+            'description': 'Optional social media links for this SIG. Leave blank if not applicable.'
+        }),
         ('Branding', {
             'fields': ('primary_color',),
             'description': 'Choose a primary color for this SIG. This will be used for theming the SIG page.'

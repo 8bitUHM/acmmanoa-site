@@ -1,17 +1,64 @@
 {% extends "base.html" %}
 {% load static %}
 {% block title %}ICSpace | ACM at UH Mānoa{% endblock %}
+{% block styles %}
+<style>
+@keyframes blob {
+  0% {
+    transform: translate(0px, 0px) scale(1);
+  }
+  33% {
+    transform: translate(30px, -50px) scale(1.1);
+  }
+  66% {
+    transform: translate(-20px, 20px) scale(0.9);
+  }
+  100% {
+    transform: translate(0px, 0px) scale(1);
+  }
+}
+
+.animate-blob {
+  animation: blob 7s infinite;
+}
+
+.animation-delay-2000 {
+  animation-delay: 2s;
+}
+
+.animation-delay-4000 {
+  animation-delay: 4s;
+}
+
+.animation-delay-1000 {
+  animation-delay: 1s;
+}
+
+.animation-delay-3000 {
+  animation-delay: 3s;
+}
+</style>
+{% endblock %}
 {% block content %}
 <main class="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50">
   <!-- Hero Section -->
-  <div class="bg-gradient-to-r from-blue-600 to-indigo-700 text-white py-20 px-4">
-    <div class="max-w-7xl mx-auto text-center">
-      <h1 class="text-6xl md:text-7xl font-bold mb-6 tracking-tight">ICSpace</h1>
-      <p class="text-xl md:text-2xl text-blue-100 max-w-4xl mx-auto leading-relaxed">
+  <div class="relative overflow-hidden bg-gradient-to-br from-blue-50 via-white to-indigo-50 py-20 px-4 border-b-4" style="border-image: linear-gradient(to right, #3B82F6, #1D4ED8, #3B82F6) 1;">
+    <!-- Animated Background Elements -->
+    <div class="absolute inset-0">
+      <div class="absolute top-20 left-10 w-80 h-80 bg-blue-300 rounded-full mix-blend-multiply filter blur-xl opacity-40 animate-blob"></div>
+      <div class="absolute top-40 right-10 w-80 h-80 bg-purple-300 rounded-full mix-blend-multiply filter blur-xl opacity-40 animate-blob animation-delay-2000"></div>
+      <div class="absolute -bottom-8 left-20 w-80 h-80 bg-pink-300 rounded-full mix-blend-multiply filter blur-xl opacity-40 animate-blob animation-delay-4000"></div>
+      <div class="absolute top-60 left-1/2 w-72 h-72 bg-indigo-300 rounded-full mix-blend-multiply filter blur-xl opacity-35 animate-blob animation-delay-1000"></div>
+      <div class="absolute bottom-20 right-1/4 w-64 h-64 bg-cyan-300 rounded-full mix-blend-multiply filter blur-xl opacity-35 animate-blob animation-delay-3000"></div>
+    </div>
+    
+    <div class="relative z-10 max-w-7xl mx-auto text-center">
+      <h1 class="text-6xl md:text-7xl font-bold mb-6 tracking-tight text-gray-900 fade-in">ICSpace</h1>
+      <p class="text-xl md:text-2xl text-gray-600 max-w-4xl mx-auto leading-relaxed fade-in">
         An interactive classroom dedicated to the Information and Computer Sciences community at the University of Hawaii at Manoa
       </p>
-      <div class="mt-8">
-        <div class="inline-flex items-center px-6 py-3 bg-white/10 backdrop-blur-sm rounded-xl text-white font-semibold">
+      <div class="mt-8 fade-in">
+        <div class="inline-flex items-center px-6 py-3 bg-blue-100 backdrop-blur-sm rounded-xl text-blue-700 font-semibold">
           <svg class="mr-3 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
@@ -26,7 +73,7 @@
   <div class="max-w-7xl mx-auto px-4 py-16">
     <!-- Welcome Section -->
     <section class="mb-20">
-      <div class="bg-white rounded-3xl shadow-xl p-12 border border-gray-100">
+      <div class="bg-white rounded-3xl shadow-xl p-12 border border-gray-100 fade-in">
         <div class="max-w-4xl mx-auto">
           <h2 class="text-4xl font-bold text-center mb-8 text-gray-800">Welcome to ICSpace</h2>
           <div class="w-24 h-1 bg-gradient-to-r from-blue-500 to-indigo-500 mx-auto rounded-full mb-12"></div>
@@ -45,14 +92,14 @@
 
     <!-- Innovation Hub Section -->
     <section class="mb-20">
-      <div class="text-center mb-16">
+      <div class="text-center mb-16 fade-in">
         <h2 class="text-5xl font-bold mb-4 text-gray-800">A Hub for Innovation and Learning</h2>
         <div class="w-24 h-1 bg-gradient-to-r from-blue-500 to-indigo-500 mx-auto rounded-full"></div>
       </div>
       
       <div class="grid gap-8 lg:grid-cols-2">
         <!-- Left Column -->
-        <div class="bg-white rounded-2xl shadow-lg p-8 border border-gray-100">
+        <div class="bg-white rounded-2xl shadow-lg p-8 border border-gray-100 fade-in">
           <h3 class="text-2xl font-bold text-gray-800 mb-6">Essential for Advancing Goals</h3>
           <p class="text-gray-600 leading-relaxed mb-6">
             ICSpace is essential for advancing the educational and professional goals of the ICS community. It serves as a central hub where:
@@ -86,7 +133,7 @@
         </div>
 
         <!-- Right Column -->
-        <div class="bg-white rounded-2xl shadow-lg p-8 border border-gray-100">
+        <div class="bg-white rounded-2xl shadow-lg p-8 border border-gray-100 fade-in">
           <h3 class="text-2xl font-bold text-gray-800 mb-6">Advanced Technology & Resources</h3>
           <p class="text-gray-600 leading-relaxed">
             The space is equipped with advanced technology and resources that are crucial for preparing students for the demands of the tech industry. It enhances hands-on learning experiences and research capabilities, bridging the gap between academic knowledge and real-world applications.
@@ -97,12 +144,12 @@
 
     <!-- Academic Excellence Section -->
     <section class="mb-20">
-      <div class="text-center mb-16">
+      <div class="text-center mb-16 fade-in">
         <h2 class="text-5xl font-bold mb-4 text-gray-800">Enhancing Academic Excellence</h2>
         <div class="w-24 h-1 bg-gradient-to-r from-blue-500 to-indigo-500 mx-auto rounded-full"></div>
       </div>
       
-      <div class="bg-white rounded-3xl shadow-xl p-12 border border-gray-100">
+      <div class="bg-white rounded-3xl shadow-xl p-12 border border-gray-100 fade-in">
         <div class="max-w-4xl mx-auto text-center">
           <p class="text-lg text-gray-600 leading-relaxed mb-8">
             The presence of ICSpace not only enhances the academic experience but also significantly boosts the attractiveness of the ICS program to prospective students and faculty. By investing in ICSpace, sponsors can play a pivotal role in shaping the next generation of tech leaders and innovators.
@@ -110,7 +157,7 @@
           
           <h3 class="text-3xl font-bold text-gray-800 mb-8">Strategic Investment Opportunities</h3>
           <div class="grid gap-6 md:grid-cols-3">
-            <div class="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl p-6">
+            <div class="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl p-6 fade-in">
               <div class="w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
                 <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"></path>
@@ -120,7 +167,7 @@
               <p class="text-gray-600">The development of a skilled workforce</p>
             </div>
             
-            <div class="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl p-6">
+            <div class="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl p-6 fade-in">
               <div class="w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
                 <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
@@ -130,7 +177,7 @@
               <p class="text-gray-600">Tackling future technological challenges</p>
             </div>
             
-            <div class="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl p-6">
+            <div class="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl p-6 fade-in">
               <div class="w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
                 <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
@@ -146,7 +193,7 @@
 
     <!-- Support ICSpace Section -->
     <section class="mb-20">
-      <div class="bg-gradient-to-r from-blue-600 to-indigo-700 rounded-3xl p-12 text-white text-center">
+      <div class="bg-gradient-to-r from-blue-600 to-indigo-700 rounded-3xl p-12 text-white text-center fade-in">
         <div class="max-w-4xl mx-auto">
           <h2 class="text-5xl font-bold mb-6">Support ICSpace</h2>
           <p class="text-xl text-blue-100 mb-8 leading-relaxed">

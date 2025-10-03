@@ -1,13 +1,60 @@
 {% extends "base.html" %}
 {% load static %}
 {% block title %}Events | ACM at UH Mānoa{% endblock %}
+{% block styles %}
+<style>
+@keyframes blob {
+  0% {
+    transform: translate(0px, 0px) scale(1);
+  }
+  33% {
+    transform: translate(30px, -50px) scale(1.1);
+  }
+  66% {
+    transform: translate(-20px, 20px) scale(0.9);
+  }
+  100% {
+    transform: translate(0px, 0px) scale(1);
+  }
+}
+
+.animate-blob {
+  animation: blob 7s infinite;
+}
+
+.animation-delay-2000 {
+  animation-delay: 2s;
+}
+
+.animation-delay-4000 {
+  animation-delay: 4s;
+}
+
+.animation-delay-1000 {
+  animation-delay: 1s;
+}
+
+.animation-delay-3000 {
+  animation-delay: 3s;
+}
+</style>
+{% endblock %}
 {% block content %}
 <main class="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50">
   <!-- Hero Section -->
-  <div class="bg-gradient-to-r from-blue-600 to-indigo-700 text-white py-20 px-4">
-    <div class="max-w-7xl mx-auto text-center">
-      <h1 class="text-6xl md:text-7xl font-bold mb-6 tracking-tight">Upcoming Events</h1>
-      <p class="text-xl md:text-2xl text-blue-100 max-w-4xl mx-auto leading-relaxed">
+  <div class="relative overflow-hidden bg-gradient-to-br from-blue-50 via-white to-indigo-50 py-20 px-4 border-b-4" style="border-image: linear-gradient(to right, #3B82F6, #1D4ED8, #3B82F6) 1;">
+    <!-- Animated Background Elements -->
+    <div class="absolute inset-0">
+      <div class="absolute top-20 left-10 w-80 h-80 bg-blue-300 rounded-full mix-blend-multiply filter blur-xl opacity-40 animate-blob"></div>
+      <div class="absolute top-40 right-10 w-80 h-80 bg-purple-300 rounded-full mix-blend-multiply filter blur-xl opacity-40 animate-blob animation-delay-2000"></div>
+      <div class="absolute -bottom-8 left-20 w-80 h-80 bg-pink-300 rounded-full mix-blend-multiply filter blur-xl opacity-40 animate-blob animation-delay-4000"></div>
+      <div class="absolute top-60 left-1/2 w-72 h-72 bg-indigo-300 rounded-full mix-blend-multiply filter blur-xl opacity-35 animate-blob animation-delay-1000"></div>
+      <div class="absolute bottom-20 right-1/4 w-64 h-64 bg-cyan-300 rounded-full mix-blend-multiply filter blur-xl opacity-35 animate-blob animation-delay-3000"></div>
+    </div>
+    
+    <div class="relative z-10 max-w-7xl mx-auto text-center">
+      <h1 class="text-6xl md:text-7xl font-bold mb-6 tracking-tight text-gray-900 fade-in">Upcoming Events</h1>
+      <p class="text-xl md:text-2xl text-gray-600 max-w-4xl mx-auto leading-relaxed fade-in">
         Join us for exciting workshops, networking events, and community gatherings. 
         Stay connected with the ACM Manoa community!
       </p>
@@ -17,14 +64,14 @@
   <!-- Events Section -->
   <div class="max-w-7xl mx-auto px-4 py-16">
     {% if events %}
-    <div class="text-center mb-16">
+    <div class="text-center mb-16 fade-in">
       <h2 class="text-5xl font-bold mb-4 text-gray-800">Our Events</h2>
       <div class="w-24 h-1 bg-gradient-to-r from-blue-500 to-indigo-500 mx-auto rounded-full"></div>
     </div>
     
     <div class="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
       {% for event in events %}
-      <a href="{% url 'event_detail' event.slug %}" class="group bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 border border-gray-100 block">
+      <a href="{% url 'event_detail' event.slug %}" class="group bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 border border-gray-100 block flex flex-col h-full fade-in">
       {% if event.image %}
         <div class="relative overflow-hidden">
           <img 
@@ -43,42 +90,46 @@
         </div>
       {% endif %}
         
-        <div class="p-8">
-          <h3 class="text-2xl font-bold text-gray-800 mb-4 group-hover:text-blue-600 transition-colors duration-300">
-          {{ event.title }}
-          </h3>
-          
-          <p class="text-gray-600 leading-relaxed mb-6 line-clamp-4">
-          {{ event.description }}
-          </p>
-          
-          <div class="space-y-3">
-            <div class="flex items-center text-gray-700">
-              <svg class="w-5 h-5 text-blue-500 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-              </svg>
-              <span class="font-semibold">
-                {{ event.event_date|date:"F j, Y" }} at {{ event.event_date|time:"g:i A" }}
-              </span>
+        <div class="p-8 flex flex-col flex-1">
+          <div class="flex-1 flex flex-col justify-between">
+            <div>
+              <h3 class="text-2xl font-bold text-gray-800 mb-4 group-hover:text-blue-600 transition-colors duration-300">
+              {{ event.title }}
+              </h3>
+              
+              <p class="text-gray-600 leading-relaxed mb-6 line-clamp-4">
+              {{ event.description }}
+              </p>
+              
+              <div class="space-y-3">
+                <div class="flex items-center text-gray-700">
+                  <svg class="w-5 h-5 text-blue-500 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                  </svg>
+                  <span class="font-semibold">
+                    {{ event.event_date|date:"F j, Y" }} at {{ event.event_date|time:"g:i A" }}
+                  </span>
+                </div>
+                
+                {% if event.location %}
+                <div class="flex items-center text-gray-700">
+                  <svg class="w-5 h-5 text-blue-500 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                  </svg>
+                  <span class="font-semibold">{{ event.location }}</span>
+                </div>
+                {% endif %}
+              </div>
             </div>
             
-            {% if event.location %}
-            <div class="flex items-center text-gray-700">
-              <svg class="w-5 h-5 text-blue-500 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
-              </svg>
-              <span class="font-semibold">{{ event.location }}</span>
-            </div>
-            {% endif %}
-          </div>
-          
-          <div class="mt-6 pt-6 border-t border-gray-100">
-            <div class="inline-flex items-center px-6 py-3 bg-blue-50 text-blue-600 font-semibold rounded-full group-hover:bg-blue-100 transition-colors duration-300">
-              <svg class="mr-2 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-              </svg>
-              View Details
+            <div class="mt-6 pt-6 border-t border-gray-100">
+              <div class="inline-flex items-center px-6 py-3 bg-blue-50 text-blue-600 font-semibold rounded-full group-hover:bg-blue-100 transition-colors duration-300">
+                <svg class="mr-2 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+                View Details
+              </div>
             </div>
           </div>
         </div>
@@ -88,7 +139,7 @@
     
     <!-- Call to Action -->
     <div class="mt-20 text-center">
-      <div class="bg-gradient-to-r from-blue-600 to-indigo-700 rounded-3xl p-12 text-white">
+      <div class="bg-gradient-to-r from-blue-600 to-indigo-700 rounded-3xl p-12 text-white fade-in">
         <h3 class="text-4xl font-bold mb-4">Stay Updated</h3>
         <p class="text-xl text-blue-100 mb-8 max-w-2xl mx-auto">
           Don't miss out on our upcoming events! Join our Discord server and follow us on social media for the latest updates.
@@ -123,7 +174,7 @@
     {% else %}
     <!-- No Events State -->
     <div class="text-center py-20">
-      <div class="max-w-2xl mx-auto">
+      <div class="max-w-2xl mx-auto fade-in">
         <div class="mb-8">
           <svg class="mx-auto w-24 h-24 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>

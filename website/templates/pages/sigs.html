@@ -14,113 +14,203 @@
         --sig-primary: {{ sig.primary_color }};
         --sig-secondary: {{ sig.get_secondary_color }};
         --sig-light: {{ sig.get_light_color }};
+        --sig-dark: {{ sig.get_dark_color }};
       }
       
       .sig-gradient {
-        background: linear-gradient(to right, var(--sig-primary), var(--sig-secondary));
+        background: linear-gradient(135deg, var(--sig-primary), var(--sig-secondary));
       }
       
-      .sig-bg-light {
-        background: linear-gradient(to bottom right, var(--sig-light), white, var(--sig-light));
+      .sig-gradient-subtle {
+        background: linear-gradient(135deg, var(--sig-light), rgba(255,255,255,0.8));
       }
       
       .sig-accent {
-        background: linear-gradient(to right, var(--sig-primary), var(--sig-secondary));
+        background: linear-gradient(135deg, var(--sig-primary), var(--sig-secondary));
+      }
+      
+      .sig-text-gradient {
+        background: linear-gradient(135deg, var(--sig-primary), var(--sig-secondary));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
       }
       
       .sig-hover:hover {
-        color: var(--sig-primary);
+        color: var(--sig-primary) !important;
       }
       
-      .sig-border:hover {
+      .sig-border {
         border-color: var(--sig-primary);
       }
       
       .sig-button {
-        background-color: var(--sig-primary);
+        background: linear-gradient(135deg, var(--sig-primary), var(--sig-secondary));
+        color: white;
       }
       
       .sig-button:hover {
-        background-color: var(--sig-secondary);
+        transform: translateY(-2px) scale(1.05);
+        box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+      }
+      
+      .sig-button-outline {
+        border: 2px solid var(--sig-primary);
+        color: var(--sig-primary);
+        background: transparent;
+      }
+      
+      .sig-button-outline:hover {
+        background: var(--sig-primary);
+        color: white;
       }
       
       .sig-role-bg {
-        background-color: var(--sig-light);
+        background: linear-gradient(135deg, var(--sig-light), rgba(255,255,255,0.9));
         color: var(--sig-primary);
+        border: 1px solid var(--sig-primary);
+      }
+      
+      .sig-card {
+        background: rgba(255,255,255,0.95);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255,255,255,0.2);
+      }
+      
+      .sig-shadow {
+        box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+      }
+      
+      .sig-shadow-lg {
+        box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+      }
+      
+      .group:hover img {
+        border-color: var(--sig-primary) !important;
+      }
+      
+      @keyframes blob {
+        0% {
+          transform: translate(0px, 0px) scale(1);
+        }
+        33% {
+          transform: translate(30px, -50px) scale(1.1);
+        }
+        66% {
+          transform: translate(-20px, 20px) scale(0.9);
+        }
+        100% {
+          transform: translate(0px, 0px) scale(1);
+        }
+      }
+
+      .animate-blob {
+        animation: blob 7s infinite;
+      }
+
+      .animation-delay-2000 {
+        animation-delay: 2s;
+      }
+
+      .animation-delay-4000 {
+        animation-delay: 4s;
+      }
+
+      .animation-delay-1000 {
+        animation-delay: 1s;
+      }
+
+      .animation-delay-3000 {
+        animation-delay: 3s;
       }
     </style>
-    <div class="w-full sig-bg-light">
+    
+    <div class="w-full min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100">
       <!-- Hero Section -->
-      <div class="sig-gradient text-white py-20 px-4">
-        <div class="max-w-7xl mx-auto">
-          <div class="text-center">
-            {% if sig.logo %}
-            <div class="mb-8">
-              <div class="inline-block p-2 bg-white/10 backdrop-blur-sm rounded-full shadow-2xl">
-                <img 
-                  src="{{sig.logo.url}}" 
-                  alt="{{sig.name}} logo" 
-                  class="w-32 h-32 rounded-full object-cover border border-white/20"
-                />
+      <section class="relative overflow-hidden">
+        <div class="relative overflow-hidden bg-gradient-to-br from-blue-50 via-white to-indigo-50 py-24 px-4 border-b-4" style="border-image: linear-gradient(to right, var(--sig-primary), var(--sig-secondary), var(--sig-primary)) 1;">
+          <!-- Animated Background Elements -->
+          <div class="absolute inset-0">
+            <div class="absolute top-20 left-10 w-80 h-80 rounded-full mix-blend-multiply filter blur-xl opacity-40 animate-blob" style="background-color: var(--sig-primary);"></div>
+            <div class="absolute top-40 right-10 w-80 h-80 rounded-full mix-blend-multiply filter blur-xl opacity-40 animate-blob animation-delay-2000" style="background-color: var(--sig-secondary);"></div>
+            <div class="absolute -bottom-8 left-20 w-80 h-80 rounded-full mix-blend-multiply filter blur-xl opacity-40 animate-blob animation-delay-4000" style="background-color: var(--sig-light);"></div>
+            <div class="absolute top-60 left-1/2 w-72 h-72 rounded-full mix-blend-multiply filter blur-xl opacity-35 animate-blob animation-delay-1000" style="background-color: var(--sig-primary); opacity: 0.6;"></div>
+            <div class="absolute bottom-20 right-1/4 w-64 h-64 rounded-full mix-blend-multiply filter blur-xl opacity-35 animate-blob animation-delay-3000" style="background-color: var(--sig-secondary); opacity: 0.7;"></div>
+          </div>
+          
+          <div class="max-w-7xl mx-auto relative z-10">
+            <div class="text-center">
+              {% if sig.logo %}
+              <div class="mb-8">
+                <div class="inline-block p-4 bg-white/20 backdrop-blur-sm rounded-3xl shadow-2xl transform hover:scale-105 transition-all duration-300">
+                  <img 
+                    src="{{sig.logo.url}}" 
+                    alt="{{sig.name}} logo" 
+                    class="w-40 h-40 rounded-2xl object-cover border-4 border-white/30 shadow-xl"
+                  />
+                </div>
+              </div>
+              {% endif %}
+              
+              <h1 class="text-5xl md:text-7xl font-bold mb-6 tracking-tight text-gray-900 fade-in">
+                Welcome to <span class="block">{{sig.name}}</span>
+              </h1>
+              
+              <div class="mt-8 fade-in">
+                <a 
+                  href="{% url 'sigs_index' %}" 
+                  class="inline-flex items-center px-8 py-4 bg-white/80 backdrop-blur-sm border-2 border-gray-200 text-gray-700 font-bold text-lg rounded-2xl transition-all duration-300 transform hover:scale-105 hover:bg-white shadow-xl"
+                >
+                  <svg class="mr-3 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                  </svg>
+                  Back to all SIGs
+                </a>
               </div>
             </div>
-            {% endif %}
-            <h1 class="text-6xl md:text-7xl font-bold mb-6 tracking-tight">aloha we are {{sig.name}}</h1>
-            {% if sig.website and sig.link_name %}
-            <div class="mt-8">
-              <a 
-                href="{{sig.website}}" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                class="inline-flex items-center px-8 py-4 bg-white font-bold text-lg rounded-xl transition-all duration-300 transform hover:scale-105 shadow-lg"
-                style="color: var(--sig-primary);"
-                onmouseover="this.style.backgroundColor='var(--sig-light)'"
-                onmouseout="this.style.backgroundColor='white'"
-              >
-                {{sig.link_name}}
-                <svg class="ml-3 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
-                </svg>
-              </a>
-            </div>
-            {% endif %}
           </div>
         </div>
-      </div>
+      </section>
 
       <!-- Main Content -->
-      <div class="max-w-7xl mx-auto px-4 py-16">
+      <div class="max-w-7xl mx-auto px-6 py-20">
         <!-- About Section -->
         {% if sig.about %}
-        <div class="mb-20">
-          <div class="text-center mb-16">
-            <h2 class="text-5xl font-bold mb-4 text-gray-800">About {{sig.name}}</h2>
+        <section class="mb-20">
+          <div class="text-center mb-16 fade-in">
+            <h2 class="text-4xl md:text-5xl font-bold mb-6 text-gray-900">
+              About <span class="sig-text-gradient">{{sig.name}}</span>
+            </h2>
             <div class="w-24 h-1 sig-accent mx-auto rounded-full"></div>
           </div>
-          <div class="bg-white rounded-3xl shadow-xl p-12 border border-gray-100">
-            <div class="max-w-4xl mx-auto text-lg text-gray-600 leading-relaxed">
-              <p>{{sig.about}}</p>
+          
+          <div class="sig-card rounded-3xl sig-shadow-lg p-12 fade-in">
+            <div class="max-w-4xl mx-auto">
+              <div class="prose prose-lg prose-gray max-w-none">
+                <p class="text-lg text-gray-700 leading-relaxed">{{sig.about}}</p>
+              </div>
             </div>
           </div>
-        </div>
+        </section>
         {% endif %}
 
         <!-- Leadership Section -->
         {% if leadership %}
         <div class="mb-20">
-          <div class="text-center mb-16">
+          <div class="text-center mb-16 fade-in">
             <h2 class="text-5xl font-bold mb-4 text-gray-800">Leadership Team</h2>
             <div class="w-24 h-1 sig-accent mx-auto rounded-full"></div>
           </div>
           <div class="grid gap-8 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             {% for leader in leadership %}
-            <div class="group bg-white rounded-2xl shadow-lg p-8 text-center hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 border border-gray-100">
+            <div class="group bg-white rounded-2xl shadow-lg p-8 text-center hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 border border-gray-100 fade-in">
               <div class="mb-6">
                 <div class="relative inline-block">
                   <img 
                     src="{% if leader.profile %}{{leader.profile.url}}{% else %}{% static 'website/default_user.svg' %}{% endif %}" 
                     alt="{{leader.name}} profile" 
-                    class="w-32 h-32 rounded-full mx-auto object-cover border-4 border-white shadow-lg group-hover:scale-110 transition-transform duration-300 sig-border"
+                    class="w-32 h-32 rounded-full mx-auto object-cover border-4 border-white shadow-lg group-hover:scale-110 transition-all duration-300"
+                    style="--sig-primary: {{ sig.primary_color }};"
                   />
                   <div class="absolute inset-0 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300" style="background: linear-gradient(to top right, var(--sig-primary)/20, var(--sig-secondary)/20);"></div>
                 </div>
@@ -133,60 +223,231 @@
         </div>
         {% endif %}
 
+        <!-- Social Media Section -->
+        {% if sig.discord_link or sig.instagram_link or sig.github_link or sig.linkedin_link %}
+        <section class="mb-20">
+          <div class="text-center mb-16 fade-in">
+            <h2 class="text-5xl font-bold mb-4 text-gray-800">Connect With Us</h2>
+            <div class="w-24 h-1 sig-accent mx-auto rounded-full"></div>
+          </div>
+          
+          <div class="grid gap-8 max-w-6xl mx-auto" id="social-grid">
+            {% if sig.discord_link %}
+            <!-- Discord -->
+            <div class="bg-gradient-to-r from-indigo-600 to-purple-700 rounded-3xl p-8 text-white text-center flex flex-col h-full fade-in">
+              <div class="flex-1 flex flex-col justify-between">
+                <div>
+                  <div class="mb-6">
+                    <div class="mx-auto w-32 h-32 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm">
+                      <svg class="w-20 h-20 text-white" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028c.462-.63.874-1.295 1.226-1.994a.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z"/>
+                      </svg>
+                    </div>
+                  </div>
+                  
+                  <h3 class="text-2xl font-bold mb-3">Join Our Discord</h3>
+                  <p class="text-lg text-indigo-100 mb-6">
+                    Connect with fellow members and get updates!
+                  </p>
+                </div>
+                
+                <div class="mt-auto">
+                  <a 
+                    href="{{ sig.discord_link }}" 
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="inline-flex items-center px-6 py-3 bg-white text-indigo-600 font-bold text-base rounded-xl hover:bg-indigo-50 transition-all duration-300 transform hover:scale-105 shadow-lg"
+                  >
+                    Join Discord
+                    <svg class="ml-2 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
+                    </svg>
+                  </a>
+                </div>
+              </div>
+            </div>
+            {% endif %}
+
+            {% if sig.instagram_link %}
+            <!-- Instagram -->
+            <div class="bg-gradient-to-tr from-yellow-400 via-pink-500 to-purple-600 rounded-3xl p-8 text-white text-center flex flex-col h-full fade-in">
+              <div class="flex-1 flex flex-col justify-between">
+                <div>
+                  <div class="mb-6">
+                    <div class="mx-auto w-32 h-32 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm">
+                      <svg class="w-20 h-20 text-white" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+                      </svg>
+                    </div>
+                  </div>
+                  
+                  <h3 class="text-2xl font-bold mb-3">Follow Us</h3>
+                  <p class="text-lg text-white/90 mb-6">
+                    Stay updated with our latest content!
+                  </p>
+                </div>
+                
+                <div class="mt-auto">
+                  <a 
+                    href="{{ sig.instagram_link }}" 
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="inline-flex items-center px-6 py-3 bg-white text-pink-600 font-bold text-base rounded-xl hover:bg-pink-50 transition-all duration-300 transform hover:scale-105 shadow-lg"
+                  >
+                    Follow on Instagram
+                    <svg class="ml-2 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
+                    </svg>
+                  </a>
+                </div>
+              </div>
+            </div>
+            {% endif %}
+
+            {% if sig.github_link %}
+            <!-- GitHub -->
+            <div class="bg-gradient-to-r from-gray-800 to-gray-900 rounded-3xl p-8 text-white text-center flex flex-col h-full fade-in">
+              <div class="flex-1 flex flex-col justify-between">
+                <div>
+                  <div class="mb-6">
+                    <div class="mx-auto w-32 h-32 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm">
+                      <svg class="w-20 h-20 text-white" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 .333A9.911 9.911 0 0 0 6.866 19.65c.5.092.678-.215.678-.477 0-.237-.01-1.017-.014-1.845-2.757.6-3.338-1.169-3.338-1.169a2.627 2.627 0 0 0-1.1-1.451c-.9-.615.07-.6.07-.6a2.084 2.084 0 0 1 1.518 1.021 2.11 2.11 0 0 0 2.884.823c.044-.503.268-.973.63-1.325-2.2-.25-4.516-1.1-4.516-4.9A3.832 3.832 0 0 1 4.7 7.068a3.56 3.56 0 0 1 .095-2.623s.832-.266 2.726 1.016a9.409 9.409 0 0 1 4.962 0c1.89-1.282 2.717-1.016 2.717-1.016.366.83.402 1.768.1 2.623a3.827 3.827 0 0 1 1.02 2.659c0 3.807-2.319 4.644-4.525 4.889a2.366 2.366 0 0 1 .673 1.834c0 1.326-.012 2.394-.012 2.72 0 .263.18.572.681.475A9.911 9.911 0 0 0 10 .333Z" clip-rule="evenodd"/>
+                      </svg>
+                    </div>
+                  </div>
+                  
+                  <h3 class="text-2xl font-bold mb-3">Check Our Code</h3>
+                  <p class="text-lg text-gray-300 mb-6">
+                    Explore our projects and contributions!
+                  </p>
+                </div>
+                
+                <div class="mt-auto">
+                  <a 
+                    href="{{ sig.github_link }}" 
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="inline-flex items-center px-6 py-3 bg-white text-gray-800 font-bold text-base rounded-xl hover:bg-gray-50 transition-all duration-300 transform hover:scale-105 shadow-lg"
+                  >
+                    View on GitHub
+                    <svg class="ml-2 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
+                    </svg>
+                  </a>
+                </div>
+              </div>
+            </div>
+            {% endif %}
+
+            {% if sig.linkedin_link %}
+            <!-- LinkedIn -->
+            <div class="bg-gradient-to-r from-blue-600 to-blue-800 rounded-3xl p-8 text-white text-center flex flex-col h-full fade-in">
+              <div class="flex-1 flex flex-col justify-between">
+                <div>
+                  <div class="mb-6">
+                    <div class="mx-auto w-32 h-32 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm">
+                      <svg class="w-20 h-20 text-white" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+                      </svg>
+                    </div>
+                  </div>
+                  
+                  <h3 class="text-2xl font-bold mb-3">Connect Professionally</h3>
+                  <p class="text-lg text-blue-100 mb-6">
+                    Network and stay updated professionally!
+                  </p>
+                </div>
+                
+                <div class="mt-auto">
+                  <a 
+                    href="{{ sig.linkedin_link }}" 
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="inline-flex items-center px-6 py-3 bg-white text-blue-600 font-bold text-base rounded-xl hover:bg-blue-50 transition-all duration-300 transform hover:scale-105 shadow-lg"
+                  >
+                    Connect on LinkedIn
+                    <svg class="ml-2 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
+                    </svg>
+                  </a>
+                </div>
+              </div>
+            </div>
+            {% endif %}
+          </div>
+        </section>
+        {% endif %}
+
         <!-- Join Section -->
-        <div class="bg-white rounded-3xl shadow-xl p-12 border border-gray-100">
-          <div class="text-center">
-            <h3 class="text-3xl font-bold text-gray-800 mb-6">Join {{sig.name}}</h3>
-            <p class="text-lg text-gray-600 mb-8 max-w-2xl mx-auto">
-              Ready to get involved? Connect with us and become part of our community!
-            </p>
-            <div class="flex flex-col sm:flex-row gap-4 justify-center">
-              <a 
-                href="{% url 'sigs_index' %}" 
-                class="inline-flex items-center px-6 py-3 bg-gray-100 text-gray-700 font-semibold rounded-lg hover:bg-gray-200 transition-colors duration-200"
-              >
-                <svg class="mr-2 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
-                </svg>
-                Back to all SIGs
-              </a>
-              {% if sig.website %}
-              <a 
-                href="{{sig.website}}" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                class="inline-flex items-center px-6 py-3 text-white font-semibold rounded-lg transition-colors duration-200 sig-button"
-              >
-                Visit Our Website
-                <svg class="ml-2 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
-                </svg>
-              </a>
-              {% endif %}
+        <section class="mb-20">
+          <div class="sig-card rounded-3xl sig-shadow-lg p-12 text-center fade-in">
+            <div class="max-w-4xl mx-auto">
+              <h3 class="text-4xl font-bold mb-6 text-gray-900">
+                Join <span class="sig-text-gradient">{{sig.name}}</span>
+              </h3>
+              <p class="text-xl text-gray-600 mb-10 max-w-2xl mx-auto leading-relaxed">
+                Ready to get involved? Connect with us and become part of our vibrant community of passionate students!
+              </p>
+              
+              <div class="flex flex-col sm:flex-row gap-6 justify-center items-center">
+                <a 
+                  href="{% url 'sigs_index' %}" 
+                  class="inline-flex items-center px-8 py-4 sig-button-outline font-semibold rounded-2xl transition-all duration-300 hover:shadow-lg"
+                >
+                  <svg class="mr-3 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                  </svg>
+                  Back to all SIGs
+                </a>
+                
+                {% if sig.website %}
+                <a 
+                  href="{{sig.website}}" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  class="inline-flex items-center px-8 py-4 sig-button font-semibold rounded-2xl transition-all duration-300 shadow-lg"
+                >
+                  Visit Our Website
+                  <svg class="ml-3 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
+                  </svg>
+                </a>
+                {% endif %}
+              </div>
             </div>
           </div>
-        </div>
+        </section>
       </div>
     </div>
   {% else %}
     {% comment %} List of Sigs {% endcomment %}
     <div class="w-full">
       <!-- Hero Section -->
-      <div class="bg-gradient-to-r from-blue-600 to-indigo-700 text-white py-20 px-4">
-        <div class="max-w-7xl mx-auto text-center">
-          <h1 class="text-6xl md:text-7xl font-bold mb-6 tracking-tight">Special Interest Programs</h1>
-          <p class="text-xl md:text-2xl text-blue-100 max-w-4xl mx-auto leading-relaxed">
-            Special Interest Programs or SIGs are clubs/organizations within
-            ACM that focus on a particular area, topic, or activity. These range from
-            web development to ballroom dancing. Please click on a SIG if you are
-            interested in learning more about it.
-          </p>
+      <div class="relative overflow-hidden bg-gradient-to-br from-blue-50 via-white to-indigo-50 py-20 px-4 border-b-4" style="border-image: linear-gradient(to right, #3B82F6, #1D4ED8, #3B82F6) 1;">
+        <!-- Animated Background Elements -->
+        <div class="absolute inset-0">
+          <div class="absolute top-20 left-10 w-80 h-80 bg-blue-300 rounded-full mix-blend-multiply filter blur-xl opacity-40 animate-blob"></div>
+          <div class="absolute top-40 right-10 w-80 h-80 bg-purple-300 rounded-full mix-blend-multiply filter blur-xl opacity-40 animate-blob animation-delay-2000"></div>
+          <div class="absolute -bottom-8 left-20 w-80 h-80 bg-pink-300 rounded-full mix-blend-multiply filter blur-xl opacity-40 animate-blob animation-delay-4000"></div>
+          <div class="absolute top-60 left-1/2 w-72 h-72 bg-indigo-300 rounded-full mix-blend-multiply filter blur-xl opacity-35 animate-blob animation-delay-1000"></div>
+          <div class="absolute bottom-20 right-1/4 w-64 h-64 bg-cyan-300 rounded-full mix-blend-multiply filter blur-xl opacity-35 animate-blob animation-delay-3000"></div>
         </div>
+        
+    <div class="relative z-10 max-w-7xl mx-auto text-center">
+      <h1 class="text-6xl md:text-7xl font-bold mb-6 tracking-tight text-gray-900 fade-in">Special Interest Programs</h1>
+      <p class="text-xl md:text-2xl text-gray-600 max-w-4xl mx-auto leading-relaxed fade-in">
+        Special Interest Programs or SIGs are clubs/organizations within
+        ACM that focus on a particular area, topic, or activity. These range from
+        web development to ballroom dancing. Please click on a SIG if you are
+        interested in learning more about it.
+      </p>
+    </div>
       </div>
 
       <!-- SIGs Grid -->
       <div class="max-w-7xl mx-auto px-4 py-20">
-        <div class="text-center mb-16">
+        <div class="text-center mb-16 fade-in">
           <h2 class="text-5xl font-bold mb-4 text-gray-800">Our SIGs</h2>
           <div class="w-24 h-1 bg-gradient-to-r from-blue-500 to-indigo-500 mx-auto rounded-full"></div>
         </div>
@@ -194,7 +455,7 @@
         <div class="grid gap-8 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {% for sig in sigs %}
             <a
-              class="group bg-white rounded-2xl shadow-lg p-8 text-center hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 border border-gray-100"
+              class="group bg-white rounded-2xl shadow-lg p-8 text-center hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 border border-gray-100 fade-in"
               href="{% url 'sig_detail' sig.slug %}"
             >
               {% if sig.logo %}
@@ -255,4 +516,26 @@
 
   {% endif %}
 </main>
+
+<script>
+// Dynamic grid columns for social media cards
+document.addEventListener('DOMContentLoaded', function() {
+  const socialGrid = document.getElementById('social-grid');
+  if (socialGrid) {
+    const socialCards = socialGrid.children;
+    const cardCount = socialCards.length;
+    
+    // Set grid columns based on number of cards
+    if (cardCount === 1) {
+      socialGrid.className = 'grid gap-8 max-w-2xl mx-auto';
+    } else if (cardCount === 2) {
+      socialGrid.className = 'grid gap-8 grid-cols-1 md:grid-cols-2 max-w-4xl mx-auto';
+    } else if (cardCount === 3) {
+      socialGrid.className = 'grid gap-8 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 max-w-5xl mx-auto';
+    } else if (cardCount === 4) {
+      socialGrid.className = 'grid gap-8 grid-cols-1 md:grid-cols-2 lg:grid-cols-4 max-w-6xl mx-auto';
+    }
+  }
+});
+</script>
 {% endblock %}

@@ -60,6 +60,24 @@ class SIGS(models.Model):
             message='Enter a valid hex color code (e.g., #3B82F6)'
         )]
     )
+    
+    # Social Media Links
+    discord_link = models.URLField(
+        blank=True, 
+        help_text="Discord server invite link (optional)"
+    )
+    instagram_link = models.URLField(
+        blank=True, 
+        help_text="Instagram profile link (optional)"
+    )
+    github_link = models.URLField(
+        blank=True, 
+        help_text="GitHub organization/repository link (optional)"
+    )
+    linkedin_link = models.URLField(
+        blank=True, 
+        help_text="LinkedIn page link (optional)"
+    )
 
     class Meta:
         verbose_name = "SIG"

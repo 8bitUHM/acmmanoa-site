@@ -7,7 +7,15 @@ def home(request):
     sigs = SIGS.objects.all()
     carousel_images = CarouselImage.objects.all().order_by('-created_at')
     questions = FAQ.objects.all().order_by('created_at')
-    return render(request, 'pages/home.html', {"programs": sigs, "carousel_images": carousel_images, "questions": questions})
+    # Get the 3 most recent upcoming events
+    from django.utils import timezone
+    upcoming_events = Event.objects.filter(event_date__gte=timezone.now().date()).order_by('event_date')[:3]
+    return render(request, 'pages/home.html', {
+        "programs": sigs, 
+        "carousel_images": carousel_images, 
+        "questions": questions,
+        "upcoming_events": upcoming_events
+    })
 
 def about(request):
     leaders = Leadership.objects.all().order_by('title')

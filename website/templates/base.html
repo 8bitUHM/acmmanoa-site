@@ -15,6 +15,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="icon" type="image/x-icon" href="{% static 'website/acm_logo.png' %}">
     <link rel="stylesheet" href="{% static 'css/index.css' %}">
+    <link rel="stylesheet" href="{% static 'css/minimal-animations.css' %}">
     {% block styles %}{% endblock %}
 </head>
 
@@ -28,6 +29,38 @@
     </div>
     {% include "components/footer.html" %}
     <script src="https://cdn.jsdelivr.net/npm/flowbite@2.5.1/dist/flowbite.min.js"></script>
+    
+    <!-- Minimal Animations Script -->
+    <script>
+    // Simple, non-intrusive fade-in animations
+    document.addEventListener('DOMContentLoaded', function() {
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            const delay = entry.target.classList.contains('delay-100') ? 100 :
+                         entry.target.classList.contains('delay-200') ? 200 :
+                         entry.target.classList.contains('delay-300') ? 300 :
+                         entry.target.classList.contains('delay-400') ? 400 :
+                         entry.target.classList.contains('delay-500') ? 500 : 0;
+            
+            setTimeout(() => {
+              entry.target.classList.add('animate');
+            }, delay);
+            
+            observer.unobserve(entry.target);
+          }
+        });
+      }, {
+        threshold: 0.1,
+        rootMargin: '0px 0px -20px 0px'
+      });
+      
+      // Observe all fade-in elements
+      document.querySelectorAll('.fade-in').forEach(el => {
+        observer.observe(el);
+      });
+    });
+    </script>
 </body>
 
 </html>
