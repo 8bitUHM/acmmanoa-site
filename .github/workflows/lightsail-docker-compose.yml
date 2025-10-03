@@ -99,12 +99,10 @@ jobs:
           # Extract new code
           tar -xzf deployment.tar.gz
           
-          # Set environment variables
-          export SECRET_KEY="${{ secrets.SECRET_KEY }}"
-          export POSTGRES_PASSWORD="${{ secrets.POSTGRES_PASSWORD }}"
-          export ALLOWED_HOSTS="${{ secrets.ALLOWED_HOSTS }}"
-          
-          # Build and start containers
+          # Build and start containers with environment variables
+          SECRET_KEY="${{ secrets.SECRET_KEY }}" \
+          POSTGRES_PASSWORD="${{ secrets.POSTGRES_PASSWORD }}" \
+          ALLOWED_HOSTS="${{ secrets.ALLOWED_HOSTS }}" \
           docker-compose -f docker-compose.lightsail.yml up --build -d
           
           # Run database migrations
