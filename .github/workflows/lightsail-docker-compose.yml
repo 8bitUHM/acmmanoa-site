@@ -66,13 +66,8 @@ jobs:
 
     - name: Create deployment package
       run: |
-        tar -czf deployment.tar.gz \
-          --exclude='.git' \
-          --exclude='node_modules' \
-          --exclude='__pycache__' \
-          --exclude='.env' \
-          --exclude='db.sqlite3' \
-          .
+        # Use git archive to create a clean deployment package
+        git archive --format=tar.gz --output=deployment.tar.gz HEAD
 
     - name: Upload to Lightsail instance
       run: |
