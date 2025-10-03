@@ -2,7 +2,7 @@
 
 This is the official website for the Association for Computing Machinery (ACM) chapter at the University of Hawaiʻi at Mānoa.
 
-## 🚀 Deployment
+## 🚀 Deployment.
 
 This project is configured for automated deployment to AWS Lightsail using GitHub Actions and Docker Compose.
 
