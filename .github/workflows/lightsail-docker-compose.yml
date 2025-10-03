@@ -69,6 +69,20 @@ jobs:
         # Use git archive to create a clean deployment package
         git archive --format=tar.gz --output=deployment.tar.gz HEAD
 
+    - name: Setup SSH key
+      run: |
+        # Create .ssh directory
+        mkdir -p ~/.ssh
+        chmod 700 ~/.ssh
+        
+        # Write the SSH key from secrets
+        echo "${{ secrets.LIGHTSAIL_SSH_KEY }}" > ~/.ssh/lightsail-key
+        chmod 600 ~/.ssh/lightsail-key
+        
+        # Add the key to SSH agent
+        eval "$(ssh-agent -s)"
+        ssh-add ~/.ssh/lightsail-key
+
     - name: Upload to Lightsail instance
       run: |
         # Get the public IP of the Lightsail instance
