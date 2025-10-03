@@ -150,6 +150,7 @@ class CarouselImage(models.Model):
 
 class Event(models.Model):
     title = models.CharField(max_length=255, unique=True, help_text="name or headline of the event")
+    slug = models.SlugField(default='', unique=True, help_text="URL-friendly version of the title")
     image = models.ImageField(
         upload_to="website.File/bytes/filename/mimetype",
         null=True,
@@ -161,6 +162,7 @@ class Event(models.Model):
     )
     description = models.TextField()
     event_date = models.DateTimeField(help_text="It is in 24-hour format")
+    location = models.CharField(max_length=255, help_text="Location where the event will take place", blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self): 

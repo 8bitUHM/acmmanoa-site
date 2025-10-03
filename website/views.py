@@ -21,6 +21,10 @@ def events(request):
     events = Event.objects.all().order_by('-event_date')
     return render(request, 'pages/events.html', {"events": events})
 
+def event_detail(request, slug):
+    event = get_object_or_404(Event, slug=slug)
+    return render(request, 'pages/event_detail.html', {"event": event})
+
 def sponsors(request):
     sponsors = Sponsor.objects.defer('created_at').all()
     return render(request, 'pages/sponsors.html', {"sponsors": sponsors})

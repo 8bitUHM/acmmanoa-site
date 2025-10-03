@@ -6,6 +6,7 @@ urlpatterns = [
     path('', home, name='home'),
     path('about/', about, name='about'),
     path('events/', events, name='events'),
+    path('events/<slug:slug>/', event_detail, name='event_detail'),
     path('sponsors/', sponsors, name='sponsors'),
     path('icspace/', icspace, name='icspace'),
     path('sigs/', sigs_index, name='sigs_index'),
