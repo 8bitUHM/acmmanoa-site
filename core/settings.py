@@ -91,12 +91,21 @@ WSGI_APPLICATION = 'core.wsgi.app'
 # Note: Django modules for using databases are not support in serverless
 # environments like Vercel. You can use a database over HTTP, hosted elsewhere.
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+# Database configuration - use PostgreSQL in production, SQLite for development
+if os.getenv('DATABASE_URL'):
+    # Production: Use PostgreSQL from DATABASE_URL
+    import dj_database_url
+    DATABASES = {
+        'default': dj_database_url.parse(os.getenv('DATABASE_URL'))
     }
-}
+else:
+    # Development: Use SQLite
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
+    }
 
 import sys
 if 'test' in sys.argv:
@@ -154,7 +163,7 @@ USE_TZ = True
 
 STATIC_URL = 'static/'  
 STATIC_ROOT = BASE_DIR / 'static'
-STATICFILES_DIR = [
+STATICFILES_DIRS = [
   BASE_DIR / 'static',
   BASE_DIR / 'static/icon',
 ] 

@@ -45,6 +45,9 @@ WORKDIR /app
 # Collect static files
 RUN python manage.py collectstatic --noinput
 
+# Run database migrations (will be skipped if no DATABASE_URL is set)
+RUN python manage.py migrate --noinput || echo "Migrations skipped - no database configured"
+
 # Create a non-root user for security
 RUN adduser --disabled-password --gecos '' appuser
 RUN chown -R appuser:appuser /app
