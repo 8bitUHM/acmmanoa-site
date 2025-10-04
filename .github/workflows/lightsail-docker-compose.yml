@@ -107,11 +107,9 @@ jobs:
           
           # Create .env file with environment variables
           echo "🔧 Creating environment file..."
-          cat > .env << 'ENVEOF'
-          SECRET_KEY=${{ secrets.SECRET_KEY }}
-          POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}
-          ALLOWED_HOSTS=${{ secrets.ALLOWED_HOSTS }}
-          ENVEOF
+          echo "SECRET_KEY=${{ secrets.SECRET_KEY }}" > .env
+          echo "POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}" >> .env
+          echo "ALLOWED_HOSTS=${{ secrets.ALLOWED_HOSTS }}" >> .env
           
           # Show environment file (without sensitive data)
           echo "📋 Environment file created:"
@@ -128,6 +126,26 @@ jobs:
           # Check container status
           echo "📊 Container status:"
           docker-compose -f docker-compose.lightsail.yml ps
+          
+          # Check if any containers failed to start
+          FAILED_CONTAINERS=$(docker-compose -f docker-compose.lightsail.yml ps --services --filter "status=exited")
+          if [ ! -z "$FAILED_CONTAINERS" ]; then
+            echo "❌ Some containers failed to start: $FAILED_CONTAINERS"
+            echo "📋 Container logs:"
+            docker-compose -f docker-compose.lightsail.yml logs
+            exit 1
+          fi
+          
+          # Check if containers are actually running
+          RUNNING_CONTAINERS=$(docker-compose -f docker-compose.lightsail.yml ps --services --filter "status=running")
+          if [ -z "$RUNNING_CONTAINERS" ]; then
+            echo "❌ No containers are running!"
+            echo "📋 All container status:"
+            docker ps -a
+            echo "📋 Docker-compose logs:"
+            docker-compose -f docker-compose.lightsail.yml logs
+            exit 1
+          fi
           
           # Run database migrations
           echo "🗄️ Running database migrations..."
