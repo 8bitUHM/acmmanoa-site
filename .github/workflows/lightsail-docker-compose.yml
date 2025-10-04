@@ -93,30 +93,58 @@ jobs:
         
         # SSH into the instance and deploy
         ssh -o StrictHostKeyChecking=no -i ~/.ssh/lightsail-key ubuntu@$INSTANCE_IP << 'EOF'
+          set -e  # Exit on any error
+          
+          echo "🚀 Starting deployment..."
+          
           # Stop existing containers
-          docker-compose -f docker-compose.lightsail.yml down
+          echo "📦 Stopping existing containers..."
+          docker-compose -f docker-compose.lightsail.yml down || true
           
           # Extract new code
+          echo "📁 Extracting deployment package..."
           tar -xzf deployment.tar.gz
           
           # Create .env file with environment variables
-          cat > .env << EOF
+          echo "🔧 Creating environment file..."
+          cat > .env << 'ENVEOF'
           SECRET_KEY=${{ secrets.SECRET_KEY }}
           POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}
           ALLOWED_HOSTS=${{ secrets.ALLOWED_HOSTS }}
-          EOF
+          ENVEOF
+          
+          # Show environment file (without sensitive data)
+          echo "📋 Environment file created:"
+          ls -la .env
           
           # Build and start containers
+          echo "🏗️ Building and starting containers..."
           docker-compose -f docker-compose.lightsail.yml up --build -d
           
+          # Wait for containers to be healthy
+          echo "⏳ Waiting for containers to be ready..."
+          sleep 30
+          
+          # Check container status
+          echo "📊 Container status:"
+          docker-compose -f docker-compose.lightsail.yml ps
+          
           # Run database migrations
+          echo "🗄️ Running database migrations..."
           docker-compose -f docker-compose.lightsail.yml exec -T web python manage.py migrate
           
           # Collect static files
+          echo "📁 Collecting static files..."
           docker-compose -f docker-compose.lightsail.yml exec -T web python manage.py collectstatic --noinput
+          
+          # Final status check
+          echo "✅ Final container status:"
+          docker-compose -f docker-compose.lightsail.yml ps
           
           # Clean up
           rm deployment.tar.gz
+          
+          echo "🎉 Deployment completed!"
         EOF
 
     - name: Notify deployment status
