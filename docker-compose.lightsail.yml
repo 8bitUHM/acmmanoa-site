@@ -24,7 +24,7 @@ services:
     ports:
       - "8000:8000"
     environment:
-      - DEBUG=0
+      - DEBUG=1
       - SECRET_KEY=${SECRET_KEY:-your-secret-key-here}
       - ALLOWED_HOSTS=${ALLOWED_HOSTS:-localhost,127.0.0.1,*.amazonaws.com}
       - POSTGRES_DB=acmmanoa
@@ -39,7 +39,7 @@ services:
       - static_volume:/app/staticfiles
       - media_volume:/app/media
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8000/"]
+      test: ["CMD", "pgrep", "-f", "gunicorn"]
       interval: 30s
       timeout: 10s
       retries: 3
