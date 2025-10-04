@@ -92,11 +92,17 @@ WSGI_APPLICATION = 'core.wsgi.app'
 # environments like Vercel. You can use a database over HTTP, hosted elsewhere.
 
 # Database configuration - use PostgreSQL in production, SQLite for development
-if os.getenv('DATABASE_URL'):
-    # Production: Use PostgreSQL from DATABASE_URL
-    import dj_database_url
+if os.getenv('POSTGRES_DB'):
+    # Production: Use PostgreSQL with individual environment variables
     DATABASES = {
-        'default': dj_database_url.parse(os.getenv('DATABASE_URL'))
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': os.getenv('POSTGRES_DB'),
+            'USER': os.getenv('POSTGRES_USER'),
+            'PASSWORD': os.getenv('POSTGRES_PASSWORD'),
+            'HOST': os.getenv('POSTGRES_HOST', 'localhost'),
+            'PORT': os.getenv('POSTGRES_PORT', '5432'),
+        }
     }
 else:
     # Development: Use SQLite
