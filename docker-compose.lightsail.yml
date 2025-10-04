@@ -28,12 +28,21 @@ services:
       - SECRET_KEY=${SECRET_KEY:-your-secret-key-here}
       - ALLOWED_HOSTS=${ALLOWED_HOSTS:-localhost,127.0.0.1,*.amazonaws.com}
       - DATABASE_URL=postgresql://postgres:${POSTGRES_PASSWORD:-your-secure-password}@db:5432/acmmanoa
+      - POSTGRES_DB=acmmanoa
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-your-secure-password}
     depends_on:
       db:
         condition: service_healthy
     volumes:
       - static_volume:/app/staticfiles
       - media_volume:/app/media
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
 
   nginx:
     image: nginx:alpine
