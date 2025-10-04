@@ -32,6 +32,7 @@ local_settings.py
 # Static files (will be collected during build)
 /static/       
 !*/static/
+staticfiles/
 
 # Docker
 .dockerignore
