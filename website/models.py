@@ -78,6 +78,40 @@ class SIGS(models.Model):
         blank=True, 
         help_text="LinkedIn page link (optional)"
     )
+    
+    # Meeting Information
+    DAY_CHOICES = [
+        ('', 'Select a day'),
+        ('Monday', 'Monday'),
+        ('Tuesday', 'Tuesday'),
+        ('Wednesday', 'Wednesday'),
+        ('Thursday', 'Thursday'),
+        ('Friday', 'Friday'),
+        ('Saturday', 'Saturday'),
+        ('Sunday', 'Sunday'),
+    ]
+    
+    meeting_days = models.CharField(
+        max_length=20, 
+        choices=DAY_CHOICES,
+        blank=True, 
+        help_text="Select the meeting days for this SIG"
+    )
+    meeting_start_time = models.TimeField(
+        blank=True, 
+        null=True, 
+        help_text="Meeting start time (24-hour format)"
+    )
+    meeting_end_time = models.TimeField(
+        blank=True, 
+        null=True, 
+        help_text="Meeting end time (24-hour format)"
+    )
+    meeting_location = models.CharField(
+        max_length=255, 
+        blank=True, 
+        help_text="Meeting location (e.g., POST 318B, Online, etc.)"
+    )
 
     class Meta:
         verbose_name = "SIG"

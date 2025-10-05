@@ -52,9 +52,9 @@
     </div>
     
     <!-- Stats -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto fade-in-up" data-delay="1000">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto fade-in-up mb-12" data-delay="1000">
       <div class="bg-white/60 backdrop-blur-sm rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300">
-        <div class="text-3xl font-bold text-blue-600 mb-2" data-count="10" data-suffix="+">0+</div>
+        <div class="text-3xl font-bold text-blue-600 mb-2" data-count="7" data-suffix="+">0+</div>
         <div class="text-gray-600 font-medium">Special Interest Groups</div>
       </div>
       <div class="bg-white/60 backdrop-blur-sm rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300">
@@ -65,15 +65,6 @@
         <div class="text-3xl font-bold text-indigo-600 mb-2" data-count="50" data-suffix="+">0+</div>
         <div class="text-gray-600 font-medium">Events Annually</div>
       </div>
-    </div>
-  </div>
-  
-  <!-- Scroll Indicator -->
-  <div class="absolute bottom-12 left-1/2 transform -translate-x-1/2 animate-bounce cursor-pointer z-20" onclick="scrollToSection('programs')">
-    <div class="w-12 h-12 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110">
-      <svg class="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>
-      </svg>
     </div>
   </div>
 </section>
@@ -533,7 +524,11 @@ const observerOptions = {
 const observer = new IntersectionObserver((entries) => {
   entries.forEach(entry => {
     if (entry.isIntersecting) {
-      animateCountUp();
+      // Wait for fade-in animation to complete before starting count-up
+      // The stats section has data-delay="1000" (1 second) + fade-in duration (0.8s) = 1.8s total
+      setTimeout(() => {
+        animateCountUp();
+      }, 1100);
       observer.unobserve(entry.target); // Only animate once
     }
   });
