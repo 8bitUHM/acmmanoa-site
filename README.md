@@ -1,106 +1,143 @@
-# ACM at UH Mānoa Website
+# **The Association for Computing Machinery at the University of Hawaii at Manoa (ACM)**
 
-This is the official website for the Association for Computing Machinery (ACM) chapter at the University of Hawaiʻi at Mānoa.
+This is the ACM website, ported from the old site [here](https://acmmanoa.org/) to Django.  
+The old site repository can be found [here](https://github.com/ACManoa/acmanoa.github.io)
 
-## 🚀 Quick Start
+## **Table of Contents**
+1. [Project Structure](#project-structure)
+2. [Getting the App Running](#getting-the-app-running)
+
+---
+
+## **Project Structure**
+
+The project is organized into several components:
+
+- **`core/`**: The main Django project directory.
+  - `settings.py`: Configuration settings for the project, including database settings, middleware, installed apps, and other configurations.
+  - `urls.py`: URL configuration for the project, mapping URLs to views.
+
+- **`db_file_storage/`**: A file storage system that allows storing files as raw bytes and mimetypes in the database.
+
+- **`website/`**: The Django app for the website.
+  - `migrations/`: Database migration files.
+  - `static/`: Static files (CSS, JavaScript, images).
+  - `templates/`: HTML templates.
+  - `admin.py`: Admin interface configuration.
+  - `forms.py`: Defines forms for user input and validation.
+  - `models.py`: Defines database structure and interactions.
+  - `serializers.py`: Converts complex data types into JSON, XML, or other formats.
+  - `tests.py`: Unit tests.
+  - `urls.py`: URL configuration for the website app.
+  - `views.py`: Handles HTTP requests and returns responses.
+
+- **Project root files:**
+  - `manage.py`: Django’s command-line utility for administrative tasks.
+  - `requirements.txt`: Contains project dependencies.
+
+---
+
+## **Getting the App Running**
 
 ### **Prerequisites**
-- Python 3.8+ 
-- pip (Python package manager)
-- Node.js 16+ (for Tailwind CSS compilation)
+Ensure you have **Python 3.8+** installed. You can check your Python version with:
 
-### **Local Development Setup**
+```sh
+python --version
+```
 
-1. **Clone the repository**:
-   ```bash
+or
+
+```sh
+python3 --version
+```
+
+If Python is not installed, download and install it from [python.org](https://www.python.org/downloads/).
+
+---
+
+### **Setup Instructions**
+
+1. **Clone the repository**  
+   Open a terminal and run:
+
+   ```sh
    git clone https://github.com/your-repo/acmmanoa-site.git
    cd acmmanoa-site
    ```
 
-2. **Create and activate a virtual environment**:
-   ```bash
-   # On Windows
+2. **Create a virtual environment (recommended)**  
+   ```sh
    python -m venv venv
-   venv\Scripts\activate
-   
-   # On macOS/Linux
-   python3 -m venv venv
-   source venv/bin/activate
+   source venv/bin/activate  # On macOS/Linux
+   venv\Scripts\activate  # On Windows
    ```
 
-3. **Install Python dependencies**:
-   ```bash
+3. **Install dependencies**  
+   ```sh
    pip install -r requirements.txt
    ```
 
-4. **Install and build Tailwind CSS**:
-   ```bash
-   cd theme/static_src
-   npm install
-   npm run build
-   cd ../..
+4. **Create a local settings file**  
+   Inside the `core/` directory, create a new file named `local_settings.py` and add the following:
+
+   ```python
+   from pathlib import Path
+
+   BASE_DIR = Path(__file__).resolve().parent.parent
+
+   DEBUG = True
+
+   DATABASES = {
+       "default": {
+           "ENGINE": "django.db.backends.sqlite3",
+           "NAME": BASE_DIR / "db.sqlite3",
+       }
+   }
    ```
 
-5. **Run database migrations**:
-   ```bash
+5. **Create a `.env` file**  
+   In the `core/` directory, create a new file named `.env` and add the required environment variables.  
+   These variables can be found in the **acmmanoa** project Discord channel.
+
+6. **Apply database migrations**  
+   ```sh
    python manage.py migrate
    ```
 
-6. **Create a superuser (optional)**:
-   ```bash
+7. **Collect static files**  
+   ```sh
+   python manage.py collectstatic
+   ```
+
+8. **Create a superuser (optional, for admin access)**  
+   ```sh
    python manage.py createsuperuser
    ```
+   Follow the prompts to set up an admin account.
 
-7. **Start the development server**:
-   ```bash
+9. **Run the development server**  
+   ```sh
    python manage.py runserver
    ```
+   The app should now be running locally at **[http://127.0.0.1:8000](http://127.0.0.1:8000/)**.
 
-8. **Access the application**:
-   - Website: http://127.0.0.1:8000
-   - Admin: http://127.0.0.1:8000/admin
+---
 
-### **Project Structure**
+### **Development Notes**
+- The **admin panel** is accessible at **[http://127.0.0.1:8000/admin/](http://127.0.0.1:8000/admin/)**.
+- If you make changes to the models, run:
 
-- `website/` - Main Django application
-- `core/` - Django project settings
-- `theme/` - Tailwind CSS theme and static files
-- `static/` - Static files (CSS, JS, images)
-- `requirements.txt` - Python dependencies
-- `manage.py` - Django management script
+  ```sh
+  python manage.py makemigrations
+  python manage.py migrate
+  ```
 
-### **Technologies Used**
+- If you add new static files, re-run:
 
-- **Backend**: Django 4.2
-- **Frontend**: Tailwind CSS, HTML5, JavaScript
-- **Database**: SQLite (development), PostgreSQL (production)
-- **Styling**: Custom CSS with Tailwind utilities
-
-### **Development Commands**
-
-```bash
-# Run the development server
-python manage.py runserver
-
-# Create database migrations
-python manage.py makemigrations
-
-# Apply database migrations
-python manage.py migrate
-
-# Collect static files
-python manage.py collectstatic
-
-# Build Tailwind CSS (if you make changes)
-cd theme/static_src && npm run build
-```
-
-### **Troubleshooting**
-
-- **Port already in use**: Change the port with `python manage.py runserver 8001`
-- **Database errors**: Delete `db.sqlite3` and run `python manage.py migrate` again
-- **Static files not loading**: Run `python manage.py collectstatic`
-- **Tailwind styles not updating**: Rebuild with `cd theme/static_src && npm run build`
+  ```sh
+  python manage.py collectstatic
+  ```
 
 ---
 
