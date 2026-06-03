@@ -60,6 +60,8 @@ jobs:
             echo "POSTGRES_DB=acmmanoa"
             echo "POSTGRES_USER=postgres"
             echo "POSTGRES_PASSWORD=${POSTGRES_PASSWORD}"
+            echo "POSTGRES_HOST=db"
+            echo "POSTGRES_PORT=5432"
           } > .env.production
 
       - name: Upload and deploy on droplet

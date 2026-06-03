@@ -4,12 +4,33 @@ This project ships with Docker Compose, nginx, PostgreSQL, and GitHub Actions fo
 
 ## Architecture
 
+PostgreSQL runs **inside Docker** on the same droplet (not an external/managed database):
+
 ```text
-Internet → nginx:80 → gunicorn (web) → PostgreSQL (db)
+Internet → nginx:80 → gunicorn (web) → PostgreSQL (db container)
                 ↘ static/media volumes
 ```
 
 Push to `main` runs tests, then SSHs into the droplet, extracts code, writes `.env`, and runs `deploy/deploy.sh`.
+
+---
+
+## Environment variables
+
+Same keys in dev (`.env` + `docker-compose.yml`) and prod (`.env` + `docker-compose.prod.yml`):
+
+| Variable | Dev (local) | Production (server) | GitHub Secret |
+|----------|-------------|---------------------|---------------|
+| `SECRET_KEY` | dev value | production value | `SECRET_KEY` |
+| `DEBUG` | `1` | `0` | hardcoded `0` in workflow |
+| `ALLOWED_HOSTS` | `127.0.0.1,localhost` | IP + domain | `ALLOWED_HOSTS` |
+| `POSTGRES_DB` | `acmmanoa` | `acmmanoa` | hardcoded in workflow |
+| `POSTGRES_USER` | `postgres` | `postgres` | hardcoded in workflow |
+| `POSTGRES_PASSWORD` | dev password | strong password | `POSTGRES_PASSWORD` |
+| `POSTGRES_HOST` | `db` | `db` | hardcoded in workflow |
+| `POSTGRES_PORT` | `5432` | `5432` | hardcoded in workflow |
+
+Copy [.env.example](../.env.example) as a starting point.
 
 ---
 
@@ -26,16 +47,10 @@ Push to `main` runs tests, then SSHs into the droplet, extracts code, writes `.e
 
 ## Phase 2: Bootstrap the server (one time)
 
-SSH in as root:
+SSH in as `deploy` (or root for initial setup):
 
 ```bash
-ssh root@YOUR_DROPLET_IP
-```
-
-Clone the repo (or upload `deploy/setup-droplet.sh`) and run bootstrap:
-
-```bash
-git clone https://github.com/YOUR_ORG/acmmanoa-site.git /opt/acmmanoa-site
+git clone https://github.com/8bitUHM/acmmanoa-site.git /opt/acmmanoa-site
 cd /opt/acmmanoa-site
 bash deploy/setup-droplet.sh
 ```
@@ -46,23 +61,25 @@ Edit production secrets:
 nano /opt/acmmanoa-site/.env
 ```
 
-Use `.env.example` as a reference. Set at minimum:
+Set at minimum:
 
-- `SECRET_KEY` — same value you use in production (from your team Discord/vault)
+- `SECRET_KEY` — production Django secret
+- `DEBUG=0`
 - `POSTGRES_PASSWORD` — strong random password
-- `ALLOWED_HOSTS` — comma-separated: domain(s) and droplet IP, e.g. `acmmanoa.org,www.acmmanoa.org,123.45.67.89`
+- `POSTGRES_HOST=db`
+- `ALLOWED_HOSTS` — comma-separated: domain(s) and droplet IP
 
 First manual deploy:
 
 ```bash
-sudo -u deploy bash /opt/acmmanoa-site/deploy/deploy.sh
+bash /opt/acmmanoa-site/deploy/deploy.sh
 ```
 
 Create an admin user:
 
 ```bash
 cd /opt/acmmanoa-site
-sudo -u deploy docker compose -f docker-compose.prod.yml exec web python manage.py createsuperuser
+docker compose -f docker-compose.prod.yml exec web python manage.py createsuperuser
 ```
 
 Visit `http://YOUR_DROPLET_IP/` and `http://YOUR_DROPLET_IP/admin/`.
@@ -76,18 +93,14 @@ In the repo: **Settings → Secrets and variables → Actions**, add:
 | Secret | Example |
 |--------|---------|
 | `DO_HOST` | `123.45.67.89` or `acmmanoa.org` |
-| `DO_SSH_USER` | `deploy` (created by setup script) or `root` |
+| `DO_SSH_USER` | `deploy` |
 | `DO_SSH_KEY` | Full private key matching the droplet’s authorized key |
-| `DO_APP_DIR` | `/opt/acmmanoa-site` (optional; default shown) |
+| `DO_APP_DIR` | `/opt/acmmanoa-site` (optional) |
 | `SECRET_KEY` | Production Django secret |
 | `POSTGRES_PASSWORD` | Same as in server `.env` |
 | `ALLOWED_HOSTS` | Same as in server `.env` |
 
-Allow the deploy user to run Docker without a password, or run Actions as `root` (less ideal). The setup script adds `deploy` to the `docker` group.
-
-Add the **public** SSH key to `/home/deploy/.ssh/authorized_keys` (or root’s) for the key used in `DO_SSH_KEY`.
-
-After secrets are set, every push to `main` deploys automatically. You can also run the workflow manually under **Actions → Deploy to DigitalOcean Droplet → Run workflow**.
+After secrets are set, every push to `main` deploys automatically.
 
 ---
 
@@ -103,7 +116,7 @@ bash deploy/deploy.sh
 
 ## HTTPS (recommended next step)
 
-For Let’s Encrypt on the host (simplest path):
+For Let’s Encrypt on the host:
 
 ```bash
 apt install certbot
@@ -124,6 +137,7 @@ docker compose -f docker-compose.prod.yml restart nginx
 cd /opt/acmmanoa-site
 docker compose -f docker-compose.prod.yml ps
 docker compose -f docker-compose.prod.yml logs -f web
+docker compose -f docker-compose.prod.yml logs -f db
 docker compose -f docker-compose.prod.yml logs -f nginx
 curl -v http://127.0.0.1/health/
 ```
@@ -132,4 +146,4 @@ curl -v http://127.0.0.1/health/
 
 **DisallowedHost:** add your domain/IP to `ALLOWED_HOSTS` in `.env` and redeploy.
 
-**Database errors:** ensure `POSTGRES_PASSWORD` matches in `.env` and was set before the first `docker compose up` (or reset the postgres volume if you changed it after initial create).
+**Database errors:** ensure `POSTGRES_PASSWORD` matches in `.env` and was set before the first `docker compose up`. The `db` container stores data in a Docker volume — changing the password after first boot requires resetting the volume or updating Postgres manually.

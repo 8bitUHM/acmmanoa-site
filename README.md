@@ -6,6 +6,7 @@ The old site repository can be found [here](https://github.com/ACManoa/acmanoa.g
 ## **Table of Contents**
 1. [Project Structure](#project-structure)
 2. [Getting the App Running](#getting-the-app-running)
+3. [Production Deployment](#production-deployment)
 
 ---
 
@@ -34,110 +35,81 @@ The project is organized into several components:
 - **Project root files:**
   - `manage.py`: Django’s command-line utility for administrative tasks.
   - `requirements.txt`: Contains project dependencies.
+  - `docker-compose.yml`: Local development stack (Postgres + Django).
+  - `docker-compose.prod.yml`: Production stack (Postgres + Gunicorn + nginx).
 
 ---
 
 ## **Getting the App Running**
 
 ### **Prerequisites**
-Ensure you have **Python 3.8+** installed. You can check your Python version with:
-
-```sh
-python --version
-```
-
-or
-
-```sh
-python3 --version
-```
-
-If Python is not installed, download and install it from [python.org](https://www.python.org/downloads/).
+- [Docker Desktop](https://www.docker.com/products/docker-desktop/) (Windows/macOS) or Docker Engine (Linux)
 
 ---
 
 ### **Setup Instructions**
 
-1. **Clone the repository**  
-   Open a terminal and run:
+1. **Clone the repository**
 
    ```sh
-   git clone https://github.com/your-repo/acmmanoa-site.git
+   git clone https://github.com/8bitUHM/acmmanoa-site.git
    cd acmmanoa-site
    ```
 
-2. **Create a virtual environment (recommended)**  
+2. **Create environment file**
+
    ```sh
-   python -m venv venv
-   source venv/bin/activate  # On macOS/Linux
-   venv\Scripts\activate  # On Windows
+   cp .env.example .env   # macOS/Linux
+   copy .env.example .env # Windows
    ```
 
-3. **Install dependencies**  
+   Edit `.env` and set at minimum `SECRET_KEY` and `POSTGRES_PASSWORD`.  
+   Production secrets can be found in the **acmmanoa** project Discord channel.
+
+3. **Start the development stack**
+
    ```sh
-   pip install -r requirements.txt
+   docker compose up --build
    ```
 
-4. **Create a local settings file**  
-   Inside the `core/` directory, create a new file named `local_settings.py` and add the following:
+   Or use the helper scripts:
 
-   ```python
-   from pathlib import Path
-
-   BASE_DIR = Path(__file__).resolve().parent.parent
-
-   DEBUG = True
-
-   DATABASES = {
-       "default": {
-           "ENGINE": "django.db.backends.sqlite3",
-           "NAME": BASE_DIR / "db.sqlite3",
-       }
-   }
-   ```
-
-5. **Create a `.env` file**  
-   In the `core/` directory, create a new file named `.env` and add the required environment variables.  
-   These variables can be found in the **acmmanoa** project Discord channel.
-
-6. **Apply database migrations**  
    ```sh
-   python manage.py migrate
+   ./scripts/dev.sh up           # macOS/Linux
+   .\scripts\dev.ps1 up          # Windows PowerShell
    ```
 
-7. **Collect static files**  
+4. **Create a superuser (optional, for admin access)**
+
    ```sh
-   python manage.py collectstatic
+   docker compose exec web python manage.py createsuperuser
    ```
 
-8. **Create a superuser (optional, for admin access)**  
-   ```sh
-   python manage.py createsuperuser
-   ```
-   Follow the prompts to set up an admin account.
+5. **Open the site**
 
-9. **Run the development server**  
-   ```sh
-   python manage.py runserver
-   ```
-   The app should now be running locally at **[http://127.0.0.1:8000](http://127.0.0.1:8000/)**.
+   - App: **[http://127.0.0.1:8000](http://127.0.0.1:8000/)**
+   - Admin: **[http://127.0.0.1:8000/admin/](http://127.0.0.1:8000/admin/)**
 
 ---
 
 ### **Development Notes**
-- The **admin panel** is accessible at **[http://127.0.0.1:8000/admin/](http://127.0.0.1:8000/admin/)**.
-- If you make changes to the models, run:
+
+- PostgreSQL runs in a Docker container (`db` service); Django runs in the `web` container with source mounted for live reload.
+- Optional: create `core/local_settings.py` with `DEBUG = True` if you need to override settings when running outside Docker.
+- After model changes:
 
   ```sh
-  python manage.py makemigrations
-  python manage.py migrate
+  docker compose exec web python manage.py makemigrations
+  docker compose exec web python manage.py migrate
   ```
 
-- If you add new static files, re-run:
+- Stop containers: `docker compose down`
 
-  ```sh
-  python manage.py collectstatic
-  ```
+---
+
+## **Production Deployment**
+
+Production uses the same PostgreSQL-in-Docker pattern via `docker-compose.prod.yml`. See [deploy/README.md](deploy/README.md) for DigitalOcean VPS setup and GitHub Actions automated deploy.
 
 ---
 

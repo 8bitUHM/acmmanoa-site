@@ -88,12 +88,11 @@ WSGI_APPLICATION = 'core.wsgi.app'
 
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
-# Note: Django modules for using databases are not support in serverless
-# environments like Vercel. You can use a database over HTTP, hosted elsewhere.
+#
+# PostgreSQL when POSTGRES_DB is set (Docker Compose in dev and prod).
+# SQLite is used only for `manage.py test` (see below) for fast CI.
 
-# Database configuration - use PostgreSQL in production, SQLite for development
 if os.getenv('POSTGRES_DB'):
-    # Production: Use PostgreSQL with individual environment variables
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.postgresql',
@@ -105,7 +104,6 @@ if os.getenv('POSTGRES_DB'):
         }
     }
 else:
-    # Development: Use SQLite
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.sqlite3',
