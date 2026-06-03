@@ -20,8 +20,10 @@ from django.conf.urls.static import static
 from django.conf import settings
 from db_file_storage.compat import url
 from db_file_storage import views as db_views
+from website.views import health
 
 urlpatterns = [
+    path('health/', health, name='health'),
     path('admin/', admin.site.urls),
     path('', include('website.urls')),
     url(r'^download/', db_views.get_file, {'add_attachment_headers': True},

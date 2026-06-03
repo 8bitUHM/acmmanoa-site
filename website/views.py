@@ -1,6 +1,9 @@
 from django.shortcuts import render, get_object_or_404
-from django.http import Http404
+from django.http import Http404, HttpResponse
 from .models import *
+
+def health(request):
+    return HttpResponse("healthy\n", content_type="text/plain")
 
 def home(request):
     # sigs = SIGS.objects.select_related('image').all()
