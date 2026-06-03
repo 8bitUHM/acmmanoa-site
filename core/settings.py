@@ -31,7 +31,12 @@ SECRET_KEY = os.getenv("SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '127.0.0.1,localhost').split(',')
+_allowed_hosts = os.getenv('ALLOWED_HOSTS', '127.0.0.1,localhost').split(',')
+# Required for in-container healthchecks (curl → 127.0.0.1 / localhost)
+for _host in ('127.0.0.1', 'localhost'):
+    if _host not in _allowed_hosts:
+        _allowed_hosts.append(_host)
+ALLOWED_HOSTS = _allowed_hosts
 
 
 # Application definition

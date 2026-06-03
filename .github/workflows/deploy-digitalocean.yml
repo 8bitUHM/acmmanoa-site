@@ -54,6 +54,11 @@ jobs:
           POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
           ALLOWED_HOSTS: ${{ secrets.ALLOWED_HOSTS }}
         run: |
+          # Escape $ for Docker Compose .env parsing ($$ in file = literal $)
+          escape_env() { printf '%s' "$1" | sed 's/\$/$$/g'; }
+          SECRET_KEY="$(escape_env "$SECRET_KEY")"
+          POSTGRES_PASSWORD="$(escape_env "$POSTGRES_PASSWORD")"
+          ALLOWED_HOSTS="$(escape_env "$ALLOWED_HOSTS")"
           {
             echo "SECRET_KEY=${SECRET_KEY}"
             echo "DEBUG=0"

@@ -1,18 +1,21 @@
 # Production stack for VPS deployment (DigitalOcean, etc.)
 # Usage: docker compose -f docker-compose.prod.yml up -d --build
+#
+# Secrets live in .env (env_file). Avoid ${POSTGRES_PASSWORD} in this file —
+# passwords containing $ break Compose interpolation unless escaped as $$.
 
 services:
   db:
     image: postgres:15
     restart: unless-stopped
+    env_file: .env
     environment:
-      POSTGRES_DB: ${POSTGRES_DB:-acmmanoa}
-      POSTGRES_USER: ${POSTGRES_USER:-postgres}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}
+      POSTGRES_DB: acmmanoa
+      POSTGRES_USER: postgres
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres}"]
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -22,12 +25,9 @@ services:
     restart: unless-stopped
     env_file: .env
     environment:
-      POSTGRES_DB: ${POSTGRES_DB:-acmmanoa}
-      POSTGRES_USER: ${POSTGRES_USER:-postgres}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}
       POSTGRES_HOST: db
       POSTGRES_PORT: 5432
-      DEBUG: ${DEBUG:-0}
+      DEBUG: "0"
     depends_on:
       db:
         condition: service_healthy
@@ -35,11 +35,11 @@ services:
       - static_volume:/app/staticfiles
       - media_volume:/app/media
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8000/health/"]
-      interval: 30s
+      test: ["CMD-SHELL", "curl -sf http://127.0.0.1:8000/health/ || exit 1"]
+      interval: 15s
       timeout: 10s
-      retries: 5
-      start_period: 60s
+      retries: 10
+      start_period: 120s
 
   nginx:
     image: nginx:alpine
