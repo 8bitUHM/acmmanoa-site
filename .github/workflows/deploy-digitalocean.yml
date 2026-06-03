@@ -24,6 +24,7 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
           cd theme/static_src && npm ci && npm run build
+          cd "$GITHUB_WORKSPACE"
           python manage.py test
         env:
           SECRET_KEY: test-secret-key-for-ci
