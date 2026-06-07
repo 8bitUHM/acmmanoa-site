@@ -1,0 +1,50 @@
+<!-- @startingPoint section="Website" subtitle="ACM clean/minimal redesign — 3 variations" viewport="1440x900" -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ACM Mānoa — Clean / Minimal Variations</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700;800&family=Schibsted+Grotesk:wght@400;500;600;700;800;900&family=Figtree:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>html,body{margin:0;height:100%;}body{background:#0c0c0e;}</style>
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel" src="design-canvas.jsx"></script>
+<script type="text/babel" src="DirectionCumulus.jsx"></script>
+<script type="text/babel" src="DirectionInk.jsx"></script>
+<script type="text/babel" src="DirectionAir.jsx"></script>
+<script type="text/babel">
+  const { DesignCanvas, DCSection, DCArtboard } = window;
+  const { Cumulus, Ink, Air } = window.ACMRedesign;
+  const Frame = ({ w, children }) => <div style={{ width: w, background:'#fff' }}>{children}</div>;
+
+  function App() {
+    return (
+      <DesignCanvas>
+        <DCSection id="cumulus" title="A · Cumulus" subtitle="The original you liked — warm paper, graphite, a single jade accent. Centered hero, soft product cards.">
+          <DCArtboard id="cumulus-d" label="Desktop · 1440" width={1440} height={3920}><Frame w={1440}><Cumulus/></Frame></DCArtboard>
+          <DCArtboard id="cumulus-m" label="Mobile · 390" width={390} height={5380}><Frame w={390}><Cumulus/></Frame></DCArtboard>
+        </DCSection>
+
+        <DCSection id="ink" title="A2 · Ink" subtitle="Monochrome editorial-clean. Left-aligned asymmetric hero, crisp hairlines, SIGs as a numbered index, one restrained clay accent. Schibsted Grotesk.">
+          <DCArtboard id="ink-d" label="Desktop · 1440" width={1440} height={3020}><Frame w={1440}><Ink/></Frame></DCArtboard>
+          <DCArtboard id="ink-m" label="Mobile · 390" width={390} height={5240}><Frame w={390}><Ink/></Frame></DCArtboard>
+        </DCSection>
+
+        <DCSection id="air" title="A3 · Air" subtitle="Soft & airy. Gentle periwinkle accent, big rounding, light tints, lighter type. Friendly and calm. Figtree.">
+          <DCArtboard id="air-d" label="Desktop · 1440" width={1440} height={3385}><Frame w={1440}><Air/></Frame></DCArtboard>
+          <DCArtboard id="air-m" label="Mobile · 390" width={390} height={4775}><Frame w={390}><Air/></Frame></DCArtboard>
+        </DCSection>
+      </DesignCanvas>
+    );
+  }
+  ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script>
+</body>
+</html>

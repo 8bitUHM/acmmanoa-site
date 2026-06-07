@@ -1,0 +1,42 @@
+/* ============================================================
+   ACM at UH Mānoa — Typography tokens
+   Single typeface: Quicksand. Rounded, friendly geometric sans.
+   Scale matches the Tailwind sizes used across the live site.
+   ============================================================ */
+
+:root {
+  /* Family */
+  --font-sans: 'Quicksand', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-display: var(--font-sans);   /* same family, heavier weight */
+
+  /* Weights (Quicksand ships 300–700) */
+  --fw-light:    300; /* @kind font */
+  --fw-regular:  400; /* @kind font */
+  --fw-medium:   500; /* @kind font */
+  --fw-semibold: 600; /* @kind font */
+  --fw-bold:     700; /* @kind font */
+
+  /* Type scale (rem @ 16px base) */
+  --text-xs:   0.75rem;   /* 12 — meta / date labels */
+  --text-sm:   0.875rem;  /* 14 — footer copy, captions */
+  --text-base: 1rem;      /* 16 — body */
+  --text-lg:   1.125rem;  /* 18 — lead paragraph */
+  --text-xl:   1.25rem;   /* 20 — card titles, nav brand */
+  --text-2xl:  1.5rem;    /* 24 — card heading */
+  --text-3xl:  1.875rem;  /* 30 — stat numbers, sub-section */
+  --text-4xl:  2.25rem;   /* 36 — section heading (mobile) */
+  --text-5xl:  3rem;      /* 48 — section heading */
+  --text-6xl:  3.75rem;   /* 60 — page hero (mobile) */
+  --text-7xl:  4.5rem;    /* 72 — page hero */
+
+  /* Line heights */
+  --leading-tight:   1.1;    /* hero headlines */
+  --leading-snug:    1.25;
+  --leading-normal:  1.5;    /* body default */
+  --leading-relaxed: 1.625;  /* long-form prose */
+
+  /* Letter spacing */
+  --tracking-tight:  -0.02em;  /* large display headings */
+  --tracking-normal: 0;
+  --tracking-wider:  0.05em;   /* uppercase footer labels */
+}

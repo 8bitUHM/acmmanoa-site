@@ -1,0 +1,55 @@
+<!-- @startingPoint section="Website" subtitle="ACM Mānoa — full Air redesign (routed site)" viewport="1280x900" -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ACM at UH Mānoa</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="theme.css">
+<link rel="icon" type="image/png" href="../../assets/acm_logo.png">
+<style>html,body{margin:0;background:#FBFBFE;}</style>
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+</head>
+<body>
+<div id="root"></div>
+<script src="image-slot.js"></script>
+<script src="data.js"></script>
+<script type="text/babel" src="shell.jsx"></script>
+<script type="text/babel" src="home.jsx"></script>
+<script type="text/babel" src="programs.jsx"></script>
+<script type="text/babel" src="sig.jsx"></script>
+<script type="text/babel" src="about.jsx"></script>
+<script type="text/babel" src="events.jsx"></script>
+<script type="text/babel" src="sponsors.jsx"></script>
+<script type="text/babel" src="icspace.jsx"></script>
+<script type="text/babel" src="event.jsx"></script>
+<script type="text/babel">
+  const { useState, useEffect } = React;
+  function Router() {
+    const [hash, setHash] = useState(window.location.hash || '#/');
+    useEffect(() => {
+      const on = () => { setHash(window.location.hash || '#/'); window.scrollTo(0, 0); };
+      window.addEventListener('hashchange', on);
+      return () => window.removeEventListener('hashchange', on);
+    }, []);
+    const P = window.AirPages;
+    const parts = hash.replace(/^#\//, '').split('/');   // e.g. "sig/ai" -> ["sig","ai"]
+    const root = parts[0];
+    if (root === 'programs') return <P.Programs />;
+    if (root === 'sig') return <P.SigDetail slug={parts[1]} />;
+    if (root === 'about') return <P.About />;
+    if (root === 'events') return <P.Events />;
+    if (root === 'event') return <P.EventDetail slug={parts[1]} />;
+    if (root === 'sponsors') return <P.Sponsors />;
+    if (root === 'icspace') return <P.ICSpace />;
+    return <P.Home />;
+  }
+  ReactDOM.createRoot(document.getElementById('root')).render(<Router />);
+</script>
+</body>
+</html>

@@ -1,227 +1,120 @@
 {% extends "base.html" %}
 {% load static %}
 {% block title %}ICSpace | ACM at UH Mānoa{% endblock %}
-{% block styles %}
-<style>
-@keyframes blob {
-  0% {
-    transform: translate(0px, 0px) scale(1);
-  }
-  33% {
-    transform: translate(30px, -50px) scale(1.1);
-  }
-  66% {
-    transform: translate(-20px, 20px) scale(0.9);
-  }
-  100% {
-    transform: translate(0px, 0px) scale(1);
-  }
-}
-
-.animate-blob {
-  animation: blob 7s infinite;
-}
-
-.animation-delay-2000 {
-  animation-delay: 2s;
-}
-
-.animation-delay-4000 {
-  animation-delay: 4s;
-}
-
-.animation-delay-1000 {
-  animation-delay: 1s;
-}
-
-.animation-delay-3000 {
-  animation-delay: 3s;
-}
-</style>
-{% endblock %}
 {% block content %}
-<main class="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50">
-  <!-- Hero Section -->
-  <div class="relative overflow-hidden bg-gradient-to-br from-blue-50 via-white to-indigo-50 py-20 px-4 border-b-4" style="border-image: linear-gradient(to right, #3B82F6, #1D4ED8, #3B82F6) 1;">
-    <!-- Animated Background Elements -->
-    <div class="absolute inset-0">
-      <div class="absolute top-20 left-10 w-80 h-80 bg-blue-300 rounded-full mix-blend-multiply filter blur-xl opacity-40 animate-blob"></div>
-      <div class="absolute top-40 right-10 w-80 h-80 bg-purple-300 rounded-full mix-blend-multiply filter blur-xl opacity-40 animate-blob animation-delay-2000"></div>
-      <div class="absolute -bottom-8 left-20 w-80 h-80 bg-pink-300 rounded-full mix-blend-multiply filter blur-xl opacity-40 animate-blob animation-delay-4000"></div>
-      <div class="absolute top-60 left-1/2 w-72 h-72 bg-indigo-300 rounded-full mix-blend-multiply filter blur-xl opacity-35 animate-blob animation-delay-1000"></div>
-      <div class="absolute bottom-20 right-1/4 w-64 h-64 bg-cyan-300 rounded-full mix-blend-multiply filter blur-xl opacity-35 animate-blob animation-delay-3000"></div>
+
+<!-- Sub-hero -->
+<div class="subhero">
+  <div class="wrap">
+    <div class="eyebrow">The Space</div>
+    <h1>ICSpace.</h1>
+    <p>An interactive classroom dedicated to the ICS community at the University of Hawaiʻi at Mānoa.</p>
+    <div class="ics-badge" style="margin-top:24px;">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+      POST 318B
     </div>
-    
-    <div class="relative z-10 max-w-7xl mx-auto text-center">
-      <h1 class="text-6xl md:text-7xl font-bold mb-6 tracking-tight text-gray-900 fade-in">ICSpace</h1>
-      <p class="text-xl md:text-2xl text-gray-600 max-w-4xl mx-auto leading-relaxed fade-in">
-        An interactive classroom dedicated to the Information and Computer Sciences community at the University of Hawaii at Manoa
-      </p>
-      <div class="mt-8 fade-in">
-        <div class="inline-flex items-center px-6 py-3 bg-blue-100 backdrop-blur-sm rounded-xl text-blue-700 font-semibold">
-          <svg class="mr-3 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
-          </svg>
-          Located in POST 318B
-        </div>
+  </div>
+</div>
+
+<!-- Welcome -->
+<section>
+  <div class="wrap">
+    <div class="panel">
+      <div class="prose">
+        <p>Welcome to ICSpace, an interactive classroom dedicated to the Information and Computer Sciences (ICS) community at the University of Hawaiʻi at Mānoa. Located in POST 318B, this facility is designed exclusively for ICS undergraduate majors, graduate students, faculty, and staff. It fosters an environment of learning and collaboration.</p>
+        <p>Guests are also welcome, provided they are accompanied by an ICS community member, ensuring a broad exchange of ideas and knowledge.</p>
       </div>
     </div>
   </div>
+</section>
 
-  <!-- Main Content -->
-  <div class="max-w-7xl mx-auto px-4 py-16">
-    <!-- Welcome Section -->
-    <section class="mb-20">
-      <div class="bg-white rounded-3xl shadow-xl p-12 border border-gray-100 fade-in">
-        <div class="max-w-4xl mx-auto">
-          <h2 class="text-4xl font-bold text-center mb-8 text-gray-800">Welcome to ICSpace</h2>
-          <div class="w-24 h-1 bg-gradient-to-r from-blue-500 to-indigo-500 mx-auto rounded-full mb-12"></div>
-          
-          <div class="text-lg text-gray-600 leading-relaxed space-y-6">
-            <p>
-              Welcome to ICSpace, an interactive classroom dedicated to the Information and Computer Sciences (ICS) community at the University of Hawaii at Manoa. Located in POST 318B, this facility is designed exclusively for ICS undergraduate majors, graduate students, faculty, and staff. It fosters an environment of learning and collaboration.
-            </p>
-            <p>
-              Guests are also welcome, provided they are accompanied by an ICS community member, ensuring a broad exchange of ideas and knowledge.
-            </p>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Innovation Hub Section -->
-    <section class="mb-20">
-      <div class="text-center mb-16 fade-in">
-        <h2 class="text-5xl font-bold mb-4 text-gray-800">A Hub for Innovation and Learning</h2>
-        <div class="w-24 h-1 bg-gradient-to-r from-blue-500 to-indigo-500 mx-auto rounded-full"></div>
-      </div>
-      
-      <div class="grid gap-8 lg:grid-cols-2">
-        <!-- Left Column -->
-        <div class="bg-white rounded-2xl shadow-lg p-8 border border-gray-100 fade-in">
-          <h3 class="text-2xl font-bold text-gray-800 mb-6">Essential for Advancing Goals</h3>
-          <p class="text-gray-600 leading-relaxed mb-6">
-            ICSpace is essential for advancing the educational and professional goals of the ICS community. It serves as a central hub where:
-          </p>
-          <ul class="space-y-4">
-            <li class="flex items-start">
-              <div class="flex-shrink-0 w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center mr-3 mt-0.5">
-                <svg class="w-3 h-3 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
-                  <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
-                </svg>
-              </div>
-              <span class="text-gray-600">Students and faculty can engage in innovative projects</span>
-            </li>
-            <li class="flex items-start">
-              <div class="flex-shrink-0 w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center mr-3 mt-0.5">
-                <svg class="w-3 h-3 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
-                  <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
-                </svg>
-              </div>
-              <span class="text-gray-600">Cutting-edge research can be conducted</span>
-            </li>
-            <li class="flex items-start">
-              <div class="flex-shrink-0 w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center mr-3 mt-0.5">
-                <svg class="w-3 h-3 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
-                  <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
-                </svg>
-              </div>
-              <span class="text-gray-600">Interactive learning sessions can be held</span>
-            </li>
-          </ul>
-        </div>
-
-        <!-- Right Column -->
-        <div class="bg-white rounded-2xl shadow-lg p-8 border border-gray-100 fade-in">
-          <h3 class="text-2xl font-bold text-gray-800 mb-6">Advanced Technology & Resources</h3>
-          <p class="text-gray-600 leading-relaxed">
-            The space is equipped with advanced technology and resources that are crucial for preparing students for the demands of the tech industry. It enhances hands-on learning experiences and research capabilities, bridging the gap between academic knowledge and real-world applications.
-          </p>
-        </div>
-      </div>
-    </section>
-
-    <!-- Academic Excellence Section -->
-    <section class="mb-20">
-      <div class="text-center mb-16 fade-in">
-        <h2 class="text-5xl font-bold mb-4 text-gray-800">Enhancing Academic Excellence</h2>
-        <div class="w-24 h-1 bg-gradient-to-r from-blue-500 to-indigo-500 mx-auto rounded-full"></div>
-      </div>
-      
-      <div class="bg-white rounded-3xl shadow-xl p-12 border border-gray-100 fade-in">
-        <div class="max-w-4xl mx-auto text-center">
-          <p class="text-lg text-gray-600 leading-relaxed mb-8">
-            The presence of ICSpace not only enhances the academic experience but also significantly boosts the attractiveness of the ICS program to prospective students and faculty. By investing in ICSpace, sponsors can play a pivotal role in shaping the next generation of tech leaders and innovators.
-          </p>
-          
-          <h3 class="text-3xl font-bold text-gray-800 mb-8">Strategic Investment Opportunities</h3>
-          <div class="grid gap-6 md:grid-cols-3">
-            <div class="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl p-6 fade-in">
-              <div class="w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"></path>
-                </svg>
-              </div>
-              <h4 class="text-xl font-bold text-gray-800 mb-2">Workforce Development</h4>
-              <p class="text-gray-600">The development of a skilled workforce</p>
+<!-- Innovation Hub -->
+<section>
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="sec-tag">What it is</div>
+      <h2>A hub for innovation and learning.</h2>
+    </div>
+    <div class="ics-two">
+      <div class="ics-card">
+        <h3>Essential for advancing goals</h3>
+        <p>ICSpace is essential for advancing the educational and professional goals of the ICS community. It serves as a central hub where students and faculty can thrive.</p>
+        <ul class="ics-list">
+          <li>
+            <div class="tick">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
             </div>
-            
-            <div class="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl p-6 fade-in">
-              <div class="w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
-                </svg>
-              </div>
-              <h4 class="text-xl font-bold text-gray-800 mb-2">Future Challenges</h4>
-              <p class="text-gray-600">Tackling future technological challenges</p>
+            Students and faculty can engage in innovative projects
+          </li>
+          <li>
+            <div class="tick">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
             </div>
-            
-            <div class="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl p-6 fade-in">
-              <div class="w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
-                </svg>
-              </div>
-              <h4 class="text-xl font-bold text-gray-800 mb-2">Tech Advancement</h4>
-              <p class="text-gray-600">Driving technological advancement</p>
+            Cutting-edge research can be conducted
+          </li>
+          <li>
+            <div class="tick">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
             </div>
-          </div>
-        </div>
+            Interactive learning sessions can be held
+          </li>
+        </ul>
       </div>
-    </section>
-
-    <!-- Support ICSpace Section -->
-    <section class="mb-20">
-      <div class="bg-gradient-to-r from-blue-600 to-indigo-700 rounded-3xl p-12 text-white text-center fade-in">
-        <div class="max-w-4xl mx-auto">
-          <h2 class="text-5xl font-bold mb-6">Support ICSpace</h2>
-          <p class="text-xl text-blue-100 mb-8 leading-relaxed">
-            Want to help us enhance ICSpace? Your donations can make a significant impact. Contribute to the future of technology education and support a vibrant community dedicated to innovation, collaboration, and excellence in Information and Computer Sciences.
-          </p>
-          
-          <div class="bg-white/10 backdrop-blur-sm rounded-2xl p-8 mb-8">
-            <h3 class="text-2xl font-bold mb-4">Make a Difference Today</h3>
-            <p class="text-blue-100 mb-6">
-              By investing in ICSpace, you are supporting the next generation of tech leaders and innovators at the University of Hawaii at Manoa.
-            </p>
-            <a 
-              href="mailto:president@acmmanoa.org" 
-              class="inline-flex items-center px-8 py-4 bg-white text-blue-600 font-bold text-lg rounded-xl hover:bg-blue-50 transition-all duration-300 transform hover:scale-105 shadow-lg"
-            >
-              <svg class="mr-3 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
-              </svg>
-              Contact President for Donations
-            </a>
-          </div>
-          
-          <p class="text-sm text-blue-200">
-            Your contribution helps us maintain and enhance the cutting-edge technology and resources that make ICSpace a hub for innovation and learning.
-          </p>
-        </div>
+      <div class="ics-card">
+        <h3>Advanced technology &amp; resources</h3>
+        <p>The space is equipped with advanced technology and resources that are crucial for preparing students for the demands of the tech industry. It enhances hands-on learning experiences and research capabilities, bridging the gap between academic knowledge and real-world applications.</p>
+        <p style="margin-top:16px;">The presence of ICSpace not only enhances the academic experience but also significantly boosts the attractiveness of the ICS program to prospective students and faculty.</p>
       </div>
-    </section>
+    </div>
   </div>
-</main>
+</section>
+
+<!-- Investment Opportunities -->
+<section>
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="sec-tag">Why invest</div>
+      <h2>Strategic investment opportunities.</h2>
+      <p class="sec-sub">By investing in ICSpace, you play a pivotal role in shaping the next generation of tech leaders and innovators.</p>
+    </div>
+    <div class="ics-invest">
+      <div class="ics-inv">
+        <div class="orb">
+          <svg width="26" height="26" fill="none" stroke="white" stroke-width="2" viewBox="0 0 24 24"><path d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"/></svg>
+        </div>
+        <h4>Workforce Development</h4>
+        <p>Support the development of a highly skilled computing workforce ready for Hawaiʻi's growing tech industry.</p>
+      </div>
+      <div class="ics-inv">
+        <div class="orb">
+          <svg width="26" height="26" fill="none" stroke="white" stroke-width="2" viewBox="0 0 24 24"><path d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg>
+        </div>
+        <h4>Future Challenges</h4>
+        <p>Help students tackle the technological challenges of tomorrow with the tools and space they need today.</p>
+      </div>
+      <div class="ics-inv">
+        <div class="orb">
+          <svg width="26" height="26" fill="none" stroke="white" stroke-width="2" viewBox="0 0 24 24"><path d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+        </div>
+        <h4>Tech Advancement</h4>
+        <p>Drive technological advancement at UH Mānoa and invest in the future of computing in Hawaiʻi.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Closer -->
+<section class="closer">
+  <div class="wrap">
+    <div class="box">
+      <h2>Support ICSpace.</h2>
+      <p>Your donations can make a significant impact. Contribute to the future of technology education and support a vibrant community dedicated to innovation, collaboration, and excellence.</p>
+      <a href="mailto:president@acmmanoa.org" class="btn btn-white btn-lg">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+        Contact us about donating
+      </a>
+    </div>
+  </div>
+</section>
+
 {% endblock %}

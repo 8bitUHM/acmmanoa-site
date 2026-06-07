@@ -1,0 +1,24 @@
+<!-- @dsCard group="Spacing" viewport="700x180" name="Elevation" subtitle="sm · lg · xl · 2xl — cards lift on hover" -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<link rel="stylesheet" href="../styles.css">
+<style>
+  body { margin: 0; padding: 28px 24px; background: var(--gray-50); font-family: var(--font-sans); }
+  .row { display:flex; gap: 26px; align-items: center; }
+  .item { text-align:center; }
+  .box { width: 110px; height: 76px; background: var(--white); border-radius: var(--radius-lg); }
+  .lbl { margin-top: 12px; font-size: 11px; color: var(--text-muted); }
+  .lbl b { display:block; color: var(--text-strong); font-size: 12px; }
+</style>
+</head>
+<body>
+  <div class="row">
+    <div class="item"><div class="box" style="box-shadow:var(--shadow-sm)"></div><div class="lbl"><b>sm</b>nav, chips</div></div>
+    <div class="item"><div class="box" style="box-shadow:var(--shadow-lg)"></div><div class="lbl"><b>lg</b>resting card</div></div>
+    <div class="item"><div class="box" style="box-shadow:var(--shadow-xl)"></div><div class="lbl"><b>xl</b>prose panel</div></div>
+    <div class="item"><div class="box" style="box-shadow:var(--shadow-2xl)"></div><div class="lbl"><b>2xl</b>card hover</div></div>
+  </div>
+</body>
+</html>

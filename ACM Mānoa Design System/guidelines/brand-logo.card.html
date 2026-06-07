@@ -1,0 +1,24 @@
+<!-- @dsCard group="Brand" viewport="700x200" name="Logo" subtitle="ACM diamond on light & dark" -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<link rel="stylesheet" href="../styles.css">
+<style>
+  body { margin: 0; font-family: var(--font-sans); display:grid; grid-template-columns:1fr 1fr; height:200px; }
+  .panel { display:flex; align-items:center; gap:16px; padding: 0 32px; }
+  .light { background: var(--white); }
+  .dark  { background: var(--gradient-footer); }
+  .panel img { height: 96px; width:auto; }
+  .wm { font-size: var(--text-xl); font-weight: var(--fw-semibold); }
+  .light .wm { color: var(--text-strong); }
+  .dark .wm { color: var(--white); }
+  .light .wm span { color: var(--text-muted); font-weight: var(--fw-medium); display:block; font-size: var(--text-sm); }
+  .dark .wm span { color: var(--blue-300); font-weight: var(--fw-medium); display:block; font-size: var(--text-sm); }
+</style>
+</head>
+<body>
+  <div class="panel light"><img src="../assets/acm_logo.png" alt="ACM logo"><div class="wm">ACM<span>at UH Mānoa</span></div></div>
+  <div class="panel dark"><img src="../assets/acm_logo.png" alt="ACM logo"><div class="wm">ACM<span>at UH Mānoa</span></div></div>
+</body>
+</html>

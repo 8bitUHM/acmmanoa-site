@@ -1,0 +1,27 @@
+<!-- @dsCard group="Colors" viewport="700x150" name="Secondary — Purple & Indigo" subtitle="Gradient end-stops and accents" -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<link rel="stylesheet" href="../styles.css">
+<style>
+  body { margin: 0; padding: 20px; background: var(--white); font-family: var(--font-sans); }
+  .row { display: flex; gap: 10px; }
+  .sw { flex: 1; border-radius: var(--radius-md); overflow: hidden; box-shadow: var(--shadow-sm); }
+  .chip { height: 64px; }
+  .meta { padding: 8px 10px; background: var(--white); }
+  .name { font-size: 12px; font-weight: var(--fw-semibold); color: var(--text-strong); }
+  .hex { font-size: 11px; color: var(--text-muted); }
+</style>
+</head>
+<body>
+  <div class="row">
+    <div class="sw"><div class="chip" style="background:var(--indigo-50)"></div><div class="meta"><div class="name">indigo-50</div><div class="hex">#eef2ff</div></div></div>
+    <div class="sw"><div class="chip" style="background:var(--indigo-500)"></div><div class="meta"><div class="name">indigo-500</div><div class="hex">#6366f1</div></div></div>
+    <div class="sw"><div class="chip" style="background:var(--indigo-600)"></div><div class="meta"><div class="name">indigo-600 ·accent</div><div class="hex">#4f46e5</div></div></div>
+    <div class="sw"><div class="chip" style="background:var(--purple-500)"></div><div class="meta"><div class="name">purple-500</div><div class="hex">#a855f7</div></div></div>
+    <div class="sw"><div class="chip" style="background:var(--purple-600)"></div><div class="meta"><div class="name">purple-600 ·grad</div><div class="hex">#9333ea</div></div></div>
+    <div class="sw"><div class="chip" style="background:var(--purple-700)"></div><div class="meta"><div class="name">purple-700</div><div class="hex">#7e22ce</div></div></div>
+  </div>
+</body>
+</html>

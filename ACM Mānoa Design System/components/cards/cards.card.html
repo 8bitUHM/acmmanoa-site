@@ -1,0 +1,62 @@
+<!-- @dsCard group="Components" viewport="700x900" name="Cards — Feature, Event, Profile, Stat" subtitle="Program tiles, events, leadership, metrics" -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<link rel="stylesheet" href="../../styles.css">
+<style>
+  body { margin: 0; padding: 28px; background: var(--gray-50); font-family: var(--font-sans); }
+  .label { font-size: 11px; font-weight: var(--fw-semibold); letter-spacing: var(--tracking-wider); text-transform: uppercase; color: var(--text-faint); margin: 0 0 12px; }
+  .group { margin-bottom: 30px; }
+  .two { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  .three { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+</style>
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="../../_ds_bundle.js"></script>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+  const { FeatureCard, EventCard, ProfileCard, StatCard } = window.ACMMNoaDesignSystem_b1bbe6;
+  function Demo() {
+    return (
+      <div>
+        <div className="group">
+          <div className="label">Feature / SIG cards</div>
+          <div className="two">
+            <FeatureCard logo="../../assets/acm_logo.png" title="SIG-AI" description="Hands-on machine learning projects, paper readings, and friendly Kaggle competitions." accentColor="#9333ea" />
+            <FeatureCard logo="../../assets/acm_logo.png" title="SIG-Web" description="Build and ship real web apps with modern frameworks and a supportive crew." accentColor="#2563eb" />
+          </div>
+        </div>
+        <div className="group">
+          <div className="label">Stat tiles</div>
+          <div className="three">
+            <StatCard value="7+" label="Special Interest Groups" color="var(--blue-600)" glass={false} />
+            <StatCard value="500+" label="Active Members" color="var(--purple-600)" glass={false} />
+            <StatCard value="50+" label="Events Annually" color="var(--indigo-600)" glass={false} />
+          </div>
+        </div>
+        <div className="group">
+          <div className="label">Event cards</div>
+          <div className="two">
+            <EventCard layout="compact" date={{ day: '14', month: 'FEB' }} title="Intro to Git & GitHub" description="A beginner-friendly walkthrough of version control." dateLabel="February 14, 2025" time="5:00 PM" location="POST 318B" />
+            <EventCard layout="media" title="Spring Hackathon" description="24 hours of building, mentoring, and prizes." dateLabel="March 8, 2025" location="iLab, POST" />
+          </div>
+        </div>
+        <div className="group" style={{marginBottom:0}}>
+          <div className="label">Profile cards</div>
+          <div className="three">
+            <ProfileCard name="Kai Nakamura" role="President" avatar="../../assets/default_user.svg" bio="Senior in CS, into open source and coffee." />
+            <ProfileCard name="Leilani Cruz" role="Vice President" avatar="../../assets/default_user.svg" />
+            <ProfileCard name="Dr. A. Sato" role="Faculty Sponsor" avatar="../../assets/default_user.svg" />
+          </div>
+        </div>
+      </div>
+    );
+  }
+  ReactDOM.createRoot(document.getElementById('root')).render(<Demo />);
+</script>
+</body>
+</html>

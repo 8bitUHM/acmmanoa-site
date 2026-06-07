@@ -1,61 +1,38 @@
 {% load static %}
+<nav>
+  <div class="wrap-wide nav-in">
+    <a href="{% url 'home' %}" class="brand">
+      <img src="{% static 'website/acm_logo.png' %}" alt="ACM logo">
+      <span>ACM <span class="sep">·</span> Mānoa</span>
+    </a>
 
-<nav class="bg-white/95 backdrop-blur-sm shadow-sm sticky top-0 z-50 relative after:absolute after:bottom-0 after:left-0 after:right-0 after:h-1" {% if sig_colors %}style="--after-bg: linear-gradient(to right, {{ sig_colors.primary }}, {{ sig_colors.secondary }}, {{ sig_colors.primary }});"{% else %}style="--after-bg: linear-gradient(to right, #3B82F6, #1D4ED8, #3B82F6);"{% endif %}>
-  <style>
-    nav::after {
-      background: var(--after-bg) !important;
-    }
-  </style>
-  <div class="max-w-7xl mx-auto px-6">
-    <div class="flex items-center justify-between h-20">
-      <!-- Logo and Brand -->
-      <a href="/" class="flex items-center space-x-3 group">
-        <img src="{% static 'website/acm_logo.png' %}" class="h-12 w-auto drop-shadow-sm group-hover:drop-shadow-md transition-all duration-300 group-hover:scale-105" alt="ACM Logo" />
-        <span class="text-xl font-semibold text-gray-900 group-hover:text-blue-600 transition-colors duration-300">at UH Mānoa</span>
-      </a>
-      
-      <!-- Desktop Navigation -->
-      <div class="hidden md:flex items-center space-x-8">
-        <a href="/about" class="text-gray-700 hover:text-blue-600 font-medium transition-colors duration-300 relative group">
-          About
-          <span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-blue-600 transition-all duration-300 group-hover:w-full"></span>
-        </a>
-        <a href="/events" class="text-gray-700 hover:text-blue-600 font-medium transition-colors duration-300 relative group">
-          Events
-          <span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-blue-600 transition-all duration-300 group-hover:w-full"></span>
-        </a>
-        <a href="/sponsors" class="text-gray-700 hover:text-blue-600 font-medium transition-colors duration-300 relative group">
-          Sponsors
-          <span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-blue-600 transition-all duration-300 group-hover:w-full"></span>
-        </a>
-        <a href="/icspace" class="text-gray-700 hover:text-blue-600 font-medium transition-colors duration-300 relative group">
-          ICSpace
-          <span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-blue-600 transition-all duration-300 group-hover:w-full"></span>
-        </a>
-        <a href="/sigs" class="text-gray-700 hover:text-blue-600 font-medium transition-colors duration-300 relative group">
-          SIGS
-          <span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-blue-600 transition-all duration-300 group-hover:w-full"></span>
-        </a>
-      </div>
-      
-      <!-- Mobile Menu Button -->
-      <button data-collapse-toggle="navbar-mobile" type="button" class="md:hidden inline-flex items-center justify-center w-10 h-10 text-gray-500 rounded-lg hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 transition-colors duration-300" aria-controls="navbar-mobile" aria-expanded="false">
-        <span class="sr-only">Open main menu</span>
-        <svg class="w-6 h-6" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 17 14">
-          <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 1h15M1 7h15M1 13h15" />
-        </svg>
-      </button>
+    <!-- Desktop links -->
+    <div class="nav-links">
+      <a href="{% url 'about' %}" {% if request.path == '/about/' %}class="active"{% endif %}>About</a>
+      <a href="{% url 'sigs_index' %}" {% if '/sigs' in request.path %}class="active"{% endif %}>Programs</a>
+      <a href="{% url 'events' %}" {% if '/events' in request.path %}class="active"{% endif %}>Events</a>
+      <a href="{% url 'sponsors' %}" {% if request.path == '/sponsors/' %}class="active"{% endif %}>Sponsors</a>
+      <a href="{% url 'icspace' %}" {% if request.path == '/icspace/' %}class="active"{% endif %}>ICSpace</a>
+      <a href="https://discord.com/invite/2UU4Jfx6gB" target="_blank" rel="noopener" class="btn-primary" style="margin-left:10px;">Join us</a>
     </div>
-    
-    <!-- Mobile Navigation -->
-    <div class="hidden md:hidden" id="navbar-mobile">
-      <div class="px-2 pt-2 pb-3 space-y-1 bg-white border-t border-gray-100">
-        <a href="/about" class="block px-3 py-2 text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded-lg font-medium transition-colors duration-300">About</a>
-        <a href="/events" class="block px-3 py-2 text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded-lg font-medium transition-colors duration-300">Events</a>
-        <a href="/sponsors" class="block px-3 py-2 text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded-lg font-medium transition-colors duration-300">Sponsors</a>
-        <a href="/icspace" class="block px-3 py-2 text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded-lg font-medium transition-colors duration-300">ICSpace</a>
-        <a href="/sigs" class="block px-3 py-2 text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded-lg font-medium transition-colors duration-300">SIGS</a>
-      </div>
-    </div>
+
+    <!-- Mobile hamburger -->
+    <button class="nav-mobile-btn" id="nav-mobile-btn" aria-label="Toggle navigation" aria-expanded="false">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
+        <line x1="3" y1="6" x2="21" y2="6"/>
+        <line x1="3" y1="12" x2="21" y2="12"/>
+        <line x1="3" y1="18" x2="21" y2="18"/>
+      </svg>
+    </button>
+  </div>
+
+  <!-- Mobile menu -->
+  <div class="nav-mobile-menu" id="nav-mobile-menu">
+    <a href="{% url 'about' %}" {% if request.path == '/about/' %}class="active"{% endif %}>About</a>
+    <a href="{% url 'sigs_index' %}" {% if '/sigs' in request.path %}class="active"{% endif %}>Programs</a>
+    <a href="{% url 'events' %}" {% if '/events' in request.path %}class="active"{% endif %}>Events</a>
+    <a href="{% url 'sponsors' %}" {% if request.path == '/sponsors/' %}class="active"{% endif %}>Sponsors</a>
+    <a href="{% url 'icspace' %}" {% if request.path == '/icspace/' %}class="active"{% endif %}>ICSpace</a>
+    <a href="https://discord.com/invite/2UU4Jfx6gB" target="_blank" rel="noopener" style="color:var(--peri-d);font-weight:700;">Join us →</a>
   </div>
 </nav>

@@ -1,0 +1,24 @@
+<!-- @dsCard group="Colors" viewport="700x150" name="Decorative blobs" subtitle="Hero background accents — multiply + blur only" -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<link rel="stylesheet" href="../styles.css">
+<style>
+  body { margin: 0; padding: 0; font-family: var(--font-sans); }
+  .stage { position: relative; height: 150px; background: var(--gradient-hero); overflow: hidden; display:flex; align-items:center; justify-content:center; }
+  .b { position:absolute; width:140px; height:140px; border-radius:var(--radius-full); mix-blend-mode:multiply; filter: blur(28px); opacity:.45; }
+  .cap { position:relative; z-index:2; font-size:13px; font-weight:var(--fw-semibold); color:var(--text-strong); background:rgba(255,255,255,.65); padding:6px 14px; border-radius:var(--radius-full); }
+</style>
+</head>
+<body>
+  <div class="stage">
+    <div class="b" style="background:var(--blue-300); top:-30px; left:40px;"></div>
+    <div class="b" style="background:var(--purple-300); top:10px; right:120px;"></div>
+    <div class="b" style="background:var(--pink-300); bottom:-40px; left:200px;"></div>
+    <div class="b" style="background:var(--indigo-300); top:-20px; right:-20px;"></div>
+    <div class="b" style="background:var(--cyan-300); bottom:-30px; right:60px;"></div>
+    <div class="cap">blue · purple · pink · indigo · cyan — blurred, multiplied, drifting</div>
+  </div>
+</body>
+</html>

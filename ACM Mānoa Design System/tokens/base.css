@@ -1,0 +1,82 @@
+/* ============================================================
+   ACM at UH Mānoa — Base element defaults & shared keyframes
+   Lightweight resets + the brand's signature utilities so cards
+   and components render correctly without Tailwind present.
+   ============================================================ */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-weight: var(--fw-regular);
+  color: var(--text-body);
+  background: var(--surface-page);
+  line-height: var(--leading-normal);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-display);
+  color: var(--text-strong);
+  line-height: var(--leading-tight);
+  margin: 0;
+}
+
+a {
+  color: var(--text-link);
+  text-decoration: none;
+}
+
+img { display: block; max-width: 100%; }
+
+/* --- Signature gradient text (headline accent word) --- */
+.acm-gradient-text {
+  background: var(--gradient-brand);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}
+
+/* --- Section divider (under centered headings) --- */
+.acm-divider {
+  width: 6rem;
+  height: 0.25rem;
+  border-radius: var(--radius-full);
+  background: var(--gradient-divider);
+}
+
+/* ============================================================
+   Shared keyframes
+   ============================================================ */
+
+/* Decorative drifting hero blobs */
+@keyframes acm-blob {
+  0%   { transform: translate(0, 0) scale(1); }
+  33%  { transform: translate(30px, -50px) scale(1.1); }
+  66%  { transform: translate(-20px, 20px) scale(0.9); }
+  100% { transform: translate(0, 0) scale(1); }
+}
+
+/* Scroll-reveal fade-ins */
+@keyframes acm-fade-in-up {
+  from { opacity: 0; transform: translateY(30px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.acm-blob {
+  animation: acm-blob 7s infinite;
+  mix-blend-mode: multiply;
+  filter: blur(40px);
+  border-radius: var(--radius-full);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .acm-blob { animation: none; }
+}

@@ -1,0 +1,25 @@
+<!-- @dsCard group="Colors" viewport="700x180" name="Signature gradients" subtitle="Blue→purple brand, divider, hero wash, footer" -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<link rel="stylesheet" href="../styles.css">
+<style>
+  body { margin: 0; padding: 20px; background: var(--white); font-family: var(--font-sans); }
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .g { border-radius: var(--radius-lg); overflow: hidden; box-shadow: var(--shadow-sm); }
+  .band { height: 56px; }
+  .lbl { padding: 7px 12px; font-size: 11px; }
+  .lbl b { display:block; font-weight: var(--fw-semibold); color: var(--text-strong); font-size: 12px; }
+  .lbl span { color: var(--text-muted); }
+</style>
+</head>
+<body>
+  <div class="grid">
+    <div class="g"><div class="band" style="background:var(--gradient-brand)"></div><div class="lbl"><b>--gradient-brand</b><span>blue-600 → purple-600 · CTAs, headline word</span></div></div>
+    <div class="g"><div class="band" style="background:var(--gradient-divider)"></div><div class="lbl"><b>--gradient-divider</b><span>blue-500 → indigo-500 · section underline</span></div></div>
+    <div class="g"><div class="band" style="background:var(--gradient-hero);border:1px solid var(--gray-100)"></div><div class="lbl"><b>--gradient-hero</b><span>blue-50 · white · indigo-50 · page wash</span></div></div>
+    <div class="g"><div class="band" style="background:var(--gradient-footer)"></div><div class="lbl"><b>--gradient-footer</b><span>gray-900 · stone-800 · gray-900 · footer</span></div></div>
+  </div>
+</body>
+</html>

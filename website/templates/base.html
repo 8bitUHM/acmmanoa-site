@@ -6,79 +6,56 @@
     {% tailwind_css %}
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}My Django Site{% endblock %}</title>
+    <title>{% block title %}ACM at UH Mānoa{% endblock %}</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="{% static 'css/dist/styles.css' %}">
-    <link href="https://cdn.jsdelivr.net/npm/flowbite@2.5.1/dist/flowbite.min.css" rel="stylesheet" />
-    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="icon" type="image/x-icon" href="{% static 'website/acm_logo.png' %}">
-    <link rel="stylesheet" href="{% static 'css/index.css' %}">
-    <link rel="stylesheet" href="{% static 'css/minimal-animations.css' %}">
-    <style>
-      /* Fallback animation CSS */
-      .fade-in {
-        opacity: 0;
-        transform: translateY(30px);
-        transition: opacity 0.8s ease-out, transform 0.8s ease-out;
-      }
-      .fade-in.animate {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    </style>
+    <link rel="stylesheet" href="{% static 'css/air-theme.css' %}">
     {% block styles %}{% endblock %}
 </head>
 
-<body>
+<body class="air">
     {% include "components/navbar.html" %}
-    <div>
-        <div class="min-h-screen">
-            {% block content %}
-            {% endblock %}
-        </div>
-    </div>
+    {% block content %}{% endblock %}
     {% include "components/footer.html" %}
-    <script src="https://cdn.jsdelivr.net/npm/flowbite@2.5.1/dist/flowbite.min.js"></script>
-    
-    <!-- Minimal Animations Script -->
+
+    <!-- Mobile nav toggle -->
     <script>
-    // Simple, non-intrusive fade-in animations
-    document.addEventListener('DOMContentLoaded', function() {
-      // Only run on non-home pages
-      if (!document.querySelector('.fade-in-up')) {
-        // Animation system is working
-        
-        const observer = new IntersectionObserver((entries) => {
-          entries.forEach(entry => {
-            if (entry.isIntersecting) {
-              const delay = entry.target.classList.contains('delay-100') ? 100 :
-                           entry.target.classList.contains('delay-200') ? 200 :
-                           entry.target.classList.contains('delay-300') ? 300 :
-                           entry.target.classList.contains('delay-400') ? 400 :
-                           entry.target.classList.contains('delay-500') ? 500 : 0;
-              
-              setTimeout(() => {
-                entry.target.classList.add('animate');
-              }, delay);
-              
-              observer.unobserve(entry.target);
-            }
-          });
-        }, {
-          threshold: 0.1,
-          rootMargin: '0px 0px -20px 0px'
-        });
-        
-        // Observe all fade-in elements
-        const fadeElements = document.querySelectorAll('.fade-in');
-        fadeElements.forEach(el => {
-          observer.observe(el);
+    (function(){
+      var btn = document.getElementById('nav-mobile-btn');
+      var menu = document.getElementById('nav-mobile-menu');
+      if(btn && menu){
+        btn.addEventListener('click', function(){
+          menu.classList.toggle('is-open');
+          var open = menu.classList.contains('is-open');
+          btn.setAttribute('aria-expanded', open);
         });
       }
+    })();
+    </script>
+
+    <!-- Accordion toggle -->
+    <script>
+    document.querySelectorAll('.acc-btn').forEach(function(btn){
+      btn.addEventListener('click', function(){
+        var body = btn.nextElementSibling;
+        var open = body.classList.contains('open');
+        // close all in same accordion
+        var parent = btn.closest('.acc');
+        if(parent){
+          parent.querySelectorAll('.acc-body').forEach(function(b){ b.classList.remove('open'); });
+          parent.querySelectorAll('.acc-btn').forEach(function(b){ b.classList.remove('open'); });
+        }
+        if(!open){
+          body.classList.add('open');
+          btn.classList.add('open');
+        }
+      });
     });
     </script>
+
+    {% block scripts %}{% endblock %}
 </body>
 
 </html>
