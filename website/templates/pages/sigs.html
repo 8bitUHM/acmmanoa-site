@@ -5,7 +5,7 @@
 {% if sig %}
 {% block styles %}
 <style>
-  body {
+  body.air {
     --sig: {{ sig.primary_color }};
     --sig-d: {{ sig.get_secondary_color }};
     --sig-light: {{ sig.get_light_color }};
@@ -55,8 +55,9 @@
 </div>
 
 <!-- SIG Body -->
-<section>
-  <div class="wrap-wide">
+<section style="position:relative;overflow:hidden;">
+  <div aria-hidden="true" style="position:absolute;top:-140px;right:-200px;width:560px;height:560px;background:radial-gradient(ellipse,var(--sig-light) 0%,transparent 68%);pointer-events:none;z-index:0;"></div>
+  <div class="wrap-wide" style="position:relative;z-index:1;">
     <div class="sig-grid">
 
       <!-- Left: About + Leadership -->
@@ -72,7 +73,7 @@
         {% if leadership %}
         <div>
           <div class="sec-head left" style="margin-bottom:24px;">
-            <h2 style="font-size:26px;">Leadership</h2>
+            <h2 class="sig-section-h" style="font-size:26px;">Leadership</h2>
           </div>
           <div class="people" style="grid-template-columns:repeat(2,1fr);gap:14px;">
             {% for leader in leadership %}
@@ -197,7 +198,7 @@
 <div class="subhero">
   <div class="wrap">
     <div class="eyebrow">Special Interest Groups</div>
-    <h1>Seven groups. One ʻohana.</h1>
+    <h1>Seven groups, each student-led and open to join.</h1>
     <p>Student-led clubs within ACM, each focused on a different corner of computing — from web dev to game design and beyond. Click a SIG to learn more.</p>
   </div>
 </div>

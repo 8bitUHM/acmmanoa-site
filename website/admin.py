@@ -48,7 +48,22 @@ class CarouselImageAdmin(admin.ModelAdmin):
 
 @admin.register(Event)
 class EventAdmin(admin.ModelAdmin):
-    pass
+    prepopulated_fields = {"slug": ["title"]}
+    list_display = ('title', 'event_date', 'sig', 'kind', 'location')
+    list_filter = ('sig', 'kind')
+    search_fields = ('title', 'description', 'location')
+    fieldsets = (
+        ('Event Details', {
+            'fields': ('title', 'slug', 'image', 'description')
+        }),
+        ('Schedule', {
+            'fields': ('event_date', 'location')
+        }),
+        ('Classification', {
+            'fields': ('sig', 'kind'),
+            'description': 'Optionally link to a SIG and categorize the event type.'
+        }),
+    )
 
 @admin.register(Sponsor)
 class SponsorAdmin(admin.ModelAdmin):

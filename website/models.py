@@ -201,6 +201,17 @@ class CarouselImage(models.Model):
         File.objects.filter(filename = self.image.name).delete()
 
 class Event(models.Model):
+    KIND_CHOICES = [
+        ('workshop', 'Workshop'),
+        ('social', 'Social'),
+        ('talk', 'Talk'),
+        ('hackathon', 'Hackathon'),
+        ('networking', 'Networking'),
+        ('competition', 'Competition'),
+        ('meeting', 'Meeting'),
+        ('other', 'Other'),
+    ]
+
     title = models.CharField(max_length=255, unique=True, help_text="name or headline of the event")
     slug = models.SlugField(default='', unique=True, help_text="URL-friendly version of the title")
     image = models.ImageField(
@@ -215,6 +226,20 @@ class Event(models.Model):
     description = models.TextField()
     event_date = models.DateTimeField(help_text="It is in 24-hour format")
     location = models.CharField(max_length=255, help_text="Location where the event will take place", blank=True)
+    sig = models.ForeignKey(
+        'SIGS',
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='events',
+        help_text="SIG hosting this event. Leave blank for general ACM events."
+    )
+    kind = models.CharField(
+        max_length=50,
+        choices=KIND_CHOICES,
+        default='other',
+        help_text="Type of event"
+    )
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self): 

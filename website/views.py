@@ -30,8 +30,37 @@ def about(request):
     return render(request, 'pages/about.html', {"leaders": leaders, "president_name": president_name})
 
 def events(request):
-    events = Event.objects.all().order_by('-event_date')
-    return render(request, 'pages/events.html', {"events": events})
+    all_events = Event.objects.select_related('sig').order_by('event_date')
+    sigs = SIGS.objects.all()
+
+    events_data = []
+    for ev in all_events:
+        events_data.append({
+            'title': ev.title,
+            'slug': ev.slug,
+            'date': ev.event_date.strftime('%Y-%m-%d'),
+            'time': ev.event_date.strftime('%H:%M'),
+            'location': ev.location or '',
+            'kind': ev.kind,
+            'sig': ev.sig.slug if ev.sig else None,
+        })
+
+    sigs_data = []
+    for sig in sigs:
+        sigs_data.append({
+            'slug': sig.slug,
+            'name': sig.name,
+            'color': sig.primary_color,
+            'light': sig.get_light_color(),
+            'dark': sig.get_secondary_color(),
+            'meeting_day': sig.meeting_days or '',
+        })
+
+    return render(request, 'pages/events.html', {
+        'sigs': sigs,
+        'events_data': events_data,
+        'sigs_data': sigs_data,
+    })
 
 def event_detail(request, slug):
     event = get_object_or_404(Event, slug=slug)
