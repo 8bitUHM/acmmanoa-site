@@ -247,8 +247,10 @@
     }
 
     list.innerHTML = upcoming.map(function(ev){
-      var d = new Date(ev.date + 'T' + (ev.time || '00:00'));
-      var dayN = d.getDate();
+      // Parse as local calendar parts — avoid UTC date-only shift
+      var parts = ev.date.split('-');
+      var y = parseInt(parts[0], 10), m = parseInt(parts[1], 10) - 1, dayN = parseInt(parts[2], 10);
+      var d = new Date(y, m, dayN);
       var monS = d.toLocaleString('en-US',{month:'short'}).toUpperCase();
       var sig = ev.sig ? sigMap[ev.sig] : null;
       var color = getColor(ev);

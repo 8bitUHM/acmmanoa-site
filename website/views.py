@@ -30,16 +30,20 @@ def about(request):
     return render(request, 'pages/about.html', {"leaders": leaders, "president_name": president_name})
 
 def events(request):
+    from django.utils import timezone as dj_timezone
+
     all_events = Event.objects.select_related('sig').order_by('event_date')
     sigs = SIGS.objects.all()
 
     events_data = []
     for ev in all_events:
+        # Format in local TIME_ZONE (Pacific/Honolulu) so calendar days match admin
+        local_dt = dj_timezone.localtime(ev.event_date)
         events_data.append({
             'title': ev.title,
             'slug': ev.slug,
-            'date': ev.event_date.strftime('%Y-%m-%d'),
-            'time': ev.event_date.strftime('%H:%M'),
+            'date': local_dt.strftime('%Y-%m-%d'),
+            'time': local_dt.strftime('%H:%M'),
             'location': ev.location or '',
             'kind': ev.kind,
             'sig': ev.sig.slug if ev.sig else None,
