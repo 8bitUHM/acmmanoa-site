@@ -38,6 +38,12 @@ for _host in ('127.0.0.1', 'localhost', 'acmmanoa.org', 'www.acmmanoa.org'):
         _allowed_hosts.append(_host)
 ALLOWED_HOSTS = _allowed_hosts
 
+# HTTPS behind nginx reverse proxy
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+CSRF_TRUSTED_ORIGINS = [
+    'https://acmmanoa.org',
+    'https://www.acmmanoa.org',
+]
 
 # Application definition
 

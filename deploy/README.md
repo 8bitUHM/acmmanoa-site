@@ -104,6 +104,26 @@ After secrets are set, every push to `main` deploys automatically.
 
 ---
 
+## HTTPS
+
+HTTPS is enabled with Let's Encrypt certificates for `acmmanoa.org` and `www.acmmanoa.org`.
+
+One-time / renew:
+
+```bash
+bash /opt/acmmanoa-site/deploy/setup-https.sh
+```
+
+A monthly cron for the `deploy` user renews certificates (1st of month at 03:00 UTC).
+
+After changing nginx SSL config, reload:
+
+```bash
+docker compose -f docker-compose.prod.yml exec nginx nginx -s reload
+```
+
+---
+
 ## Manual redeploy on the server
 
 ```bash

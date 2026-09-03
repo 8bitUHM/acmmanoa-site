@@ -1,0 +1,16 @@
+.git
+.gitignore
+.env
+.env.*
+!.env.example
+venv/
+.venv/
+__pycache__/
+*.pyc
+db.sqlite3
+staticfiles/
+ssl/
+letsencrypt/
+*.md
+.github/
+deploy/run-https-setup-remote.sh

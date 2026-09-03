@@ -34,8 +34,15 @@ local_settings.py
 !*/static/
 staticfiles/
 
+# SSL certificates
+ssl/
+letsencrypt/
+*.pem
+*.key
+*.crt
+
 # Docker
-.dockerignore
+# Keep .dockerignore tracked so builds exclude secrets/certs
 
 # IDE
 .vscode/
@@ -50,9 +57,3 @@ Thumbs.db
 # Backup files
 *.bak
 *.backup
-
-# SSL certificates
-ssl/
-*.pem
-*.key
-*.crt
