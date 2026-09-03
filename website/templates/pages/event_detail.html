@@ -40,7 +40,7 @@
   <div class="wrap-wide">
     <div class="ev-detail-grid">
 
-      <!-- Flyer / photo — full width, natural aspect ratio -->
+      <!-- Photo / flyer (left) — full aspect ratio, no crop -->
       <div class="ev-photo">
         {% if event.image %}
         <img src="{{ event.image.url }}" alt="{{ event.title }}">
@@ -51,15 +51,14 @@
         {% endif %}
       </div>
 
-      <div class="ev-detail-body">
+      <!-- Info (right) -->
+      <div>
         {% if event.description %}
-        <div class="panel">
+        <div class="panel" style="margin-bottom:20px;">
           <div class="prose">
             <p>{{ event.description|linebreaks }}</p>
           </div>
         </div>
-        {% else %}
-        <div></div>
         {% endif %}
 
         <div class="ev-info">
