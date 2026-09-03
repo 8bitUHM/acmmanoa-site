@@ -59,6 +59,11 @@ jobs:
           SECRET_KEY="$(escape_env "$SECRET_KEY")"
           POSTGRES_PASSWORD="$(escape_env "$POSTGRES_PASSWORD")"
           ALLOWED_HOSTS="$(escape_env "$ALLOWED_HOSTS")"
+          if [[ -z "$ALLOWED_HOSTS" ]]; then
+            ALLOWED_HOSTS="167.172.197.200,acmmanoa.org,www.acmmanoa.org"
+          elif [[ "$ALLOWED_HOSTS" != *"acmmanoa.org"* ]]; then
+            ALLOWED_HOSTS="${ALLOWED_HOSTS},acmmanoa.org,www.acmmanoa.org"
+          fi
           {
             echo "SECRET_KEY=${SECRET_KEY}"
             echo "DEBUG=0"

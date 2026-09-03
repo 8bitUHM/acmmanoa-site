@@ -31,9 +31,9 @@ SECRET_KEY = os.getenv("SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-_allowed_hosts = os.getenv('ALLOWED_HOSTS', '127.0.0.1,localhost').split(',')
-# Required for in-container healthchecks (curl → 127.0.0.1 / localhost)
-for _host in ('127.0.0.1', 'localhost'):
+_allowed_hosts = [h.strip() for h in os.getenv('ALLOWED_HOSTS', '127.0.0.1,localhost').split(',') if h.strip()]
+# Healthchecks use localhost; production domain is always allowed
+for _host in ('127.0.0.1', 'localhost', 'acmmanoa.org', 'www.acmmanoa.org'):
     if _host not in _allowed_hosts:
         _allowed_hosts.append(_host)
 ALLOWED_HOSTS = _allowed_hosts
