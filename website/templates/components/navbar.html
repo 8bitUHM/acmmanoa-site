@@ -13,7 +13,7 @@
       <a href="{% url 'events' %}" {% if '/events' in request.path %}class="active"{% endif %}>Events</a>
       <a href="{% url 'sponsors' %}" {% if request.path == '/sponsors/' %}class="active"{% endif %}>Sponsors</a>
       <a href="{% url 'icspace' %}" {% if request.path == '/icspace/' %}class="active"{% endif %}>ICSpace</a>
-      <a href="https://discord.com/invite/2UU4Jfx6gB" target="_blank" rel="noopener" class="btn-primary" style="margin-left:10px;">Join us</a>
+      <a href="https://discord.gg/RvuXUadKTg" target="_blank" rel="noopener" class="btn-primary" style="margin-left:10px;">Join us</a>
     </div>
 
     <!-- Mobile hamburger -->
@@ -33,6 +33,6 @@
     <a href="{% url 'events' %}" {% if '/events' in request.path %}class="active"{% endif %}>Events</a>
     <a href="{% url 'sponsors' %}" {% if request.path == '/sponsors/' %}class="active"{% endif %}>Sponsors</a>
     <a href="{% url 'icspace' %}" {% if request.path == '/icspace/' %}class="active"{% endif %}>ICSpace</a>
-    <a href="https://discord.com/invite/2UU4Jfx6gB" target="_blank" rel="noopener" style="color:var(--peri-d);font-weight:700;">Join us →</a>
+    <a href="https://discord.gg/RvuXUadKTg" target="_blank" rel="noopener" style="color:var(--peri-d);font-weight:700;">Join us →</a>
   </div>
 </nav>
