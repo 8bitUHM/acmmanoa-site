@@ -29,7 +29,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.getenv("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+# Honor DEBUG from the environment so local Docker (DEBUG=1) can serve CSS/JS.
+DEBUG = os.getenv("DEBUG", "0").lower() in ("1", "true", "yes")
 
 _allowed_hosts = [h.strip() for h in os.getenv('ALLOWED_HOSTS', '127.0.0.1,localhost').split(',') if h.strip()]
 # Healthchecks use localhost; production domain is always allowed
@@ -178,9 +179,9 @@ USE_TZ = True
 
 STATIC_URL = 'static/'  
 STATIC_ROOT = BASE_DIR / 'staticfiles'
-STATICFILES_DIRS = [
-  BASE_DIR / 'static',
-] 
+# App static dirs (website/static, theme/static) are picked up automatically.
+# Only include a project-level static/ folder if it exists (avoids W004 in Docker).
+STATICFILES_DIRS = [p for p in [BASE_DIR / 'static'] if p.is_dir()] 
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
