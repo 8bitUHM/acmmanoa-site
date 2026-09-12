@@ -13,6 +13,6 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='sigs',
             name='expanded_name',
-            field=models.CharField(blank=True, help_text='Full name of SIG i.e PANDA -> Programming and Algorithms', max_length=200),
+            field=models.CharField(blank=True, help_text='Optional full name under the title, e.g "Programs and Algorithms"', max_length=200),
         ),
     ]
