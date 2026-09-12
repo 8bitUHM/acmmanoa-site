@@ -29,7 +29,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.getenv("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-# Honor DEBUG from the environment so local Docker (DEBUG=1) can serve CSS/JS.
+# Local Docker sets DEBUG=1 in .env; without this, runserver/WhiteNoise
+# will not serve website, Tailwind, or Jazzmin/admin static files.
 DEBUG = os.getenv("DEBUG", "0").lower() in ("1", "true", "yes")
 
 _allowed_hosts = [h.strip() for h in os.getenv('ALLOWED_HOSTS', '127.0.0.1,localhost').split(',') if h.strip()]
@@ -177,10 +178,10 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
 
-STATIC_URL = 'static/'  
+STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
-# App static dirs (website/static, theme/static) are picked up automatically.
-# Only include a project-level static/ folder if it exists (avoids W004 in Docker).
+# App static dirs (website/static, theme/static, jazzmin, admin) are found
+# automatically. Only include a project-level static/ folder if it exists.
 STATICFILES_DIRS = [p for p in [BASE_DIR / 'static'] if p.is_dir()] 
 
 # Default primary key field type
