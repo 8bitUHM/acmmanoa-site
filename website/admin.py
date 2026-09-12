@@ -23,7 +23,7 @@ class SIGSAdmin(admin.ModelAdmin):
     prepopulated_fields = { "slug": ["name"] }
     fieldsets = (
         ('Basic Information', {
-            'fields': ('name', 'slug', 'about', 'logo')
+            'fields': ('name', 'slug', 'expanded_name', 'about', 'logo')
         }),
         ('Website & Links', {
             'fields': ('website', 'link_name')

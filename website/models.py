@@ -50,6 +50,7 @@ class SIGS(models.Model):
     slug = models.SlugField(default='', unique=True)
     about = models.TextField(help_text="Description or overview of SIG", blank=True)
     website = models.URLField(help_text="Enter full link to the SIG website", blank=True)
+    expanded_name = models.CharField(max_length=200, blank=True, help_text='Optional full name under the title, e.g "Programs and Algorithms"')
     link_name = models.CharField(max_length=150, help_text="Short label for the URL, e.g \"Visit Site\"", blank=True)
     primary_color = models.CharField(
         max_length=7, 
