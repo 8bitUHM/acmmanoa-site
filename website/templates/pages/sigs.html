@@ -37,7 +37,7 @@
       <div>
         <div class="eyebrow">Special Interest Group</div>
         <h1>{{ sig.name }}</h1>
-        {% if sig.about %}<p class="tag">{{ sig.about|truncatewords:20 }}</p>{% endif %}
+        {% if sig.expanded_name %}<p class="tag">{{ sig.expanded_name }}</p>{% endif %}
         <div class="cta">
           {% if sig.discord_link %}
           <a href="{{ sig.discord_link }}" target="_blank" rel="noopener" class="btn btn-sig">
