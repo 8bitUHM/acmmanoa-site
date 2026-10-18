@@ -22,6 +22,7 @@ done
 
 echo "Running migrations..."
 python manage.py migrate --noinput
+python manage.py setup_calendar
 
 echo "Collecting static files..."
 python manage.py collectstatic --noinput

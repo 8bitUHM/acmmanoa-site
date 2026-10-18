@@ -170,6 +170,10 @@ LANGUAGE_CODE = 'en-us'
 
 TIME_ZONE = 'Pacific/Honolulu'
 
+# Radicale is private to the Compose network. Native clients use /caldav/.
+CALDAV_URL = os.getenv('CALDAV_URL', 'http://127.0.0.1:5232').rstrip('/')
+CALDAV_COLLECTION = '/calendar-admin/events/'
+
 USE_I18N = True
 
 USE_TZ = True
@@ -358,4 +362,3 @@ TAILWIND_APP_NAME = 'theme'
 INTERNAL_IPS = [
     "127.0.0.1",
 ]
-
