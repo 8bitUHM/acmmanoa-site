@@ -15,6 +15,81 @@ from .models import (
 )
 from datetime import datetime, timedelta
 import os
+from zoneinfo import ZoneInfo
+
+from django.urls import reverse
+from icalendar import Calendar
+
+
+class EventsCalendarTest(TestCase):
+    def create_event(self, **kwargs):
+        fields = {
+            'title': 'Mānoa workshop, Q&A; bring a laptop',
+            'slug': 'workshop',
+            'description': 'First line\nSecond line; commas, and a backslash \\ ' + '🌺' * 80,
+            'event_date': datetime(2026, 10, 20, 18, 0, tzinfo=ZoneInfo('Pacific/Honolulu')),
+            'location': 'POST 318B, Mānoa',
+        }
+        fields.update(kwargs)
+        return Event.objects.create(**fields)
+
+    def get_entries(self):
+        response = self.client.get(reverse('events_calendar'), secure=True)
+        self.assertEqual(response.status_code, 200)
+        calendar = Calendar.from_ical(response.content)
+        return response, calendar.walk('VEVENT')
+
+    def test_public_feed_round_trips_text_and_honolulu_time(self):
+        event = self.create_event()
+        response, entries = self.get_entries()
+        self.assertEqual(response['Content-Type'], 'text/calendar; charset=utf-8')
+        self.assertIn('max-age=300', response['Cache-Control'])
+        self.assertEqual(len(entries), 1)
+        entry = entries[0]
+        for field, value in [('SUMMARY', event.title), ('DESCRIPTION', event.description),
+                             ('LOCATION', event.location)]:
+            self.assertEqual(str(entry[field]), value)
+        self.assertEqual(entry.decoded('DTSTART'), event.event_date)
+        self.assertIn(b'DTSTART:20261021T040000Z\r\n', response.content)
+        self.assertIn('DTSTAMP', entry)
+        self.assertEqual(str(entry['URL']), 'https://testserver/events/workshop/')
+        self.assertNotIn('DTEND', entry)
+        self.assertTrue(all(len(line) <= 75 for line in response.content.split(b'\r\n')))
+
+    def test_refresh_includes_edits_and_removals_with_stable_identity(self):
+        event = self.create_event()
+        _, entries = self.get_entries()
+        uid = str(entries[0]['UID'])
+        event.title = 'Rescheduled workshop'
+        event.slug = 'rescheduled'
+        event.event_date += timedelta(days=1)
+        event.save()
+        _, entries = self.get_entries()
+        self.assertEqual(str(entries[0]['UID']), uid)
+        self.assertEqual(str(entries[0]['SUMMARY']), event.title)
+        self.assertEqual(entries[0].decoded('DTSTART'), event.event_date)
+        self.assertEqual(str(entries[0]['URL']), 'https://testserver/events/rescheduled/')
+        Event.objects.filter(pk=event.pk).delete()
+        _, entries = self.get_entries()
+        self.assertEqual(entries, [])
+
+    def test_feed_keeps_past_events_and_includes_sig_events(self):
+        sig = SIGS.objects.create(name='Test SIG', slug='test-sig')
+        self.create_event(title='Past event', slug='past', event_date=timezone.now() - timedelta(days=30))
+        self.create_event(sig=sig, location='')
+        _, entries = self.get_entries()
+        self.assertEqual(len(entries), 2)
+        self.assertEqual(str(entries[0]['SUMMARY']), 'Past event')
+        self.assertNotIn('LOCATION', entries[1])
+
+    def test_empty_calendar_and_http_methods(self):
+        response, entries = self.get_entries()
+        self.assertEqual(entries, [])
+        self.assertTrue(response.content.endswith(b'END:VCALENDAR\r\n'))
+        response = self.client.head(reverse('events_calendar'))
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.content, b'')
+        self.assertEqual(self.client.post(reverse('events_calendar')).status_code, 405)
 
 class FileModelTest(TestCase):
     def setUp(self):
