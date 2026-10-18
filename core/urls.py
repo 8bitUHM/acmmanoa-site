@@ -22,6 +22,7 @@ from db_file_storage.compat import url
 from db_file_storage import views as db_views
 from website.views import health
 from website.caldav_accounts import caldav_gateway
+from website.calendar import calendar_admin
 from django.views.generic import RedirectView
 
 urlpatterns = [
@@ -29,6 +30,7 @@ urlpatterns = [
     path('caldav/', caldav_gateway, name='caldav_root'),
     path('caldav/<path:path>', caldav_gateway, name='caldav_gateway'),
     path('health/', health, name='health'),
+    path('admin/calendar/', calendar_admin, name='calendar_admin'),
     path('admin/', admin.site.urls),
     path('', include('website.urls')),
     url(r'^download/', db_views.get_file, {'add_attachment_headers': True},

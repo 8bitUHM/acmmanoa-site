@@ -305,6 +305,10 @@ JAZZMIN_SETTINGS = {
 
     # Custom links to append to app groups, keyed on app name
     "custom_links": {
+        "website": [{
+            "name": "Calendar", "url": "calendar_admin", "icon": "fas fa-calendar",
+            "permissions": ["website.change_event"],
+        }],
         "books": [{
             "name": "Make Messages", 
             "url": "make_messages", 

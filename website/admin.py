@@ -55,24 +55,7 @@ class SIGSAdmin(admin.ModelAdmin):
 class CarouselImageAdmin(admin.ModelAdmin):
     pass
 
-@admin.register(Event)
-class EventAdmin(admin.ModelAdmin):
-    prepopulated_fields = {"slug": ["title"]}
-    list_display = ('title', 'event_date', 'sig', 'kind', 'location')
-    list_filter = ('sig', 'kind')
-    search_fields = ('title', 'description', 'location')
-    fieldsets = (
-        ('Event Details', {
-            'fields': ('title', 'slug', 'image', 'description')
-        }),
-        ('Schedule', {
-            'fields': ('event_date', 'location')
-        }),
-        ('Classification', {
-            'fields': ('sig', 'kind'),
-            'description': 'Optionally link to a SIG and categorize the event type.'
-        }),
-    )
+# Event remains an unregistered legacy archive for the resumable CalDAV migration.
 
 @admin.register(Sponsor)
 class SponsorAdmin(admin.ModelAdmin):

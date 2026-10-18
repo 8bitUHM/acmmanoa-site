@@ -1,0 +1,44 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ACM Mānoa Calendar{% if editor %} editor{% endif %}</title>
+  <link rel="stylesheet" href="{% static 'css/fullcalendar.css' %}">
+  <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.22/index.global.min.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/luxon@3.7.2/build/global/luxon.min.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fullcalendar/luxon3@6.1.22/index.global.min.js" defer></script>
+  <script src="{% static 'js/fullcalendar.js' %}" defer></script>
+</head>
+<body>
+  <div id="calendar-config" data-editor="{{ editor|yesno:'true,false' }}" data-feed="{% url 'calendar_events' %}" data-write="{% url 'calendar_create' %}"></div>
+  <p>Times shown in Pacific/Honolulu.{% if editor %} Select a date or time to create an event; select an event to edit it.{% endif %}</p>
+  <div class="filters" aria-label="Filter events by host">
+    <label><input type="checkbox" value="" checked> ACM</label>
+    {% for sig in sigs %}<label><input type="checkbox" value="{{ sig.slug }}" checked> {{ sig.name }}</label>{% endfor %}
+  </div>
+  <p id="calendar-status" role="status" aria-live="polite"></p>
+  <div id="calendar"></div>
+  <noscript>Enable JavaScript to view the calendar, or <a href="{% url 'events_calendar' %}">subscribe to the iCalendar feed</a>.</noscript>
+  <dialog id="event-dialog" aria-labelledby="event-dialog-title">
+    <form id="event-form">
+      {% csrf_token %}
+      <h2 id="event-dialog-title">Event details</h2>
+      <label>Title<input name="title" required maxlength="255" {% if not editor %}readonly{% endif %}></label>
+      <label>Description<textarea name="description" rows="4" {% if not editor %}readonly{% endif %}></textarea></label>
+      <label>Location<input name="location" {% if not editor %}readonly{% endif %}></label>
+      <label><input name="allDay" type="checkbox" {% if not editor %}disabled{% endif %}> All day</label>
+      <label>Start (Honolulu)<input name="start" type="datetime-local" required {% if not editor %}readonly{% endif %}></label>
+      <label>End (optional; exclusive for all-day events)<input name="end" type="datetime-local" {% if not editor %}readonly{% endif %}></label>
+      <label>Host<select name="sig" {% if not editor %}disabled{% endif %}><option value="">ACM</option>{% for sig in sigs %}<option value="{{ sig.slug }}">{{ sig.name }}</option>{% endfor %}</select></label>
+      <label>Kind<select name="kind" {% if not editor %}disabled{% endif %}>{% for value, label in kinds %}<option value="{{ value }}">{{ label }}</option>{% endfor %}</select></label>
+      <p id="event-status" role="status" aria-live="polite"></p>
+      <div class="actions">
+        {% if editor %}<button type="submit" id="event-save">Save event</button><button type="button" id="event-delete">Delete event</button>{% endif %}
+        <button type="button" id="event-close">Close</button>
+      </div>
+    </form>
+  </dialog>
+</body>
+</html>
