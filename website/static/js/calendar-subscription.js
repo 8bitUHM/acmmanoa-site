@@ -5,6 +5,15 @@
   var feed = document.getElementById('calendar-feed-url');
   var status = document.getElementById('calendar-copy-status');
 
+  document.getElementById('calendar-host').addEventListener('change', function (event) {
+    var url = new URL(event.target.value, window.location.origin);
+    feed.value = url.href;
+    dialog.querySelectorAll('a[href^="webcal:"]').forEach(function (link) {
+      link.href = 'webcal://' + url.host + url.pathname;
+    });
+    status.textContent = '';
+  });
+
   button.addEventListener('click', function () {
     dialog.showModal();
   });

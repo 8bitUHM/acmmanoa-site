@@ -12,18 +12,23 @@ from zoneinfo import ZoneInfo
 from pathlib import Path
 from unittest import skipUnless
 from unittest.mock import patch
+from xml.etree import ElementTree
+from urllib.parse import unquote, urlsplit
 
 from django.contrib.auth.hashers import check_password, make_password
 from django.test import Client, TestCase, override_settings
 from django.contrib.auth import get_user_model
 from django.core.management import call_command
 from django.core.management.base import CommandError
+from django.db.models.deletion import ProtectedError
 from django.urls import reverse
 from icalendar import Calendar
 
 from .caldav_accounts import CalDAVAccountForm
-from .models import CalDAVAccount, CalendarImport, Event, SIGS
-from .caldav import dav_request, ensure_calendar, service_password
+from .models import CalDAVAccount, CalendarImport, CalendarMove, Event, SIGS
+from .caldav import CalendarUnavailable, calendar_resources, dav_request, ensure_calendar, service_password
+from .calendar_hosts import get_calendar
+from .calendar_moves import MoveConflict, move_resource, fingerprint
 
 
 class CalDAVAccountsTest(TestCase):
@@ -111,6 +116,15 @@ class RadicaleIntegrationTest(TestCase):
         super().tearDownClass()
 
     def setUp(self):
+        # SQL rolls back between tests; Radicale's filesystem does not.
+        status, body, _ = dav_request('PROPFIND', '/calendar-admin/', headers={'Depth': '1'})
+        self.assertEqual(status, 207)
+        for href in ElementTree.fromstring(body).iter('{DAV:}href'):
+            path = unquote(urlsplit(href.text).path)
+            if path != '/calendar-admin/' and path.endswith('/'):
+                for resource, _, _ in calendar_resources({'path': path}):
+                    self.assertIn(dav_request('DELETE', path + resource)[0], (200, 204))
+        ensure_calendar()
         self.user = get_user_model().objects.create_superuser('calendar-editor', password='long-passphrase')
         self.client.force_login(self.user)
 
@@ -204,7 +218,7 @@ class RadicaleIntegrationTest(TestCase):
         self.assertFalse(CalendarImport.objects.exists())
         call_command('migrate_calendars', stdout=StringIO())
         checkpoint = CalendarImport.objects.get(source_key=f'event:{source.pk}')
-        status, content, _ = dav_request('GET', '/calendar-admin/events/' + checkpoint.resource)
+        status, content, _ = dav_request('GET', get_calendar(checkpoint.calendar)['path'] + checkpoint.resource)
         self.assertEqual(status, 200)
         entry = Calendar.from_ical(content).walk('VEVENT')[0]
         self.assertEqual(str(entry['UID']), f'acm-event-{source.pk}@acmmanoa.org')
@@ -227,7 +241,7 @@ class RadicaleIntegrationTest(TestCase):
         # A native edit after import must prevent any later SQL overwrite.
         calendar = Calendar.from_ical(content)
         calendar.walk('VEVENT')[0]['SUMMARY'] = 'Native correction'
-        dav_request('PUT', '/calendar-admin/events/' + checkpoint.resource, calendar.to_ical(), {'Content-Type': 'text/calendar'})
+        dav_request('PUT', get_calendar(checkpoint.calendar)['path'] + checkpoint.resource, calendar.to_ical(), {'Content-Type': 'text/calendar'})
         source.title = 'Another SQL correction'
         source.save()
         with self.assertRaises(CommandError):
@@ -273,3 +287,205 @@ class RadicaleIntegrationTest(TestCase):
         self.assertTrue(any(event['allDay'] for event in events))
         self.assertTrue(any(event['extendedProps']['recurring'] for event in events))
         self.assertTrue(all(event['title'].startswith('[DEMO]') for event in events))
+
+    def put_native(self, host, resource, sig='', recurring=False):
+        recurrence = 'RRULE:FREQ=DAILY;COUNT=3\r\n' if recurring else ''
+        exception = (f'BEGIN:VEVENT\r\nUID:{resource}\r\nDTSTAMP:20261001T000000Z\r\n'
+                     'RECURRENCE-ID:20261021T040000Z\r\nDTSTART:20261021T060000Z\r\n'
+                     'SUMMARY:Rescheduled occurrence\r\nEND:VEVENT\r\n') if recurring else ''
+        content = (f'BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPRODID:-//Native//EN\r\nBEGIN:VEVENT\r\n'
+                   f'UID:{resource}\r\nDTSTAMP:20261001T000000Z\r\nDTSTART:20261020T040000Z\r\n'
+                   f'SUMMARY:Native event\r\nX-ACM-SIG:{sig}\r\nX-ACM-KIND:talk\r\n'
+                   f'X-NATIVE-DETAIL:keep-me\r\n{recurrence}END:VEVENT\r\n{exception}END:VCALENDAR\r\n').encode()
+        if recurring:
+            zone = (b'BEGIN:VTIMEZONE\r\nTZID:Pacific/Honolulu\r\nBEGIN:STANDARD\r\n'
+                    b'DTSTART:19700101T000000\r\nTZOFFSETFROM:-1000\r\nTZOFFSETTO:-1000\r\n'
+                    b'TZNAME:HST\r\nEND:STANDARD\r\nEND:VTIMEZONE\r\n')
+            content = content.replace(b'BEGIN:VEVENT', zone + b'BEGIN:VEVENT', 1)
+            content = content.replace(b'DTSTART:20261020T040000Z', b'DTSTART;TZID=Pacific/Honolulu:20261019T180000')
+            content = content.replace(b'RECURRENCE-ID:20261021T040000Z', b'RECURRENCE-ID;TZID=Pacific/Honolulu:20261020T180000')
+            content = content.replace(b'DTSTART:20261021T060000Z', b'DTSTART;TZID=Pacific/Honolulu:20261020T200000')
+        status, _, _ = dav_request('PUT', host['path'] + resource, content, {'Content-Type': 'text/calendar'})
+        self.assertEqual(status, 201)
+        return dav_request('GET', host['path'] + resource)
+
+    def make_host(self, name='AI & Robotics', slug='ai'):
+        sig = SIGS.objects.create(name=name, slug=slug, primary_color='#123456')
+        host = get_calendar(f'sig-{sig.pk}')
+        ensure_calendar(host)
+        return sig, host
+
+    def test_named_calendars_are_discovered_and_renames_preserve_identity(self):
+        sig, host = self.make_host()
+        CalDAVAccount.objects.create(username='reader', password_hash=make_password('reader-passphrase'))
+        auth = 'Basic ' + base64.b64encode(b'reader:reader-passphrase').decode()
+        response = Client().generic('PROPFIND', '/caldav/calendar-admin/',
+                                    b'<D:propfind xmlns:D="DAV:"><D:allprop/></D:propfind>',
+                                    content_type='application/xml', HTTP_AUTHORIZATION=auth, HTTP_DEPTH='1')
+        self.assertEqual(response.status_code, 207, response.content)
+        self.assertIn(('/caldav' + host['path']).encode(), response.content)
+        self.assertIn(b'AI &amp; Robotics', response.content)
+        self.assertIn(b'#123456FF', response.content)
+        sig.name, sig.slug = 'Renamed SIG', 'renamed'
+        sig.save()
+        renamed = get_calendar(host['key'])
+        self.assertEqual(renamed['path'], host['path'])
+        ensure_calendar(renamed)
+        status, body, _ = dav_request('PROPFIND', host['path'], headers={'Depth': '0'})
+        self.assertEqual(status, 207)
+        self.assertIn(b'Renamed SIG', body)
+        with self.assertRaises(ProtectedError):
+            sig.delete()
+
+    def test_editor_creates_in_host_calendar_and_feeds_are_separate(self):
+        _, host = self.make_host()
+        data = {**self.event_data(), 'calendar': host['key']}
+        response = self.client.post(reverse('calendar_create'), json.dumps(data), content_type='application/json')
+        self.assertEqual(response.status_code, 201, response.content)
+        resource = response.json()['resource']
+        event = next(event for event in self.query_events() if event['extendedProps']['resource'] == resource)
+        self.assertEqual(event['extendedProps']['calendar'], host['key'])
+        self.assertEqual(event['color'], host['color'])
+        self.assertEqual(dav_request('GET', get_calendar()['path'] + resource)[0], 404)
+        for key, count in [('acm', 0), (host['key'], 1)]:
+            feed = self.client.get(reverse('host_calendar', args=[key]))
+            self.assertEqual(feed.status_code, 200)
+            self.assertEqual(len(Calendar.from_ical(feed.content).walk('VEVENT')), count)
+        combined = self.client.get(reverse('events_calendar'))
+        self.assertEqual(len(Calendar.from_ical(combined.content).walk('VEVENT')), 1)
+        self.assertEqual(self.client.get(reverse('events_calendar'), HTTP_IF_NONE_MATCH=combined['ETag']).status_code, 304)
+        self.assertEqual(self.client.get(reverse('host_calendar', args=['sig-99999'])).status_code, 404)
+        url = reverse('host_calendar_update', args=[host['key'], resource])
+        edited = self.client.put(url, json.dumps({**data, 'calendar': 'acm', 'title': 'Moved event'}),
+                                 content_type='application/json', HTTP_IF_MATCH=event['extendedProps']['etag'])
+        self.assertEqual(edited.status_code, 200, edited.content)
+        self.assertEqual(dav_request('GET', host['path'] + resource)[0], 404)
+        self.assertNotEqual(self.client.get(reverse('events_calendar'))['ETag'], combined['ETag'])
+
+    def test_collection_controls_host_even_with_stale_metadata_and_same_filenames(self):
+        _, first = self.make_host()
+        _, second = self.make_host('Security', 'security')
+        self.put_native(first, 'same.ics', sig='security')
+        self.put_native(second, 'same.ics', sig='ai')
+        events = self.query_events()
+        self.assertEqual(len(events), 2)
+        self.assertEqual(len({event['id'] for event in events}), 2)
+        self.assertEqual({event['extendedProps']['calendar'] for event in events}, {first['key'], second['key']})
+
+    def test_recurring_series_can_move_without_losing_exceptions_or_native_metadata(self):
+        sig, host = self.make_host()
+        _, original, headers = self.put_native(host, 'series.ics', sig=sig.slug, recurring=True)
+        url = reverse('host_calendar_update', args=[host['key'], 'series.ics'])
+        response = self.client.put(url, json.dumps({'calendar': 'acm'}), content_type='application/json', HTTP_IF_MATCH=headers['ETag'])
+        self.assertEqual(response.status_code, 200, response.content)
+        status, moved, _ = dav_request('GET', get_calendar()['path'] + 'series.ics')
+        self.assertEqual(status, 200)
+        self.assertEqual(fingerprint(original), fingerprint(moved))
+        self.assertEqual(len(Calendar.from_ical(moved).walk('VTIMEZONE')), 1)
+        self.assertEqual(len(self.query_events()), 3)
+        self.assertTrue(all(event['extendedProps']['calendar'] == 'acm' for event in self.query_events()))
+        call_command('migrate_calendar_hosts', stdout=StringIO())
+        self.assertEqual(dav_request('GET', get_calendar()['path'] + 'series.ics')[0], 200)
+
+    def test_shared_host_migration_is_dry_run_repeatable_and_updates_import_checkpoint(self):
+        sig, host = self.make_host()
+        source = get_calendar()
+        _, original, headers = self.put_native(source, 'legacy-series.ics', sig=sig.slug, recurring=True)
+        CalendarImport.objects.create(source_key='test:series', fingerprint='original', resource='legacy-series.ics', etag=headers['ETag'])
+        output = StringIO()
+        call_command('migrate_calendar_hosts', dry_run=True, stdout=output)
+        self.assertIn('1 planned', output.getvalue())
+        self.assertFalse(CalendarMove.objects.exists())
+        self.assertEqual(dav_request('GET', source['path'] + 'legacy-series.ics')[0], 200)
+        call_command('migrate_calendar_hosts', stdout=StringIO())
+        self.assertEqual(dav_request('GET', source['path'] + 'legacy-series.ics')[0], 404)
+        status, moved, headers = dav_request('GET', host['path'] + 'legacy-series.ics')
+        self.assertEqual(status, 200)
+        self.assertEqual(fingerprint(original), fingerprint(moved))
+        checkpoint = CalendarImport.objects.get(source_key='test:series')
+        self.assertEqual(checkpoint.calendar, host['key'])
+        self.assertEqual(checkpoint.etag, headers['ETag'])
+        output = StringIO()
+        call_command('migrate_calendar_hosts', stdout=output)
+        self.assertIn('0 moved; 0 conflicts', output.getvalue())
+
+    def test_moves_resume_after_copy_or_source_deletion_and_never_overwrite_conflicts(self):
+        _, host = self.make_host()
+        source = get_calendar()
+        for failure in ('copy', 'delete'):
+            resource = failure + '.ics'
+            _, original, headers = self.put_native(source, resource)
+            def interrupted(method, path, *args, **kwargs):
+                if method == 'DELETE':
+                    if failure == 'delete':
+                        dav_request(method, path, *args, **kwargs)
+                    raise CalendarUnavailable('Simulated interruption')
+                return dav_request(method, path, *args, **kwargs)
+            with patch('website.calendar_moves.dav_request', side_effect=interrupted):
+                with self.assertRaises(CalendarUnavailable):
+                    move_resource(source, host, resource, headers['ETag'])
+            call_command('migrate_calendar_hosts', stdout=StringIO())
+            self.assertTrue(CalendarMove.objects.get(source_path=source['path'] + resource).completed)
+            self.assertEqual(dav_request('GET', source['path'] + resource)[0], 404)
+            self.assertEqual(fingerprint(dav_request('GET', host['path'] + resource)[1]), fingerprint(original))
+        self.put_native(source, 'conflict.ics')
+        _, target, _ = self.put_native(host, 'conflict.ics', sig='different')
+        with self.assertRaises(MoveConflict):
+            move_resource(source, host, 'conflict.ics')
+        self.assertEqual(dav_request('GET', source['path'] + 'conflict.ics')[0], 200)
+        self.assertEqual(dav_request('GET', host['path'] + 'conflict.ics')[1], target)
+
+    def test_migration_reports_unknown_hosts_and_native_edits_block_pending_move(self):
+        _, host = self.make_host()
+        source = get_calendar()
+        self.put_native(source, 'unknown.ics', sig='missing-sig')
+        with self.assertRaises(CommandError):
+            call_command('migrate_calendar_hosts', stdout=StringIO(), stderr=StringIO())
+        self.assertEqual(dav_request('GET', source['path'] + 'unknown.ics')[0], 200)
+        _, original, headers = self.put_native(source, 'edited.ics')
+        with self.assertRaises(MoveConflict):
+            move_resource(source, host, 'edited.ics', '"stale"')
+        def interrupted(method, path, *args, **kwargs):
+            if method == 'DELETE':
+                raise CalendarUnavailable('Simulated interruption')
+            return dav_request(method, path, *args, **kwargs)
+        with patch('website.calendar_moves.dav_request', side_effect=interrupted):
+            with self.assertRaises(CalendarUnavailable):
+                move_resource(source, host, 'edited.ics', headers['ETag'])
+        edited = original.replace(b'SUMMARY:Native event', b'SUMMARY:Native correction')
+        dav_request('PUT', source['path'] + 'edited.ics', edited, {'Content-Type': 'text/calendar'})
+        with self.assertRaises(MoveConflict):
+            move_resource(source, host, 'edited.ics')
+        self.assertIn(b'Native correction', dav_request('GET', source['path'] + 'edited.ics')[1])
+
+    def test_native_gateway_moves_between_host_calendars_and_enforces_permissions(self):
+        _, host = self.make_host()
+        source = get_calendar()
+        _, original, headers = self.put_native(source, 'native-move.ics', recurring=True)
+        account = CalDAVAccount.objects.create(username='native', password_hash=make_password('native-passphrase'))
+        auth = 'Basic ' + base64.b64encode(b'native:native-passphrase').decode()
+        path = '/caldav' + source['path'] + 'native-move.ics'
+        destination = 'http://testserver/caldav' + host['path'] + 'native-move.ics'
+        response = Client().generic('MOVE', path, HTTP_AUTHORIZATION=auth, HTTP_DESTINATION=destination, HTTP_IF_MATCH=headers['ETag'])
+        self.assertEqual(response.status_code, 403)
+        account.can_edit = True
+        account.save()
+        response = Client().generic('MOVE', path, HTTP_AUTHORIZATION=auth, HTTP_DESTINATION=destination, HTTP_IF_MATCH=headers['ETag'])
+        self.assertEqual(response.status_code, 201, response.content)
+        self.assertEqual(fingerprint(dav_request('GET', host['path'] + 'native-move.ics')[1]), fingerprint(original))
+        self.assertEqual(Client().delete('/caldav' + host['path'], HTTP_AUTHORIZATION=auth).status_code, 403)
+        self.assertEqual(Client().get('/caldav/calendar-admin/sig-99999/', HTTP_AUTHORIZATION=auth).status_code, 404)
+
+    def test_moving_natively_edited_import_does_not_restore_sql_overwrite_permission(self):
+        _, host = self.make_host()
+        source = get_calendar()
+        _, original, headers = self.put_native(source, 'edited-import.ics')
+        checkpoint = CalendarImport.objects.create(source_key='event:99', fingerprint='old-source',
+                                                   resource='edited-import.ics', etag=headers['ETag'])
+        edited = original.replace(b'SUMMARY:Native event', b'SUMMARY:Native correction')
+        dav_request('PUT', source['path'] + 'edited-import.ics', edited, {'Content-Type': 'text/calendar'})
+        move_resource(source, host, 'edited-import.ics')
+        checkpoint.refresh_from_db()
+        self.assertEqual(checkpoint.calendar, host['key'])
+        self.assertEqual(checkpoint.etag, headers['ETag'])
+        self.assertNotEqual(checkpoint.etag, dav_request('GET', host['path'] + 'edited-import.ics')[2]['ETag'])

@@ -7,7 +7,6 @@ from datetime import datetime, timedelta
 import recurring_ical_events
 from icalendar import Calendar, Event as CalendarEvent
 
-from django.conf import settings
 from django.contrib import admin
 from django.contrib.admin.views.decorators import staff_member_required
 from django.core.exceptions import PermissionDenied
@@ -20,24 +19,25 @@ from django.views.decorators.clickjacking import xframe_options_sameorigin
 from django.views.decorators.csrf import ensure_csrf_cookie
 from django.views.decorators.http import require_http_methods, require_safe
 
-from .caldav import CalendarUnavailable, calendar_resources, dav_request, read_calendar
-from .models import Event, SIGS
+from .caldav import CalendarUnavailable, dav_request, ensure_calendar, host_resources, read_calendar
+from .calendar_hosts import calendar_hosts, get_calendar
+from .calendar_moves import MoveConflict, fingerprint, move_resource
+from .models import CalendarMove
 
 
 def can_edit(request):
     return request.user.is_active and request.user.is_staff and request.user.has_perm('website.change_event')
 
 
-def resource_path(resource):
+def resource_path(resource, host):
     if not re.fullmatch(r'[A-Za-z0-9_.@-]+\.ics', resource):
         raise Http404
-    return settings.CALDAV_COLLECTION + resource
+    return host['path'] + resource
 
 
 def calendar_events(start, end):
-    sigs = {sig.slug: sig for sig in SIGS.objects.all()}
     result = []
-    for resource, etag, content in calendar_resources():
+    for host, resource, etag, content in host_resources():
         calendar = Calendar.from_ical(content)
         original = calendar.walk('VEVENT')
         recurring = len(original) != 1 or any(
@@ -51,20 +51,18 @@ def calendar_events(start, end):
                 begins = timezone.make_aware(begins)
             if isinstance(finishes, datetime) and timezone.is_naive(finishes):
                 finishes = timezone.make_aware(finishes)
-            sig_slug = str(event.get('X-ACM-SIG', ''))
-            sig = sigs.get(sig_slug)
             result.append({
-                'id': resource + ('#' + begins.isoformat() if recurring else ''),
+                'id': host['key'] + '/' + resource + ('#' + begins.isoformat() if recurring else ''),
                 'title': str(event.get('SUMMARY', '(Untitled event)')),
                 'start': begins.isoformat(),
                 'end': finishes.isoformat() if finishes else None,
                 'allDay': all_day,
-                'color': sig.primary_color if sig else '#3F6FE6',
+                'color': host['color'],
                 'extendedProps': {
                     'resource': resource, 'etag': etag, 'recurring': recurring,
                     'description': str(event.get('DESCRIPTION', '')),
                     'location': str(event.get('LOCATION', '')),
-                    'sig': sig.slug if sig else '', 'kind': str(event.get('X-ACM-KIND', 'other')),
+                    'calendar': host['key'], 'host': host['name'], 'sig': host['slug'],
                 },
             })
     def start_timestamp(event):
@@ -77,9 +75,12 @@ def calendar_events(start, end):
 
 @require_safe
 @cache_control(public=True, max_age=300)
-def events_calendar(request):
+def events_calendar(request, calendar_key=None):
     try:
-        body, headers = read_calendar()
+        host = get_calendar(calendar_key) if calendar_key else None
+        body, headers = read_calendar(host)
+    except ValueError:
+        raise Http404('Calendar not found')
     except CalendarUnavailable as error:
         response = HttpResponse(str(error), status=503)
         response['Cache-Control'] = 'no-store'
@@ -88,6 +89,9 @@ def events_calendar(request):
     response['Content-Disposition'] = 'inline; filename="acmmanoa-events.ics"'
     if 'ETag' in headers:
         response['ETag'] = headers['ETag']
+        if request.headers.get('If-None-Match') == headers['ETag']:
+            response.status_code = 304
+            response.content = b''
     return response
 
 
@@ -117,7 +121,7 @@ def calendar_embed(request):
     if editor and not can_edit(request):
         raise PermissionDenied
     return render(request, 'calendar/embed.html', {
-        'editor': editor, 'sigs': SIGS.objects.all(), 'kinds': Event.KIND_CHOICES,
+        'editor': editor, 'hosts': calendar_hosts(),
     })
 
 
@@ -142,14 +146,15 @@ def parse_event_time(value, all_day):
 
 @require_http_methods(['POST', 'PUT', 'DELETE'])
 @never_cache
-def event_write(request, resource=None):
+def event_write(request, resource=None, calendar_key='acm'):
     if not can_edit(request):
         raise PermissionDenied
     try:
+        source = get_calendar(calendar_key)
         if request.method == 'POST' and resource or request.method != 'POST' and not resource:
             return JsonResponse({'error': 'Unsupported operation.'}, status=405)
         if resource:
-            path = resource_path(resource)
+            path = resource_path(resource, source)
             etag = request.headers.get('If-Match')
             if not etag or etag == '*':
                 return JsonResponse({'error': 'Reload the event before saving.'}, status=428)
@@ -160,13 +165,24 @@ def event_write(request, resource=None):
                 return JsonResponse({'error': 'Event changed. Reload before editing.'}, status=412)
             calendar = Calendar.from_ical(body)
             components = calendar.walk('VEVENT')
-            if len(components) != 1 or any(key in components[0] for key in ('RRULE', 'RDATE', 'RECURRENCE-ID')):
+            recurring = len(components) != 1 or any(key in components[0] for key in ('RRULE', 'RDATE', 'RECURRENCE-ID'))
+            if request.method == 'PUT':
+                data = json.loads(request.body)
+                if isinstance(data, dict) and set(data) == {'calendar'}:
+                    destination = get_calendar(data['calendar'])
+                    if destination['key'] != source['key']:
+                        ensure_calendar(destination)
+                        move_resource(source, destination, resource, etag)
+                    return JsonResponse({'resource': resource, 'calendar': destination['key']})
+                if CalendarMove.objects.filter(source_path=path, completed=False).exists():
+                    return JsonResponse({'error': 'This event has an unfinished host move. Resume it with migrate_calendar_hosts before editing its details.'}, status=409)
+            if recurring:
                 return JsonResponse({'error': 'Edit recurring events in a native CalDAV client.'}, status=409)
             event = components[0]
             conditions = {'If-Match': etag}
         else:
             resource = f'{uuid.uuid4()}.ics'
-            path = resource_path(resource)
+            path = resource_path(resource, source)
             calendar = Calendar()
             calendar.add('prodid', '-//ACM at UH Manoa//CalDAV//EN')
             calendar.add('version', '2.0')
@@ -191,31 +207,42 @@ def event_write(request, resource=None):
             end = parse_event_time(data['end'], all_day) if data.get('end') else None
             if end and end <= start:
                 raise ValueError('End must be after start (all-day end dates are exclusive).')
-            sig = data.get('sig', '')
-            kind = data.get('kind', 'other')
-            for field in ('description', 'location', 'sig', 'kind'):
+            destination = get_calendar(data.get('calendar', source['key']))
+            for field in ('description', 'location'):
                 if not isinstance(data.get(field, ''), str):
                     raise ValueError(f'{field} must be text.')
-            if sig and not SIGS.objects.filter(slug=sig).exists():
-                raise ValueError('Choose an existing SIG.')
-            if kind not in dict(Event.KIND_CHOICES):
-                raise ValueError('Choose a valid event kind.')
+            if resource and request.method == 'PUT' and destination['key'] != source['key']:
+                # Save edits with the original ETag, then move exactly the saved resource.
+                ensure_calendar(destination)
+            elif request.method == 'POST':
+                ensure_calendar(destination)
+                path = resource_path(resource, destination)
             for key, value in {
                 'SUMMARY': title.strip(), 'DESCRIPTION': data.get('description', ''),
                 'LOCATION': data.get('location', ''), 'DTSTART': start, 'DTEND': end,
-                'DURATION': None, 'X-ACM-SIG': sig, 'X-ACM-KIND': kind,
+                'DURATION': None,
                 'DTSTAMP': timezone.now(), 'LAST-MODIFIED': timezone.now(),
                 'SEQUENCE': int(event.get('SEQUENCE', 0)) + 1,
             }.items():
                 event.pop(key, None)
                 if value is not None:
                     event.add(key, value)
-            status, _, _ = dav_request('PUT', path, calendar.to_ical(), {
+            saved_content = calendar.to_ical()
+            status, _, saved_headers = dav_request('PUT', path, saved_content, {
                 **conditions, 'Content-Type': 'text/calendar; charset=utf-8',
             })
+            if status in (200, 201, 204) and request.method == 'PUT' and destination['key'] != source['key']:
+                current_status, current_content, current_headers = dav_request('GET', path)
+                if current_status != 200:
+                    raise CalendarUnavailable('Saved event could not be read; reload before retrying its move.')
+                if fingerprint(current_content) != fingerprint(saved_content):
+                    raise MoveConflict('Event changed after saving; its host was not changed.')
+                move_resource(source, destination, resource, saved_headers.get('ETag', current_headers['ETag']))
         if status not in (200, 201, 204):
             return JsonResponse({'error': 'Event changed; reload and try again.'}, status=412 if status == 412 else 502)
-        return JsonResponse({'resource': resource}, status=201 if request.method == 'POST' else 200)
+        return JsonResponse({'resource': resource, 'calendar': source['key'] if request.method == 'DELETE' else destination['key']}, status=201 if request.method == 'POST' else 200)
+    except MoveConflict as error:
+        return JsonResponse({'error': str(error) + ' Reload the calendar before retrying.'}, status=409)
     except (ValueError, TypeError, OverflowError) as error:
         return JsonResponse({'error': str(error)}, status=400)
     except CalendarUnavailable as error:

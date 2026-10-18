@@ -6,6 +6,9 @@ from urllib.error import HTTPError, URLError
 from urllib.request import Request, urlopen
 from urllib.parse import unquote, urlsplit
 from xml.etree import ElementTree
+from xml.sax.saxutils import escape
+
+from icalendar import Calendar
 
 from django.conf import settings
 
@@ -36,40 +39,70 @@ def dav_request(method, path, body=None, headers=None, *, script_name=''):
         return response.status, response.read(), response.headers
 
 
-def ensure_calendar():
-    status, _, _ = dav_request('PROPFIND', settings.CALDAV_COLLECTION, headers={'Depth': '0'})
-    if status == 207:
-        return
-    if status != 404:
+def ensure_calendar(host=None):
+    from .calendar_hosts import get_calendar
+    from .models import ProvisionedCalendar
+    host = host or get_calendar()
+    status, _, _ = dav_request('PROPFIND', host['path'], headers={'Depth': '0'})
+    if status not in (207, 404):
         raise CalendarUnavailable(f'Cannot inspect calendar (HTTP {status}).')
-    body = b'''<?xml version="1.0" encoding="utf-8"?>
-<C:mkcalendar xmlns:D="DAV:" xmlns:C="urn:ietf:params:xml:ns:caldav">
-  <D:set><D:prop><D:displayname>ACM at UH Manoa Events</D:displayname>
-  <C:supported-calendar-component-set><C:comp name="VEVENT"/></C:supported-calendar-component-set>
-  </D:prop></D:set>
-</C:mkcalendar>'''
-    status, _, _ = dav_request('MKCALENDAR', settings.CALDAV_COLLECTION, body, {'Content-Type': 'application/xml'})
-    # Another worker may have created it concurrently.
-    if status not in (201, 405):
-        raise CalendarUnavailable(f'Cannot create calendar (HTTP {status}).')
+    properties = f'''<D:set><D:prop><D:displayname>{escape(host['name'])}</D:displayname>
+    <A:calendar-color>{escape(host['color'])}FF</A:calendar-color>
+    </D:prop></D:set>'''
+    attributes = 'xmlns:D="DAV:" xmlns:C="urn:ietf:params:xml:ns:caldav" xmlns:A="http://apple.com/ns/ical/"'
+    if status == 404:
+        supported = '<C:supported-calendar-component-set><C:comp name="VEVENT"/></C:supported-calendar-component-set>'
+        creation = properties.replace('</D:prop>', supported + '</D:prop>')
+        body = f'<C:mkcalendar {attributes}>{creation}</C:mkcalendar>'.encode()
+        status, _, _ = dav_request('MKCALENDAR', host['path'], body, {'Content-Type': 'application/xml'})
+        if status not in (201, 405):
+            raise CalendarUnavailable(f'Cannot create calendar (HTTP {status}).')
+    body = f'<D:propertyupdate {attributes}>{properties}</D:propertyupdate>'.encode()
+    status, response, _ = dav_request('PROPPATCH', host['path'], body, {'Content-Type': 'application/xml'})
+    if status != 207 or any(' 200 ' not in (node.text or '') for node in ElementTree.fromstring(response).iter('{DAV:}status')):
+        raise CalendarUnavailable(f'Cannot set calendar metadata (HTTP {status}).')
+    if host['sig_id']:
+        ProvisionedCalendar.objects.get_or_create(sig_id=host['sig_id'])
 
 
-def read_calendar():
-    status, body, headers = dav_request('GET', settings.CALDAV_COLLECTION)
-    if status != 200:
-        raise CalendarUnavailable(f'Cannot read calendar (HTTP {status}).')
-    return body, headers
+def ensure_calendars():
+    from .calendar_hosts import calendar_hosts
+    for host in calendar_hosts():
+        ensure_calendar(host)
 
 
-def calendar_resources():
+def read_calendar(host=None):
+    from .calendar_hosts import calendar_hosts
+    calendar = Calendar()
+    calendar.add('prodid', '-//ACM at UH Manoa//CalDAV//EN')
+    calendar.add('version', '2.0')
+    calendar.add('x-wr-calname', host['name'] if host else 'ACM and SIG events')
+    components = set()
+    for owner in [host] if host else calendar_hosts():
+        for _, _, content in calendar_resources(owner):
+            for component in Calendar.from_ical(content).subcomponents:
+                # Keep recurrence exceptions and time zones, without duplicate zones.
+                encoded = component.to_ical()
+                if component.name != 'VTIMEZONE' or encoded not in components:
+                    calendar.add_component(component)
+                components.add(encoded)
+    body = calendar.to_ical()
+    return body, {'ETag': '"' + hashlib.sha256(body).hexdigest() + '"'}
+
+
+def calendar_resources(host=None):
     """Fetch resource names and ETags together with their iCalendar content."""
+    from .calendar_hosts import get_calendar
+    host = host or get_calendar()
     body = b'''<C:calendar-query xmlns:D="DAV:" xmlns:C="urn:ietf:params:xml:ns:caldav">
 <D:prop><D:getetag/><C:calendar-data/></D:prop>
 <C:filter><C:comp-filter name="VCALENDAR"><C:comp-filter name="VEVENT"/></C:comp-filter></C:filter>
 </C:calendar-query>'''
-    status, data, _ = dav_request('REPORT', settings.CALDAV_COLLECTION, body, {
+    status, data, _ = dav_request('REPORT', host['path'], body, {
         'Content-Type': 'application/xml', 'Depth': '1',
     })
+    if status == 404:
+        return []
     if status != 207:
         raise CalendarUnavailable(f'Cannot query events (HTTP {status}).')
     try:
@@ -87,3 +120,10 @@ def calendar_resources():
         return result
     except ElementTree.ParseError as error:
         raise CalendarUnavailable('Calendar returned an invalid response.') from error
+
+
+def host_resources():
+    from .calendar_hosts import calendar_hosts
+    for host in calendar_hosts():
+        for resource, etag, content in calendar_resources(host):
+            yield host, resource, etag, content

@@ -5,6 +5,12 @@
   <h2 id="calendar-subscription-title">Subscribe to events</h2>
   <p id="calendar-subscription-description">Which calendar software would you like to use?</p>
 
+  <label for="calendar-host">Events to subscribe to</label>
+  <select id="calendar-host">
+    <option value="{% url 'events_calendar' %}">All ACM and SIG events</option>
+    {% for host in calendar_hosts %}<option value="{% url 'host_calendar' host.key %}">{{ host.name }}</option>{% endfor %}
+  </select>
+
   <label for="calendar-software">Calendar software</label>
   <select id="calendar-software" autofocus>
     <option value="">Choose your calendar software</option>
@@ -76,5 +82,5 @@
     </div>
     <p id="calendar-copy-status" role="status" aria-live="polite"></p>
   </div>
-  <p class="calendar-subscription-note">Includes all ACM and SIG events, regardless of the filters on this page. Your calendar app controls how often updates appear.</p>
+   <p class="calendar-subscription-note">Subscribe to all events or one host calendar. This selection is independent of the filters on this page. Your calendar app controls how often updates appear.</p>
 </dialog>

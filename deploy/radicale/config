@@ -6,6 +6,7 @@ max_content_length = 20000000
 type = htpasswd
 htpasswd_filename = /data/users
 htpasswd_encryption = bcrypt
+cache_logins = True
 
 [rights]
 type = owner_only

@@ -9,14 +9,19 @@ of the website, calendar account password hashes, and the legacy event archive.
 
 1. Start the stack with `docker compose up --build` (production uses
    `docker compose -f docker-compose.prod.yml up -d --build`). Startup provisions
-   the shared calendar automatically.
+   an ACM calendar and one calendar for each SIG automatically.
 2. Sign into Django admin and open **Calendar** (`/admin/calendar/`) in the top
    menu (also under Website in the sidebar when that app is visible).
    Staff need the **website | event | Can change event** permission; superusers
    already have it.
 3. Select a date/time to create an event or select an event to edit/delete it.
    Times are in **Pacific/Honolulu**; all-day end dates are exclusive.
-   Recurring series can be viewed here and edited with a native CalDAV client.
+    Recurring series can be viewed here and edited with a native CalDAV client.
+
+Choose **Host** to select the actual CalDAV calendar. Changing it moves the event
+to that calendar, preserving its UID. For recurring events, Host is the only
+editable field here and moves the entire series, including exceptions. Kind is
+no longer shown or required; existing custom metadata is retained.
 
 The iframe reuses the Django session. Django and Radicale independently derive
 the private `calendar-admin` service password from `SECRET_KEY`; Radicale creates
@@ -27,8 +32,10 @@ restart both services together if rotating it. Port 5232 is internal only.
 ## Create, reset, or revoke a calendar account
 
 In Django admin, open **CalDAV accounts → Add**. Enter a username and password.
-Enable **Can edit** only for people allowed to change the shared public calendar.
-All accounts see the same ACM/SIG calendar; these are not private calendars.
+Enable **Can edit** only for people allowed to change all public host calendars.
+All accounts discover ACM and the individual SIG calendars. Read-only accounts
+can read all of them; editing accounts can edit all of them. Permissions are not
+restricted per SIG, and these are not private calendars.
 
 Give the person their username, password, and the server URL:
 
@@ -41,6 +48,16 @@ For clients requiring the collection URL instead of discovery, use:
 ```text
 https://acmmanoa.org/caldav/calendar-admin/events/
 ```
+
+That is the ACM calendar. SIG collections use
+`/caldav/calendar-admin/sig-<database-id>/`. Names and colors are provisioned from
+the website's SIG records; client color support varies. Calendar paths remain
+stable when a SIG is renamed or its slug changes. Creating or saving a SIG in
+admin provisions/updates its calendar; `python manage.py setup_calendar`
+synchronizes all calendars after scripted SIG changes. Provisioned SIG records
+are protected against deletion to prevent orphaning live calendars. Retiring a
+SIG requires explicitly moving/exporting its events and retiring its calendar
+mapping before deleting the SIG; normal admin deletion cannot bypass this.
 
 Use your deployment's hostname for previews. Development URLs start with
 `http://localhost:8000/`; use HTTPS for real devices. CalDAV accounts are separate
@@ -79,7 +96,7 @@ Accounts → Add Account → Other → Add CalDAV Account** (on older iOS versio
 **Settings → Calendar → Accounts**). Use the HTTPS CalDAV server URL above, the
 issued username/password, and a description. Under advanced settings, SSL must
 be enabled and the port must be **443**. If discovery fails, use the collection
-URL above as the account URL. Enable Calendars and select the ACM calendar when
+URL above as the account URL. Enable Calendars and select the desired host calendar when
 creating events. Read-only accounts cannot save changes.
 
 For a **public subscription**, open Calendar → **Calendars → Add Calendar → Add
@@ -94,7 +111,7 @@ Subscription Calendar**, paste the feed URL, and confirm. The Events page's
 For **editable CalDAV access**, choose **Calendar → Add Account → Other CalDAV
 Account**. Choose **Manual** and enter the issued credentials and the server
 URL above. If necessary use **Advanced** with your domain, server path
-`/caldav/`, port **443**, and SSL enabled. Select the ACM calendar when creating
+`/caldav/`, port **443**, and SSL enabled. Select the desired host calendar when creating
 events. For clients that do not discover it, use the explicit collection URL.
 
 For a **public subscription**, choose **File → New Calendar Subscription**,
@@ -116,6 +133,49 @@ Changes appear on the client's next refresh; the calendar app controls timing
 and the feed may be cached for five minutes. Importing a downloaded file does
 not subscribe to changes. Anyone can read these events; keep private material
 out of this calendar.
+
+Individual host feeds are also available:
+
+```text
+https://acmmanoa.org/events/calendars/acm.ics
+https://acmmanoa.org/events/calendars/sig-<database-id>.ics
+```
+
+The subscription chooser lets users select **All ACM and SIG events** or one
+host. Each feed advertises its calendar name. The combined feed retains time
+zones and recurrence exceptions, and its ETag changes when any included calendar
+changes. The website still aggregates every host into one filterable view.
+
+## Upgrade from the single shared calendar
+
+Back up SQL and Radicale, and pause calendar edits during the move. Deploy this
+version and run SQL migrations and `setup_calendar` first (normal startup does
+both). Then run:
+
+```sh
+docker compose exec web python manage.py migrate_calendar_hosts --dry-run
+docker compose exec web python manage.py migrate_calendar_hosts
+```
+
+The dry run reads CalDAV but writes neither SQL nor calendar data. The command
+uses legacy `X-ACM-SIG` values to move SIG resources out of the ACM collection.
+Unassigned events remain in ACM. Unknown or inconsistent SIG references and
+destination conflicts are reported, left untouched, and cause a nonzero exit.
+Review those events before reopening editing. A recurring resource is moved as
+one unit, including exceptions and time zones. The containing collection is the
+authoritative host after migration; legacy custom host properties are retained
+only for compatibility and archival fidelity.
+
+Moves copy with `If-None-Match: *`, verify event/timezone content, and conditionally
+delete the source using its original ETag. SQL move checkpoints allow the same
+command to resume after an interruption, even after the source was deleted.
+It also resumes pending moves initiated by the editor or native gateway.
+Changed sources or destinations require review rather than automatic overwrite.
+If a conflict leaves two copies, inspect both and resolve the pending checkpoint
+before retrying; don't blindly delete a copy that may contain somebody's edits.
+Completed moves update legacy import locations/ETags without making previously
+edited events eligible for SQL overwrite. The existing combined feed URL stays
+the same; native clients will discover the new calendars on their next refresh.
 
 The Events page reuses the software chooser, copyable URL, `webcal://` links,
 and official setup instructions from `explore/subscribe-only`. This branch is

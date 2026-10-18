@@ -5,7 +5,8 @@ from .models import *
 from datetime import timedelta
 from django.utils import timezone
 from django.utils.dateparse import parse_date, parse_datetime
-from .caldav import CalendarUnavailable, calendar_resources
+from .caldav import CalendarUnavailable, host_resources
+from .calendar_hosts import calendar_hosts
 from .calendar import calendar_events
 from icalendar import Calendar
 
@@ -46,12 +47,13 @@ def about(request):
 def events(request):
     return render(request, 'pages/events.html', {
         'calendar_feed_url': request.build_absolute_uri(reverse('events_calendar')),
+        'calendar_hosts': calendar_hosts(),
     })
 
 def event_detail(request, slug):
     # Preserve legacy event URLs using metadata carried into Radicale.
     try:
-        for _, _, content in calendar_resources():
+        for _, _, _, content in host_resources():
             for entry in Calendar.from_ical(content).walk('VEVENT'):
                 if str(entry.get('X-ACM-SLUG', '')) == slug:
                     event = {

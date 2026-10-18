@@ -2,12 +2,12 @@ import hashlib
 from datetime import datetime, timedelta, timezone as datetime_timezone
 from zoneinfo import ZoneInfo
 
-from django.conf import settings
 from django.core.management.base import BaseCommand, CommandError
 from django.utils.dateparse import parse_date
 from icalendar import Calendar, Event as CalendarEvent
 
-from website.caldav import CalendarUnavailable, dav_request, ensure_calendar
+from website.caldav import CalendarUnavailable, dav_request, ensure_calendars
+from website.calendar_hosts import calendar_for_slug, get_calendar
 from website.models import CalendarImport, Event, SIGS
 
 
@@ -87,7 +87,7 @@ class Command(BaseCommand):
             self.stdout.write('SIG schedules require an explicit --meeting-start date; importing Event records only.')
         if not options['dry_run']:
             try:
-                ensure_calendar()
+                ensure_calendars()
             except CalendarUnavailable as error:
                 raise CommandError(str(error)) from error
         imported = skipped = conflicts = 0
@@ -105,7 +105,8 @@ class Command(BaseCommand):
                 self.stdout.write(f'{"Update" if checkpoint else "Import"} {key} -> {resource}')
                 imported += 1
                 continue
-            path = settings.CALDAV_COLLECTION + resource
+            host = get_calendar(checkpoint.calendar) if checkpoint else calendar_for_slug(str(entry.get('X-ACM-SIG', '')))
+            path = host['path'] + resource
             conditions = {'If-Match': checkpoint.etag} if checkpoint else {'If-None-Match': '*'}
             entry.add('x-acm-legacy-hash', fingerprint)
             content = calendar_for(entry).to_ical()
@@ -117,7 +118,7 @@ class Command(BaseCommand):
                     # Recover a successful upload whose SQL checkpoint was interrupted.
                     status, existing, headers = dav_request('GET', path)
                     if status == 200 and self.same_event(existing, entry):
-                        self.record(key, fingerprint, resource, headers['ETag'])
+                        self.record(key, fingerprint, resource, headers['ETag'], host['key'])
                         imported += 1
                         continue
                     status = 412
@@ -128,7 +129,7 @@ class Command(BaseCommand):
                 status, uploaded, headers = dav_request('GET', path)
                 if status != 200 or not self.same_event(uploaded, entry):
                     raise CalendarUnavailable(f'{key}: upload verification failed; retry to recover the checkpoint.')
-                self.record(key, fingerprint, resource, headers['ETag'])
+                self.record(key, fingerprint, resource, headers['ETag'], host['key'])
                 imported += 1
             except CalendarUnavailable as error:
                 raise CommandError(f'{error} Completed imports are checkpointed; rerun to resume.') from error
@@ -142,7 +143,7 @@ class Command(BaseCommand):
         return len(entries) == 1 and entries[0].to_ical() == expected.to_ical()
 
     @staticmethod
-    def record(key, fingerprint, resource, etag):
+    def record(key, fingerprint, resource, etag, calendar='acm'):
         CalendarImport.objects.update_or_create(source_key=key, defaults={
-            'fingerprint': fingerprint, 'resource': resource, 'etag': etag,
+            'fingerprint': fingerprint, 'resource': resource, 'etag': etag, 'calendar': calendar,
         })

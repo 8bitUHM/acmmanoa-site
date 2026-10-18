@@ -9,7 +9,7 @@ class CalDAVAccount(models.Model):
     )])
     password_hash = models.CharField(max_length=128, editable=False)
     is_active = models.BooleanField(default=True)
-    can_edit = models.BooleanField(default=False, help_text='Allow editing the shared public calendar.')
+    can_edit = models.BooleanField(default=False, help_text='Allow editing all public host calendars.')
 
     class Meta:
         verbose_name = 'CalDAV account'
@@ -23,6 +23,7 @@ class CalendarImport(models.Model):
     source_key = models.CharField(max_length=100, unique=True)
     fingerprint = models.CharField(max_length=64)
     resource = models.CharField(max_length=200, unique=True)
+    calendar = models.CharField(max_length=64, default='acm')
     etag = models.CharField(max_length=200)
     imported_at = models.DateTimeField(auto_now=True)
 
@@ -339,6 +340,20 @@ class Leadership(models.Model):
     def delete(self, *args, **kwargs):
         super(Leadership, self).delete(*args, **kwargs)
         File.objects.filter(filename = self.image.name).delete()
+
+class ProvisionedCalendar(models.Model):
+    # Protect a live calendar's owner from being deleted out from under its events.
+    sig = models.OneToOneField(SIGS, on_delete=models.PROTECT)
+
+
+class CalendarMove(models.Model):
+    source_path = models.CharField(max_length=512, unique=True)
+    destination_path = models.CharField(max_length=512)
+    source_etag = models.CharField(max_length=255)
+    fingerprint = models.CharField(max_length=64)
+    destination_etag = models.CharField(max_length=255, blank=True)
+    completed = models.BooleanField(default=False)
+
 
 class FAQ(models.Model):
     question = models.CharField(max_length=100, unique=True, help_text="Question that is asked frequently")

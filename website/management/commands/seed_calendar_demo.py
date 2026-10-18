@@ -1,13 +1,13 @@
 from datetime import datetime, time, timedelta, timezone as datetime_timezone
 from zoneinfo import ZoneInfo
 
-from django.conf import settings
 from django.core.management.base import BaseCommand, CommandError
 from django.utils import timezone
 from django.utils.dateparse import parse_date
 from icalendar import Calendar, Event
 
-from website.caldav import CalendarUnavailable, dav_request, ensure_calendar
+from website.caldav import CalendarUnavailable, dav_request, ensure_calendars, host_resources
+from website.calendar_hosts import calendar_for_slug
 from website.models import SIGS
 
 
@@ -25,7 +25,6 @@ class Command(BaseCommand):
         if anchor is None:
             raise CommandError('--start-date must be a valid YYYY-MM-DD date.')
         try:
-            ensure_calendar()
             for slug, name, color in [
                 ('demo-caldav-ai', '[DEMO] AI SIG', '#7C3AED'),
                 ('demo-caldav-security', '[DEMO] Security SIG', '#059669'),
@@ -33,6 +32,8 @@ class Command(BaseCommand):
                 SIGS.objects.get_or_create(slug=slug, defaults={
                     'name': name, 'about': 'Sample group for the CalDAV preview.', 'primary_color': color,
                 })
+            ensure_calendars()
+            existing = {resource for _, resource, _, _ in host_resources()}
             specs = [
                 ('orientation', 'Past orientation', -3, 17, 'meeting', '', 'POST 318B'),
                 ('welcome', 'Welcome and pizza night', 1, 18, 'social', '', 'Campus Center'),
@@ -45,6 +46,10 @@ class Command(BaseCommand):
             ]
             created = skipped = 0
             for key, title, offset, hour, kind, sig, location in specs:
+                resource = f'demo-caldav-{key}.ics'
+                if resource in existing:
+                    skipped += 1
+                    continue
                 day = anchor + timedelta(days=offset)
                 entry = Event()
                 entry.add('uid', f'demo-caldav-{key}@acmmanoa.org')
@@ -68,7 +73,7 @@ class Command(BaseCommand):
                 calendar.add('prodid', '-//ACM at UH Manoa//CalDAV demo//EN')
                 calendar.add('version', '2.0')
                 calendar.add_component(entry)
-                status, _, _ = dav_request('PUT', settings.CALDAV_COLLECTION + f'demo-caldav-{key}.ics', calendar.to_ical(), {
+                status, _, _ = dav_request('PUT', calendar_for_slug(sig)['path'] + resource, calendar.to_ical(), {
                     'Content-Type': 'text/calendar; charset=utf-8', 'If-None-Match': '*',
                 })
                 if status == 412:

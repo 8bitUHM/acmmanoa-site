@@ -2,6 +2,8 @@ from django.contrib import admin
 from django import forms
 from .models import *
 from .caldav_accounts import CalDAVAccountForm
+from .caldav import CalendarUnavailable, ensure_calendar
+from .calendar_hosts import get_calendar
 
 
 @admin.register(CalDAVAccount)
@@ -30,6 +32,13 @@ class SIGSAdmin(admin.ModelAdmin):
     form = SIGSForm
     inlines = [SIGSLeadershipInline]
     prepopulated_fields = { "slug": ["name"] }
+
+    def save_model(self, request, obj, form, change):
+        super().save_model(request, obj, form, change)
+        try:
+            ensure_calendar(get_calendar(f'sig-{obj.pk}'))
+        except CalendarUnavailable as error:
+            self.message_user(request, f'SIG saved. Calendar provisioning needs a retry: {error}', level='error')
     fieldsets = (
         ('Basic Information', {
             'fields': ('name', 'slug', 'expanded_name', 'about', 'logo')

@@ -21,7 +21,7 @@
   function field(name) { return form.elements.namedItem(name); }
   function filters() {
     const active = new Set(Array.from(document.querySelectorAll('.filters input:checked'), input => input.value));
-    calendar.getEvents().forEach(event => event.setProp('display', active.has(event.extendedProps.sig) ? 'auto' : 'none'));
+    calendar.getEvents().forEach(event => event.setProp('display', active.has(event.extendedProps.calendar) ? 'auto' : 'none'));
   }
   function inputTime(value, allDay) {
     if (!value) return '';
@@ -50,14 +50,15 @@
     field('title').value = event ? event.title : '';
     field('description').value = props.description || '';
     field('location').value = props.location || '';
-    field('sig').value = props.sig || '';
-    field('kind').value = props.kind || 'other';
+    field('calendar').value = props.calendar || 'acm';
     field('start').value = inputTime(event ? event.startStr : selection.startStr, allDay);
     field('end').value = inputTime(event ? event.endStr : selection.endStr, allDay);
     if (editor) {
-      save.hidden = !!props.recurring;
+      save.hidden = false;
       remove.hidden = !event || !!props.recurring;
-      if (props.recurring) message.textContent = 'Edit recurring events using an editable CalDAV account in Apple Calendar or another CalDAV client.';
+      for (const name of ['title', 'description', 'location', 'start', 'end']) field(name).readOnly = !!props.recurring;
+      field('allDay').disabled = !!props.recurring;
+      if (props.recurring) message.textContent = 'Host changes move the entire recurring series. Edit other details in a native CalDAV client.';
     }
     dialog.showModal();
   }
@@ -91,7 +92,7 @@
       window.requestAnimationFrame(function () {
         const active = new Set(Array.from(document.querySelectorAll('.filters input:checked'), input => input.value));
         calendar.getEvents().forEach(function (event) {
-          const display = active.has(event.extendedProps.sig) ? 'auto' : 'none';
+          const display = active.has(event.extendedProps.calendar) ? 'auto' : 'none';
           if (event.display !== display) event.setProp('display', display);
         });
       });
@@ -113,15 +114,17 @@
       const allDay = field('allDay').checked;
       const convert = value => !value ? null : allDay ? value : DateTime.fromISO(value, { zone }).toISO();
       const resource = selected ? selected.extendedProps.resource : null;
-      const url = resource ? config.dataset.write + encodeURIComponent(resource) + '/' : config.dataset.write;
+      const url = resource ? config.dataset.write + encodeURIComponent(selected.extendedProps.calendar) + '/' + encodeURIComponent(resource) + '/' : config.dataset.write;
       const headers = { 'Content-Type': 'application/json', 'X-CSRFToken': field('csrfmiddlewaretoken').value };
       if (selected) headers['If-Match'] = selected.extendedProps.etag;
       const response = await fetch(url, {
         method, headers, credentials: 'same-origin',
-        body: method === 'DELETE' ? undefined : JSON.stringify({
+        body: method === 'DELETE' ? undefined : JSON.stringify(selected && selected.extendedProps.recurring ? {
+          calendar: field('calendar').value,
+        } : {
           title: field('title').value, description: field('description').value,
           location: field('location').value, start: convert(field('start').value),
-          end: convert(field('end').value), allDay, sig: field('sig').value, kind: field('kind').value,
+          end: convert(field('end').value), allDay, calendar: field('calendar').value,
         }),
       });
       if (!response.ok) {

@@ -1,6 +1,7 @@
 import base64
 import binascii
 import re
+from urllib.parse import urlsplit, unquote
 
 from django import forms
 from django.contrib.auth.hashers import check_password, make_password
@@ -10,6 +11,8 @@ from django.views.decorators.csrf import csrf_exempt
 
 from .caldav import CalendarUnavailable, dav_request
 from .models import CalDAVAccount
+from .calendar_hosts import calendar_hosts
+from .calendar_moves import MoveConflict, move_resource
 
 
 class CalDAVAccountForm(forms.ModelForm):
@@ -57,18 +60,43 @@ def caldav_gateway(request, path=''):
         response['Cache-Control'] = 'no-store'
         return response
 
-    # All provisioned accounts share this one public calendar. No arbitrary DAV proxying.
-    if not re.fullmatch(r'(calendar-admin/(events/([A-Za-z0-9_.@-]+\.ics)?)?)?', path):
+    hosts = calendar_hosts()
+    collections = {host['path'].lstrip('/'): host for host in hosts}
+    collection = next((key for key in collections if path.startswith(key)), None)
+    resource = path[len(collection):] if collection else ''
+    principal = hosts[0]['path'].strip('/').rsplit('/', 1)[0] + '/'
+    if path not in ('', principal) and (not collection or (resource and not re.fullmatch(r'[A-Za-z0-9_.@-]+\.ics', resource))):
         return HttpResponse(status=404)
     read_methods = {'OPTIONS', 'GET', 'HEAD', 'PROPFIND', 'REPORT'}
     if request.method not in read_methods:
         if not account.can_edit:
             return HttpResponse(status=403)
-        if request.method in {'PUT', 'DELETE'}:
-            if not path.startswith('calendar-admin/events/') or not path.endswith('.ics'):
+        if request.method in {'PUT', 'DELETE', 'MOVE'}:
+            if not collection or not resource:
                 return HttpResponse('Only individual events may be changed.', status=403)
-        elif request.method != 'PROPPATCH' or path != 'calendar-admin/events/':
+        elif request.method != 'PROPPATCH' or path not in collections:
             return HttpResponse(status=405)
+
+    if request.method == 'MOVE':
+        target = urlsplit(request.headers.get('Destination', ''))
+        if target.netloc and target.netloc != request.get_host():
+            return HttpResponse('Destination must be on this server.', status=403)
+        target_path = unquote(target.path)
+        destination = next((host for key, host in collections.items()
+                            if target_path == '/caldav/' + key + resource), None)
+        if not destination or destination['key'] == collections[collection]['key']:
+            return HttpResponse('Choose another host calendar and preserve the resource name.', status=403)
+        try:
+            etag = move_resource(collections[collection], destination, resource, request.headers.get('If-Match'))
+        except MoveConflict as error:
+            return HttpResponse(str(error), status=412)
+        except CalendarUnavailable as error:
+            return HttpResponse(str(error), status=503)
+        response = HttpResponse(status=201)
+        response['Location'] = target_path
+        response['ETag'] = etag
+        response['Cache-Control'] = 'no-store'
+        return response
 
     headers = {name: request.headers[name] for name in (
         'Content-Type', 'Depth', 'If-Match', 'If-None-Match', 'Prefer',
