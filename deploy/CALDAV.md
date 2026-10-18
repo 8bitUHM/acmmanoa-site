@@ -191,7 +191,7 @@ For local development use the same commands with `docker compose exec web`.
 ## Checks
 
 ```sh
-python -m pip install -r requirements.txt 'Radicale[bcrypt]==3.5.10' 'bcrypt==4.0.1'
+python -m pip install -r requirements-test.txt
 python manage.py test
 ```
 
@@ -199,3 +199,4 @@ The CalDAV integration tests launch a real, isolated Radicale process with a
 temporary filesystem. They are skipped if the optional Radicale test dependency
 is not installed. Docker Compose is required to validate the complete deployed
 PostgreSQL/nginx/container stack.
+The CI test job installs `requirements-test.txt` so live CalDAV tests run there.

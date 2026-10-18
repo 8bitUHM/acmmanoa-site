@@ -84,7 +84,7 @@ class RadicaleIntegrationTest(TestCase):
         users.write_text('calendar-admin:' + bcrypt.hashpw(service_password().encode(), bcrypt.gensalt()).decode() + '\n')
         cls.log = (Path(cls.temp.name) / 'radicale.log').open('w+')
         cls.server = subprocess.Popen([
-            sys.executable, '-m', 'radicale', '--config', '',
+            sys.executable, '-m', 'radicale', '--config', str(Path(__file__).resolve().parents[1] / 'deploy/radicale/config'),
             '--server-hosts', f'127.0.0.1:{port}', '--auth-type', 'htpasswd',
             '--auth-htpasswd-filename', str(users), '--auth-htpasswd-encryption', 'bcrypt',
             '--storage-filesystem-folder', cls.temp.name + '/collections',
