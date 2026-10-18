@@ -1,6 +1,8 @@
 from django.db import models
 from datetime import datetime
 from django.core.validators import MaxLengthValidator, RegexValidator
+from django.conf import settings
+from django.core.exceptions import ValidationError
 
 
 class CalDAVAccount(models.Model):
@@ -9,13 +11,45 @@ class CalDAVAccount(models.Model):
     )])
     password_hash = models.CharField(max_length=128, editable=False)
     is_active = models.BooleanField(default=True)
-    can_edit = models.BooleanField(default=False, help_text='Allow editing all public host calendars.')
+    can_edit = models.BooleanField(
+        default=False, verbose_name='Can edit all calendars',
+        help_text='Global editing access, including future calendars. Leave unchecked to use the calendar editing grants below.',
+    )
 
     class Meta:
         verbose_name = 'CalDAV account'
 
     def __str__(self):
         return self.username
+
+
+class CalendarEditGrant(models.Model):
+    calendar = models.CharField(max_length=64, validators=[RegexValidator(r'^(acm|sig-[1-9][0-9]*)$')])
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.CASCADE,
+                             related_name='calendar_edit_grants')
+    account = models.ForeignKey(CalDAVAccount, null=True, blank=True, on_delete=models.CASCADE,
+                                related_name='calendar_edit_grants')
+
+    class Meta:
+        constraints = [
+            models.CheckConstraint(
+                check=(models.Q(user__isnull=False, account__isnull=True) |
+                       models.Q(user__isnull=True, account__isnull=False)),
+                name='calendar_grant_one_identity',
+            ),
+            models.UniqueConstraint(fields=('user', 'calendar'), name='calendar_grant_unique_user'),
+            models.UniqueConstraint(fields=('account', 'calendar'), name='calendar_grant_unique_account'),
+        ]
+
+    def clean(self):
+        from .calendar_hosts import get_calendar
+        try:
+            get_calendar(self.calendar)
+        except ValueError as error:
+            raise ValidationError({'calendar': str(error)}) from error
+
+    def __str__(self):
+        return f'{self.user or self.account}: {self.calendar}'
 
 
 class CalendarImport(models.Model):

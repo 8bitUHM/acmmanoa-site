@@ -2,6 +2,7 @@ import base64
 import binascii
 import re
 from urllib.parse import urlsplit, unquote
+from xml.etree import ElementTree
 
 from django import forms
 from django.contrib.auth.hashers import check_password, make_password
@@ -13,6 +14,29 @@ from .caldav import CalendarUnavailable, dav_request
 from .models import CalDAVAccount
 from .calendar_hosts import calendar_hosts
 from .calendar_moves import MoveConflict, move_resource
+from .calendar_permissions import account_editable_calendars
+
+
+def scoped_privileges(body, hosts, editable):
+    """Advertise the caller's rights, not the upstream service account's rights."""
+    try:
+        root = ElementTree.fromstring(body)
+    except ElementTree.ParseError:
+        return body
+    changed = False
+    for result in root.findall('{DAV:}response'):
+        path = unquote(urlsplit(result.findtext('{DAV:}href', '')).path).removeprefix('/caldav')
+        owner = next((host for host in hosts if path.startswith(host['path'])), None)
+        for privileges in result.iter('{DAV:}current-user-privilege-set'):
+            privileges.clear()
+            names = ['read', 'read-current-user-privilege-set']
+            if owner and owner['key'] in editable:
+                names += ['write', 'write-content', 'write-properties', 'bind', 'unbind']
+            for name in names:
+                privilege = ElementTree.SubElement(privileges, '{DAV:}privilege')
+                ElementTree.SubElement(privilege, '{DAV:}' + name)
+            changed = True
+    return ElementTree.tostring(root, encoding='utf-8', xml_declaration=True) if changed else body
 
 
 class CalDAVAccountForm(forms.ModelForm):
@@ -68,8 +92,9 @@ def caldav_gateway(request, path=''):
     if path not in ('', principal) and (not collection or (resource and not re.fullmatch(r'[A-Za-z0-9_.@-]+\.ics', resource))):
         return HttpResponse(status=404)
     read_methods = {'OPTIONS', 'GET', 'HEAD', 'PROPFIND', 'REPORT'}
+    editable = account_editable_calendars(account)
     if request.method not in read_methods:
-        if not account.can_edit:
+        if not collection or collections[collection]['key'] not in editable:
             return HttpResponse(status=403)
         if request.method in {'PUT', 'DELETE', 'MOVE'}:
             if not collection or not resource:
@@ -86,6 +111,8 @@ def caldav_gateway(request, path=''):
                             if target_path == '/caldav/' + key + resource), None)
         if not destination or destination['key'] == collections[collection]['key']:
             return HttpResponse('Choose another host calendar and preserve the resource name.', status=403)
+        if destination['key'] not in editable:
+            return HttpResponse('You cannot edit the destination calendar.', status=403)
         try:
             etag = move_resource(collections[collection], destination, resource, request.headers.get('If-Match'))
         except MoveConflict as error:
@@ -107,6 +134,8 @@ def caldav_gateway(request, path=''):
         )
     except CalendarUnavailable as error:
         return HttpResponse(str(error), status=503)
+    if status == 207 and request.method == 'PROPFIND':
+        body = scoped_privileges(body, hosts, editable)
     response = HttpResponse(body, status=status)
     for name in ('Content-Type', 'ETag', 'DAV', 'Allow', 'Location', 'Last-Modified'):
         if name in upstream:

@@ -44,21 +44,24 @@
     form.reset();
     message.textContent = '';
     const props = event ? event.extendedProps : {};
+    const readOnly = !editor || !!event && !props.canEdit;
     const allDay = event ? event.allDay : selection.allDay;
     field('allDay').checked = allDay;
     for (const name of ['start', 'end']) field(name).type = allDay ? 'date' : 'datetime-local';
     field('title').value = event ? event.title : '';
     field('description').value = props.description || '';
     field('location').value = props.location || '';
-    field('calendar').value = props.calendar || 'acm';
+    field('calendar').value = props.calendar || config.dataset.defaultCalendar;
+    field('calendar').disabled = readOnly;
     field('start').value = inputTime(event ? event.startStr : selection.startStr, allDay);
     field('end').value = inputTime(event ? event.endStr : selection.endStr, allDay);
     if (editor) {
-      save.hidden = false;
-      remove.hidden = !event || !!props.recurring;
-      for (const name of ['title', 'description', 'location', 'start', 'end']) field(name).readOnly = !!props.recurring;
-      field('allDay').disabled = !!props.recurring;
-      if (props.recurring) message.textContent = 'Host changes move the entire recurring series. Edit other details in a native CalDAV client.';
+      save.hidden = readOnly;
+      remove.hidden = readOnly || !event || !!props.recurring;
+      for (const name of ['title', 'description', 'location', 'start', 'end']) field(name).readOnly = readOnly || !!props.recurring;
+      field('allDay').disabled = readOnly || !!props.recurring;
+      if (readOnly) message.textContent = 'You have read-only access to this host calendar.';
+      else if (props.recurring) message.textContent = 'Host changes move the entire recurring series. Edit other details in a native CalDAV client.';
     }
     dialog.showModal();
   }
@@ -105,7 +108,7 @@
   document.getElementById('event-close').addEventListener('click', () => dialog.close());
 
   async function write(method) {
-    if (busy) return;
+    if (busy || selected && !selected.extendedProps.canEdit) return;
     busy = true;
     save.disabled = true;
     remove.disabled = true;

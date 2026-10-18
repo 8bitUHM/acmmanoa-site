@@ -16,6 +16,8 @@ from xml.etree import ElementTree
 from urllib.parse import unquote, urlsplit
 
 from django.contrib.auth.hashers import check_password, make_password
+from django.contrib.auth.models import Permission
+from django.core.exceptions import ValidationError
 from django.test import Client, TestCase, override_settings
 from django.contrib.auth import get_user_model
 from django.core.management import call_command
@@ -25,7 +27,7 @@ from django.urls import reverse
 from icalendar import Calendar
 
 from .caldav_accounts import CalDAVAccountForm
-from .models import CalDAVAccount, CalendarImport, CalendarMove, Event, SIGS
+from .models import CalDAVAccount, CalendarEditGrant, CalendarImport, CalendarMove, Event, SIGS
 from .caldav import CalendarUnavailable, calendar_resources, dav_request, ensure_calendar, service_password
 from .calendar_hosts import get_calendar
 from .calendar_moves import MoveConflict, move_resource, fingerprint
@@ -48,6 +50,50 @@ class CalDAVAccountsTest(TestCase):
         form = CalDAVAccountForm({**data, 'password': ''}, instance=account)
         self.assertTrue(form.is_valid(), form.errors)
         self.assertEqual(form.save().password_hash, original)
+
+    @patch('website.caldav_accounts.dav_request', return_value=(204, b'', {}))
+    def test_calendar_grants_gate_native_mutations_and_revoke_immediately(self, dav):
+        sig = SIGS.objects.create(name='Restricted SIG', slug='restricted')
+        host = get_calendar(f'sig-{sig.pk}')
+        grant = CalendarEditGrant.objects.create(account=self.account, calendar=host['key'])
+        for method, suffix in [('PUT', 'event.ics'), ('DELETE', 'event.ics'), ('PROPPATCH', '')]:
+            with self.subTest(method=method):
+                self.assertEqual(self.client.generic(method, '/caldav' + host['path'] + suffix,
+                    HTTP_AUTHORIZATION=self.auth).status_code, 204)
+                dav.reset_mock()
+                self.assertEqual(self.client.generic(method, '/caldav/calendar-admin/events/' + suffix,
+                    HTTP_AUTHORIZATION=self.auth).status_code, 403)
+                dav.assert_not_called()
+        grant.delete()
+        self.assertEqual(self.client.put('/caldav' + host['path'] + 'event.ics',
+            HTTP_AUTHORIZATION=self.auth).status_code, 403)
+
+    def test_grants_require_one_identity_and_a_known_calendar(self):
+        user = get_user_model().objects.create_user('staff', is_staff=True)
+        for values in [dict(calendar='acm'), dict(calendar='acm', user=user, account=self.account),
+                       dict(calendar='sig-999999', account=self.account)]:
+            with self.subTest(values=values), self.assertRaises(ValidationError):
+                CalendarEditGrant(**values).full_clean()
+        CalendarEditGrant(calendar='acm', account=self.account).full_clean()
+
+    def test_admin_can_save_grants_on_account_and_user_forms(self):
+        admin = get_user_model().objects.create_superuser('admin', password='admin-passphrase')
+        user = get_user_model().objects.create_user('staff', is_staff=True)
+        self.client.force_login(admin)
+        inline = {'calendar_edit_grants-TOTAL_FORMS': '1', 'calendar_edit_grants-INITIAL_FORMS': '0',
+                  'calendar_edit_grants-MIN_NUM_FORMS': '0', 'calendar_edit_grants-MAX_NUM_FORMS': '1000',
+                  'calendar_edit_grants-0-calendar': 'acm'}
+        response = self.client.post(reverse('admin:website_caldavaccount_change', args=[self.account.pk]), {
+            **inline, 'username': self.account.username, 'password': '', 'is_active': 'on', '_save': 'Save',
+        })
+        self.assertEqual(response.status_code, 302)
+        self.assertTrue(self.account.calendar_edit_grants.filter(calendar='acm').exists())
+        response = self.client.post(reverse('admin:auth_user_change', args=[user.pk]), {
+            **inline, 'username': user.username, 'is_active': 'on', 'is_staff': 'on', '_save': 'Save',
+            'date_joined_0': '2026-10-18', 'date_joined_1': '12:00:00',
+        })
+        self.assertEqual(response.status_code, 302)
+        self.assertTrue(user.calendar_edit_grants.filter(calendar='acm').exists())
 
     @patch('website.caldav_accounts.dav_request', return_value=(207, b'<xml/>', {'DAV': '1, 2, calendar-access'}))
     def test_basic_auth_discovery_and_no_session_bypass(self, dav):
@@ -173,6 +219,86 @@ class RadicaleIntegrationTest(TestCase):
         csrf_client = Client(enforce_csrf_checks=True)
         csrf_client.force_login(self.user)
         self.assertEqual(csrf_client.post(reverse('calendar_create'), '{}', content_type='application/json').status_code, 403)
+
+    def test_staff_grants_enforce_source_destination_and_revocation(self):
+        sig = SIGS.objects.create(name='Granted SIG', slug='granted')
+        key = f'sig-{sig.pk}'
+        acm = self.client.post(reverse('calendar_create'), json.dumps(self.event_data()), content_type='application/json')
+        acm_url = reverse('calendar_update', args=[acm.json()['resource']])
+        user = get_user_model().objects.create_user('restricted', is_staff=True)
+        grant = CalendarEditGrant.objects.create(user=user, calendar=key)
+        self.client.force_login(user)
+        self.assertEqual(self.client.get(reverse('calendar_embed') + '?edit=1').status_code, 200)
+        self.assertContains(self.client.get(reverse('calendar_admin')), '?edit=1')
+        self.assertEqual(self.client.post(reverse('calendar_create'), json.dumps(self.event_data()),
+            content_type='application/json').status_code, 403)
+        self.assertEqual(self.client.put(acm_url, '{}', content_type='application/json').status_code, 403)
+        self.assertEqual(self.client.delete(acm_url).status_code, 403)
+        created = self.client.post(reverse('calendar_create'), json.dumps({**self.event_data(), 'calendar': key}),
+            content_type='application/json')
+        self.assertEqual(created.status_code, 201, created.content)
+        url = reverse('host_calendar_update', args=[key, created.json()['resource']])
+        entries = self.query_events()
+        self.assertFalse(next(e for e in entries if e['extendedProps']['calendar'] == 'acm')['extendedProps']['canEdit'])
+        entry = next(e for e in entries if e['extendedProps']['calendar'] == key)
+        self.assertTrue(entry['extendedProps']['canEdit'])
+        etag = entry['extendedProps']['etag']
+        for data in [{'calendar': 'acm'}, {**self.event_data(), 'calendar': 'acm', 'title': 'Forbidden edit'}]:
+            response = self.client.put(url, json.dumps(data), content_type='application/json', HTTP_IF_MATCH=etag)
+            self.assertEqual(response.status_code, 403)
+        self.assertEqual(next(e for e in self.query_events() if e['extendedProps']['calendar'] == key)['title'], self.event_data()['title'])
+        CalendarEditGrant.objects.create(user=user, calendar='acm')
+        response = self.client.put(url, json.dumps({'calendar': 'acm'}), content_type='application/json', HTTP_IF_MATCH=etag)
+        self.assertEqual(response.status_code, 200, response.content)
+        grant.delete()
+        user.calendar_edit_grants.all().delete()
+        self.assertEqual(self.client.get(reverse('calendar_embed') + '?edit=1').status_code, 403)
+        self.assertContains(self.client.get(reverse('calendar_admin')), 'read-only access')
+        self.assertEqual(self.client.delete(reverse('calendar_update', args=[created.json()['resource']])).status_code, 403)
+        self.assertEqual(Client().get(reverse('events_calendar')).status_code, 200)
+
+    def test_global_permission_and_inactive_nonstaff_grants(self):
+        user = get_user_model().objects.create_user('global', is_staff=True)
+        user.user_permissions.add(Permission.objects.get(codename='change_event', content_type__app_label='website'))
+        self.client.force_login(user)
+        response = self.client.post(reverse('calendar_create'), json.dumps(self.event_data()), content_type='application/json')
+        self.assertEqual(response.status_code, 201)
+        user.user_permissions.clear()
+        CalendarEditGrant.objects.create(user=user, calendar='acm')
+        for active, staff in [(False, True), (True, False)]:
+            user.is_active, user.is_staff = active, staff
+            user.save()
+            self.client.force_login(user)
+            self.assertEqual(self.client.post(reverse('calendar_create'), '{}', content_type='application/json').status_code, 403)
+
+    def test_native_grants_discovery_and_moves(self):
+        sig = SIGS.objects.create(name='Native SIG', slug='native-sig')
+        host = get_calendar(f'sig-{sig.pk}')
+        created = self.client.post(reverse('calendar_create'), json.dumps({**self.event_data(), 'calendar': host['key']}),
+            content_type='application/json')
+        resource = created.json()['resource']
+        source = '/caldav' + host['path'] + resource
+        destination = '/caldav/calendar-admin/events/' + resource
+        account = CalDAVAccount.objects.create(username='scoped', password_hash=make_password('native-passphrase'))
+        CalendarEditGrant.objects.create(account=account, calendar=host['key'])
+        auth = 'Basic ' + base64.b64encode(b'scoped:native-passphrase').decode()
+        native = Client()
+        body = b'<D:propfind xmlns:D="DAV:"><D:prop><D:current-user-privilege-set/></D:prop></D:propfind>'
+        response = native.generic('PROPFIND', '/caldav/calendar-admin/', body,
+            content_type='application/xml', HTTP_AUTHORIZATION=auth, HTTP_DEPTH='1')
+        self.assertEqual(response.status_code, 207, response.content)
+        rights = {r.findtext('{DAV:}href'): {node.tag for node in r.findall('.//{DAV:}privilege/*')}
+                  for r in ElementTree.fromstring(response.content).findall('{DAV:}response')}
+        self.assertIn('{DAV:}write', rights['/caldav' + host['path']])
+        self.assertNotIn('{DAV:}write', rights['/caldav/calendar-admin/events/'])
+        self.assertEqual(native.generic('MOVE', source, HTTP_AUTHORIZATION=auth, HTTP_DESTINATION=destination).status_code, 403)
+        self.assertEqual(native.generic('MOVE', destination, HTTP_AUTHORIZATION=auth, HTTP_DESTINATION=source).status_code, 403)
+        grant = CalendarEditGrant.objects.create(account=account, calendar='acm')
+        response = native.generic('MOVE', source, HTTP_AUTHORIZATION=auth, HTTP_DESTINATION=destination)
+        self.assertEqual(response.status_code, 201, response.content)
+        grant.delete()
+        self.assertEqual(native.delete(destination, HTTP_AUTHORIZATION=auth).status_code, 403)
+        self.assertEqual(native.get(destination, HTTP_AUTHORIZATION=auth).status_code, 200)
 
     def test_recurring_native_events_expand_and_cannot_be_flattened_by_editor(self):
         resource = 'native-recurring.ics'
@@ -376,6 +502,13 @@ class RadicaleIntegrationTest(TestCase):
         sig, host = self.make_host()
         _, original, headers = self.put_native(host, 'series.ics', sig=sig.slug, recurring=True)
         url = reverse('host_calendar_update', args=[host['key'], 'series.ics'])
+        restricted = get_user_model().objects.create_user('series-editor', is_staff=True)
+        CalendarEditGrant.objects.create(user=restricted, calendar=host['key'])
+        self.client.force_login(restricted)
+        response = self.client.put(url, json.dumps({'calendar': 'acm'}), content_type='application/json', HTTP_IF_MATCH=headers['ETag'])
+        self.assertEqual(response.status_code, 403)
+        self.assertEqual(fingerprint(dav_request('GET', host['path'] + 'series.ics')[1]), fingerprint(original))
+        CalendarEditGrant.objects.create(user=restricted, calendar='acm')
         response = self.client.put(url, json.dumps({'calendar': 'acm'}), content_type='application/json', HTTP_IF_MATCH=headers['ETag'])
         self.assertEqual(response.status_code, 200, response.content)
         status, moved, _ = dav_request('GET', get_calendar()['path'] + 'series.ics')

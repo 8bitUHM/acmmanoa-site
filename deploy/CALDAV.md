@@ -12,8 +12,11 @@ of the website, calendar account password hashes, and the legacy event archive.
    an ACM calendar and one calendar for each SIG automatically.
 2. Sign into Django admin and open **Calendar** (`/admin/calendar/`) in the top
    menu (also under Website in the sidebar when that app is visible).
-   Staff need the **website | event | Can change event** permission; superusers
-   already have it.
+   For restricted editing, enable **Staff status** on the Django user and add
+   rows under **Calendar editing grants** on their user form. Each row selects
+   one calendar they may edit. Leave **Can change event** unassigned, including
+   through groups, since that permission grants global calendar editing access.
+   Superusers and existing holders of that permission retain global access.
 3. Select a date/time to create an event or select an event to edit/delete it.
    Times are in **Pacific/Honolulu**; all-day end dates are exclusive.
     Recurring series can be viewed here and edited with a native CalDAV client.
@@ -22,6 +25,13 @@ Choose **Host** to select the actual CalDAV calendar. Changing it moves the even
 to that calendar, preserving its UID. For recurring events, Host is the only
 editable field here and moves the entire series, including exceptions. Kind is
 no longer shown or required; existing custom metadata is retained.
+
+All staff can view the admin calendar. Users with grants can create, edit, and
+delete events only in those calendars; other calendars display read-only.
+The Host selector allows only granted destinations. Moving an event, including
+an entire recurring series, requires edit access to both source and destination.
+Removing a grant takes effect on the next request. No individual grants are
+created automatically during migration; existing global editors keep their access.
 
 The iframe reuses the Django session. Django and Radicale independently derive
 the private `calendar-admin` service password from `SECRET_KEY`; Radicale creates
@@ -32,10 +42,14 @@ restart both services together if rotating it. Port 5232 is internal only.
 ## Create, reset, or revoke a calendar account
 
 In Django admin, open **CalDAV accounts → Add**. Enter a username and password.
-Enable **Can edit** only for people allowed to change all public host calendars.
-All accounts discover ACM and the individual SIG calendars. Read-only accounts
-can read all of them; editing accounts can edit all of them. Permissions are not
-restricted per SIG, and these are not private calendars.
+For restricted editing, leave **Can edit all calendars** unchecked and add the
+allowed calendars under **Calendar editing grants**. Enable **Can edit all
+calendars** only for global editors; this also covers calendars added later.
+An account with neither grants nor global access is read-only. All accounts
+discover and read ACM and the individual SIG calendars. Native clients are shown
+the account's actual write privileges; the gateway independently enforces them
+for event writes, deletes, collection property changes, and both sides of moves.
+These calendars remain public, with anonymous read-only subscription feeds.
 
 Give the person their username, password, and the server URL:
 
@@ -66,6 +80,9 @@ as Django hashes. To reset one, enter a new password on its admin form; leaving
 the password blank preserves it. Disable **Is active** or delete the account to
 revoke access immediately. Django administrators who manage these accounts need
 the corresponding CalDAV account permissions.
+Administrators managing the inline grants also need the corresponding
+**Calendar edit grant** view/add/change/delete permissions; superusers already
+have them. Django users and native CalDAV accounts have independent grants.
 
 ## Google Calendar (subscription)
 

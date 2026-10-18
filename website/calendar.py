@@ -23,10 +23,12 @@ from .caldav import CalendarUnavailable, dav_request, ensure_calendar, host_reso
 from .calendar_hosts import calendar_hosts, get_calendar
 from .calendar_moves import MoveConflict, fingerprint, move_resource
 from .models import CalendarMove
+from .calendar_permissions import user_editable_calendars
 
 
-def can_edit(request):
-    return request.user.is_active and request.user.is_staff and request.user.has_perm('website.change_event')
+def can_edit(request, calendar=None):
+    editable = user_editable_calendars(request.user)
+    return bool(editable) if calendar is None else calendar in editable
 
 
 def resource_path(resource, host):
@@ -105,7 +107,11 @@ def events_json(request):
             raise ValueError('Supply start and end with time zone offsets.')
         if not timedelta(0) < end - start <= timedelta(days=370):
             raise ValueError('Calendar ranges must be between 1 and 370 days.')
-        return JsonResponse(calendar_events(start, end), safe=False)
+        editable = user_editable_calendars(request.user)
+        events = calendar_events(start, end)
+        for event in events:
+            event['extendedProps']['canEdit'] = event['extendedProps']['calendar'] in editable
+        return JsonResponse(events, safe=False)
     except (ValueError, TypeError) as error:
         return JsonResponse({'error': str(error)}, status=400)
     except CalendarUnavailable as error:
@@ -120,18 +126,21 @@ def calendar_embed(request):
     editor = request.GET.get('edit') == '1'
     if editor and not can_edit(request):
         raise PermissionDenied
+    hosts = calendar_hosts()
+    editable = user_editable_calendars(request.user) if editor else set()
+    for host in hosts:
+        host['editable'] = host['key'] in editable
     return render(request, 'calendar/embed.html', {
-        'editor': editor, 'hosts': calendar_hosts(),
+        'editor': editor, 'hosts': hosts,
+        'default_calendar': next((host['key'] for host in hosts if host['editable']), 'acm'),
     })
 
 
 @staff_member_required
 @never_cache
 def calendar_admin(request):
-    if not can_edit(request):
-        raise PermissionDenied
     return render(request, 'admin/calendar.html', {
-        **admin.site.each_context(request), 'title': 'Calendar',
+        **admin.site.each_context(request), 'title': 'Calendar', 'editor': can_edit(request),
     })
 
 
@@ -151,6 +160,8 @@ def event_write(request, resource=None, calendar_key='acm'):
         raise PermissionDenied
     try:
         source = get_calendar(calendar_key)
+        if resource and not can_edit(request, source['key']):
+            raise PermissionDenied
         if request.method == 'POST' and resource or request.method != 'POST' and not resource:
             return JsonResponse({'error': 'Unsupported operation.'}, status=405)
         if resource:
@@ -170,6 +181,8 @@ def event_write(request, resource=None, calendar_key='acm'):
                 data = json.loads(request.body)
                 if isinstance(data, dict) and set(data) == {'calendar'}:
                     destination = get_calendar(data['calendar'])
+                    if not can_edit(request, destination['key']):
+                        raise PermissionDenied
                     if destination['key'] != source['key']:
                         ensure_calendar(destination)
                         move_resource(source, destination, resource, etag)
@@ -208,6 +221,8 @@ def event_write(request, resource=None, calendar_key='acm'):
             if end and end <= start:
                 raise ValueError('End must be after start (all-day end dates are exclusive).')
             destination = get_calendar(data.get('calendar', source['key']))
+            if not can_edit(request, destination['key']):
+                raise PermissionDenied
             for field in ('description', 'location'):
                 if not isinstance(data.get(field, ''), str):
                     raise ValueError(f'{field} must be text.')

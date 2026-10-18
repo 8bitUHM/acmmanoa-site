@@ -1,14 +1,53 @@
 from django.contrib import admin
 from django import forms
+from django.contrib.auth import get_user_model
+from django.contrib.auth.admin import UserAdmin
 from .models import *
 from .caldav_accounts import CalDAVAccountForm
 from .caldav import CalendarUnavailable, ensure_calendar
-from .calendar_hosts import get_calendar
+from .calendar_hosts import calendar_hosts, get_calendar
+
+
+class CalendarEditGrantForm(forms.ModelForm):
+    calendar = forms.ChoiceField(
+        help_text='Allows editing this calendar only. Global edit access overrides individual grants.',
+    )
+
+    class Meta:
+        model = CalendarEditGrant
+        fields = ('calendar',)
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['calendar'].choices = [(host['key'], host['name']) for host in calendar_hosts()]
+
+
+class AccountCalendarGrantInline(admin.TabularInline):
+    model = CalendarEditGrant
+    form = CalendarEditGrantForm
+    fk_name = 'account'
+    fields = ('calendar',)
+    extra = 0
+    verbose_name_plural = 'Calendar editing grants'
+
+
+class UserCalendarGrantInline(AccountCalendarGrantInline):
+    fk_name = 'user'
+    verbose_name_plural = 'Calendar editing grants (superusers and users with Can change event have global access)'
+
+
+admin.site.unregister(get_user_model())
+
+
+@admin.register(get_user_model())
+class CalendarUserAdmin(UserAdmin):
+    inlines = [UserCalendarGrantInline]
 
 
 @admin.register(CalDAVAccount)
 class CalDAVAccountAdmin(admin.ModelAdmin):
     form = CalDAVAccountForm
+    inlines = [AccountCalendarGrantInline]
     list_display = ('username', 'is_active', 'can_edit')
     list_filter = ('is_active', 'can_edit')
     search_fields = ('username',)
