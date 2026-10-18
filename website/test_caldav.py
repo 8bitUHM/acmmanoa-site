@@ -178,5 +178,9 @@ class RadicaleIntegrationTest(TestCase):
         response = public.get(reverse('events'), HTTP_HOST='acmmanoa.org', secure=True)
         self.assertContains(response, 'src="/calendar/embed/"')
         self.assertContains(response, 'https://acmmanoa.org/events/calendar.ics')
+        self.assertContains(response, 'href="webcal://acmmanoa.org/events/calendar.ics"')
+        for software in ['Google Calendar', 'Apple Calendar on Mac',
+                         'Apple Calendar on iPhone or iPad', 'Microsoft Outlook (Windows)']:
+            self.assertContains(response, software)
         self.assertNotContains(response, 'cal-body')
         self.assertEqual(public.get(reverse('home')).status_code, 200)

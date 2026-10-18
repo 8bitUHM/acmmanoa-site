@@ -7,6 +7,7 @@ The old site repository can be found [here](https://github.com/ACManoa/acmanoa.g
 1. [Project Structure](#project-structure)
 2. [Getting the App Running](#getting-the-app-running)
 3. [Production Deployment](#production-deployment)
+4. [CalDAV Calendar](#caldav-calendar)
 
 ---
 
@@ -110,6 +111,21 @@ The project is organized into several components:
 ## **Production Deployment**
 
 Production uses the same PostgreSQL-in-Docker pattern via `docker-compose.prod.yml`. See [deploy/README.md](deploy/README.md) for DigitalOcean VPS setup and GitHub Actions automated deploy.
+
+## **CalDAV Calendar**
+
+The `explore/caldav` implementation uses a separate Radicale service and
+FullCalendar. Both Compose stacks provision the calendar automatically.
+Open **Website → Calendar** in Django admin to edit using your existing login,
+or create **CalDAV accounts** for native calendar clients.
+
+See [calendar accounts and client setup](deploy/CALDAV.md) for Google Calendar,
+Microsoft Outlook, iPhone/iPad Calendar, and Mac Calendar instructions.
+The public Events page includes a subscription chooser with this feed URL:
+
+```text
+https://acmmanoa.org/events/calendar.ics
+```
 
 ---
 

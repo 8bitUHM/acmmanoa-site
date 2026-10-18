@@ -1,17 +1,27 @@
 {% extends "base.html" %}
+{% load static %}
 {% block title %}Events | ACM at UH Mānoa{% endblock %}
+{% block styles %}
+<link rel="stylesheet" href="{% static 'css/calendar-subscription.css' %}">
+{% endblock %}
 {% block content %}
 <div class="subhero">
   <div class="wrap">
     <div class="eyebrow">Events</div>
     <h1>Something's always happening.</h1>
     <p>Workshops, socials, talks, and more — from ACM and all of our SIGs.</p>
-    <a class="btn btn-primary" href="{{ calendar_feed_url }}">Subscribe to calendar (.ics)</a>
+    <button type="button" id="calendar-subscribe" class="btn btn-primary calendar-subscribe" aria-haspopup="dialog" aria-controls="calendar-subscription">Subscribe to calendar</button>
+    <p>Get ACM and SIG event updates in your calendar app.</p>
+    <noscript><p>Copy the <a href="{{ calendar_feed_url }}">iCalendar feed URL</a> into your app's calendar subscription settings.</p></noscript>
   </div>
 </div>
+{% include 'components/calendar_subscription.html' %}
 <section>
   <div class="wrap">
     <iframe src="{% url 'calendar_embed' %}" title="ACM and SIG event calendar" style="width:100%;height:1050px;border:0" loading="lazy" referrerpolicy="same-origin"></iframe>
   </div>
 </section>
+{% endblock %}
+{% block scripts %}
+<script src="{% static 'js/calendar-subscription.js' %}" defer></script>
 {% endblock %}

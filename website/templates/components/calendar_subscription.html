@@ -1,0 +1,80 @@
+<dialog id="calendar-subscription" class="calendar-subscription" aria-labelledby="calendar-subscription-title" aria-describedby="calendar-subscription-description">
+  <form method="dialog" class="calendar-subscription-close">
+    <button class="btn btn-ghost" aria-label="Close calendar subscription">Close</button>
+  </form>
+  <h2 id="calendar-subscription-title">Subscribe to events</h2>
+  <p id="calendar-subscription-description">Which calendar software would you like to use?</p>
+
+  <label for="calendar-software">Calendar software</label>
+  <select id="calendar-software" autofocus>
+    <option value="">Choose your calendar software</option>
+    <option value="google">Google Calendar</option>
+    <option value="apple-mac">Apple Calendar on Mac</option>
+    <option value="apple-ios">Apple Calendar on iPhone or iPad</option>
+    <option value="outlook-windows">Microsoft Outlook (Windows)</option>
+  </select>
+
+  <div class="calendar-subscription-guide" data-calendar-software="google" hidden>
+    <h3>Google Calendar</h3>
+    <ol>
+      <li>Copy the feed URL below.</li>
+      <li>On a computer, open Google Calendar. Next to <strong>Other calendars</strong>, click <strong>+ → From URL</strong>.</li>
+      <li>Paste the URL, then click <strong>Add calendar</strong>.</li>
+    </ol>
+    <p>New subscriptions must be added in a computer web browser, not the Google Calendar mobile app. Once added, the calendar is available in the app.</p>
+    <div class="calendar-subscription-actions">
+      <a href="https://calendar.google.com/calendar/u/0/r/settings/addbyurl" target="_blank" rel="noopener noreferrer" class="btn btn-primary">Open Google Calendar</a>
+      <a href="https://support.google.com/calendar/answer/37100?hl=en" target="_blank" rel="noopener noreferrer">Official Google instructions ↗</a>
+    </div>
+  </div>
+
+  <div class="calendar-subscription-guide" data-calendar-software="apple-mac" hidden>
+    <h3>Apple Calendar on Mac</h3>
+    <ol>
+      <li>Click <strong>Open Apple Calendar</strong> below and confirm the subscription.</li>
+      <li>Or copy the feed URL, then in Calendar choose <strong>File → New Calendar Subscription</strong>, paste the URL, and click <strong>Subscribe</strong>.</li>
+      <li>Choose a name and color. Select <strong>iCloud</strong> as the location to see it on your other Apple devices, then click <strong>OK</strong>.</li>
+    </ol>
+    <div class="calendar-subscription-actions">
+      <a href="webcal://{{ request.get_host }}{% url 'events_calendar' %}" class="btn btn-primary">Open Apple Calendar</a>
+      <a href="https://support.apple.com/102301" target="_blank" rel="noopener noreferrer">Official Apple instructions ↗</a>
+    </div>
+  </div>
+
+  <div class="calendar-subscription-guide" data-calendar-software="apple-ios" hidden>
+    <h3>Apple Calendar on iPhone or iPad</h3>
+    <ol>
+      <li>Tap <strong>Open Apple Calendar</strong> below and follow the subscription prompt.</li>
+      <li>Or copy the feed URL, then in Calendar choose <strong>Calendars → Add Calendar → Add Subscription Calendar</strong>.</li>
+      <li>Paste the URL and tap <strong>Find</strong> (iOS/iPadOS 26 or later) or <strong>Subscribe</strong> (18 or earlier).</li>
+      <li>Choose a name, color, and account, then tap <strong>Done</strong> or <strong>Add</strong>. Choose <strong>iCloud</strong> to see it on your other Apple devices.</li>
+    </ol>
+    <div class="calendar-subscription-actions">
+      <a href="webcal://{{ request.get_host }}{% url 'events_calendar' %}" class="btn btn-primary">Open Apple Calendar</a>
+      <a href="https://support.apple.com/102301" target="_blank" rel="noopener noreferrer">Official Apple instructions ↗</a>
+    </div>
+  </div>
+
+  <div class="calendar-subscription-guide" data-calendar-software="outlook-windows" hidden>
+    <h3>Microsoft Outlook (Windows)</h3>
+    <ol>
+      <li>Copy the feed URL below and switch to Outlook's <strong>Calendar</strong> view.</li>
+      <li><strong>New Outlook:</strong> choose <strong>Add calendar → Subscribe from web</strong>, paste the URL, then select <strong>Import</strong>.</li>
+      <li><strong>Classic Outlook:</strong> choose <strong>Open Calendar → From Internet</strong> in the ribbon, paste the URL, and select <strong>OK</strong>. Confirm the subscription if prompted.</li>
+    </ol>
+    <p>Use the web subscription option, rather than importing a downloaded file, to receive updates.</p>
+    <div class="calendar-subscription-actions">
+      <a href="https://learn.microsoft.com/en-us/troubleshoot/outlook/calendaring/cannot-add-an-internet-calendar" target="_blank" rel="noopener noreferrer">Official Microsoft Windows instructions and troubleshooting ↗</a>
+    </div>
+  </div>
+
+  <div class="calendar-subscription-feed">
+    <label for="calendar-feed-url">Calendar feed URL</label>
+    <div class="calendar-subscription-copy">
+      <input id="calendar-feed-url" type="url" value="{{ calendar_feed_url }}" readonly>
+      <button type="button" id="calendar-copy-url" class="btn btn-soft">Copy URL</button>
+    </div>
+    <p id="calendar-copy-status" role="status" aria-live="polite"></p>
+  </div>
+  <p class="calendar-subscription-note">Includes all ACM and SIG events, regardless of the filters on this page. Your calendar app controls how often updates appear.</p>
+</dialog>
