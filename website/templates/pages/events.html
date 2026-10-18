@@ -9,6 +9,8 @@
     <div class="eyebrow">Events</div>
     <h1>Something's always happening.</h1>
     <p>Workshops, socials, talks, and more — from ACM and all of our SIGs.</p>
+    <a href="webcal://{{ request.get_host }}{% url 'events_calendar' %}" class="btn btn-primary">Subscribe to calendar</a>
+    <p>Get ACM and SIG event updates in your calendar app. You can also copy the <a href="{% url 'events_calendar' %}">iCalendar feed URL</a> into your app's subscription settings.</p>
   </div>
 </div>
 

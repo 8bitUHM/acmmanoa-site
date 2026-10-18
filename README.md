@@ -7,6 +7,7 @@ The old site repository can be found [here](https://github.com/ACManoa/acmanoa.g
 1. [Project Structure](#project-structure)
 2. [Getting the App Running](#getting-the-app-running)
 3. [Production Deployment](#production-deployment)
+4. [Calendar Subscription](#calendar-subscription)
 
 ---
 
@@ -110,6 +111,34 @@ The project is organized into several components:
 ## **Production Deployment**
 
 Production uses the same PostgreSQL-in-Docker pattern via `docker-compose.prod.yml`. See [deploy/README.md](deploy/README.md) for DigitalOcean VPS setup and GitHub Actions automated deploy.
+
+---
+
+## **Calendar Subscription**
+
+The Events page has a **Subscribe to calendar** link for Apple Calendar and other
+apps that support `webcal://` subscriptions. The public iCalendar feed is:
+
+```text
+https://acmmanoa.org/events/calendar.ics
+```
+
+On iOS, open Calendar, choose **Calendars → Add Calendar → Add Subscription
+Calendar**, and paste the HTTPS URL above. Subscribe rather than importing a
+downloaded `.ics` file to receive subsequent updates. Other clients can use the
+same URL in their calendar subscription or “From URL” settings.
+
+The feed is generated from the existing Event records, including both general
+ACM and SIG events. Admin additions, edits, and deletions appear on the client's
+next refresh; refresh frequency is controlled by the calendar app. Past events
+remain in the feed. The Events page's filter chips do not filter the subscription,
+and recurring SIG meeting schedules are not separate Event records.
+
+Event times are exported in UTC, preserving the Honolulu times entered in admin;
+calendar apps display them in the subscriber's chosen time zone. Since events
+currently have only a start time, the feed does not invent end times. No database
+migration or additional service is needed. Install the updated `requirements.txt`
+(or rebuild the Docker image) when deploying.
 
 ---
 

@@ -91,6 +91,11 @@ class EventsCalendarTest(TestCase):
         self.assertEqual(response.content, b'')
         self.assertEqual(self.client.post(reverse('events_calendar')).status_code, 405)
 
+    def test_events_page_links_to_subscription_and_feed(self):
+        response = self.client.get(reverse('events'), HTTP_HOST='acmmanoa.org', secure=True)
+        self.assertContains(response, 'href="webcal://acmmanoa.org/events/calendar.ics"')
+        self.assertContains(response, 'href="/events/calendar.ics"')
+
 class FileModelTest(TestCase):
     def setUp(self):
         self.file = File.objects.create(
