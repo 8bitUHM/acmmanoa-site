@@ -121,6 +121,8 @@ or create **CalDAV accounts** for native calendar clients.
 
 See [calendar accounts and client setup](deploy/CALDAV.md) for Google Calendar,
 Microsoft Outlook, iPhone/iPad Calendar, and Mac Calendar instructions.
+For an existing installation, follow the [legacy database migration procedure](deploy/CALDAV.md#migrate-the-old-database-to-radicale)
+before reopening calendar editing. Live events now require a Radicale volume backup.
 The public Events page includes a subscription chooser with this feed URL:
 
 ```text

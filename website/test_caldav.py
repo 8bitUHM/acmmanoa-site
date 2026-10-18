@@ -6,6 +6,9 @@ import subprocess
 import sys
 import tempfile
 import time
+from datetime import datetime
+from io import StringIO
+from zoneinfo import ZoneInfo
 from pathlib import Path
 from unittest import skipUnless
 from unittest.mock import patch
@@ -13,11 +16,13 @@ from unittest.mock import patch
 from django.contrib.auth.hashers import check_password, make_password
 from django.test import Client, TestCase, override_settings
 from django.contrib.auth import get_user_model
+from django.core.management import call_command
+from django.core.management.base import CommandError
 from django.urls import reverse
 from icalendar import Calendar
 
 from .caldav_accounts import CalDAVAccountForm
-from .models import CalDAVAccount
+from .models import CalDAVAccount, CalendarImport, Event, SIGS
 from .caldav import dav_request, ensure_calendar, service_password
 
 
@@ -184,3 +189,56 @@ class RadicaleIntegrationTest(TestCase):
             self.assertContains(response, software)
         self.assertNotContains(response, 'cal-body')
         self.assertEqual(public.get(reverse('home')).status_code, 200)
+
+    def test_legacy_import_is_resumable_preserves_metadata_and_protects_native_edits(self):
+        sig = SIGS.objects.create(name='Import SIG', slug='import-sig')
+        source = Event.objects.create(
+            title='Legacy event', slug='legacy-event', description='Legacy details 🌺',
+            event_date=datetime(2026, 10, 23, 18, tzinfo=ZoneInfo('Pacific/Honolulu')),
+            sig=sig, kind='talk', location='POST 318B',
+        )
+        output = StringIO()
+        call_command('migrate_calendars', dry_run=True, stdout=output)
+        self.assertIn('1 planned', output.getvalue())
+        self.assertFalse(CalendarImport.objects.exists())
+        call_command('migrate_calendars', stdout=StringIO())
+        checkpoint = CalendarImport.objects.get(source_key=f'event:{source.pk}')
+        status, content, _ = dav_request('GET', '/calendar-admin/events/' + checkpoint.resource)
+        self.assertEqual(status, 200)
+        entry = Calendar.from_ical(content).walk('VEVENT')[0]
+        self.assertEqual(str(entry['UID']), f'acm-event-{source.pk}@acmmanoa.org')
+        self.assertEqual(entry.decoded('DTSTART'), source.event_date)
+        self.assertEqual(str(entry['X-ACM-SIG']), sig.slug)
+        self.assertNotIn('DTEND', entry)
+        self.assertContains(self.client.get(reverse('event_detail', args=[source.slug])), source.description)
+        call_command('migrate_calendars', stdout=StringIO())
+        self.assertEqual(CalendarImport.objects.count(), 1)
+        # Simulate a crash after DAV upload but before recording the SQL checkpoint.
+        CalendarImport.objects.all().delete()
+        call_command('migrate_calendars', stdout=StringIO())
+        self.assertEqual(CalendarImport.objects.count(), 1)
+        source.title = 'SQL correction'
+        source.save()
+        with self.assertRaises(CommandError):
+            call_command('migrate_calendars', stdout=StringIO(), stderr=StringIO())
+        call_command('migrate_calendars', update_existing=True, stdout=StringIO())
+        checkpoint = CalendarImport.objects.get(source_key=f'event:{source.pk}')
+        # A native edit after import must prevent any later SQL overwrite.
+        calendar = Calendar.from_ical(content)
+        calendar.walk('VEVENT')[0]['SUMMARY'] = 'Native correction'
+        dav_request('PUT', '/calendar-admin/events/' + checkpoint.resource, calendar.to_ical(), {'Content-Type': 'text/calendar'})
+        source.title = 'Another SQL correction'
+        source.save()
+        with self.assertRaises(CommandError):
+            call_command('migrate_calendars', update_existing=True, stdout=StringIO(), stderr=StringIO())
+        self.assertTrue(Event.objects.filter(pk=source.pk).exists())
+
+    def test_import_weekly_sig_schedules_with_explicit_start(self):
+        sig = SIGS.objects.create(name='Weekly SIG', slug='weekly-sig', meeting_days='Monday',
+                                  meeting_start_time='18:00', meeting_end_time='19:00', meeting_location='POST')
+        call_command('migrate_calendars', meeting_start='2026-10-01', stdout=StringIO())
+        checkpoint = CalendarImport.objects.get(source_key=f'sig:{sig.pk}')
+        events = [event for event in self.query_events() if event['extendedProps']['resource'] == checkpoint.resource]
+        self.assertEqual(len(events), 4)
+        self.assertTrue(all(event['extendedProps']['recurring'] for event in events))
+        self.assertEqual(events[0]['start'], '2026-10-06T04:00:00+00:00')

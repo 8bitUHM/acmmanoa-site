@@ -17,6 +17,15 @@ class CalDAVAccount(models.Model):
     def __str__(self):
         return self.username
 
+
+class CalendarImport(models.Model):
+    """A checkpoint for each legacy source; never a second live event store."""
+    source_key = models.CharField(max_length=100, unique=True)
+    fingerprint = models.CharField(max_length=64)
+    resource = models.CharField(max_length=200, unique=True)
+    etag = models.CharField(max_length=200)
+    imported_at = models.DateTimeField(auto_now=True)
+
 # Create your models here.
 class File(models.Model): 
     bytes = models.TextField()

@@ -120,3 +120,81 @@ The Events page reuses the software chooser, copyable URL, `webcal://` links,
 and official setup instructions from `explore/subscribe-only`. This branch is
 based directly on the pre-subscription mainline and does not depend on that
 branch's commits or database-generated feed implementation.
+
+## Migrate the old database to Radicale
+
+The SQL `website_event` table becomes an archive, not a live calendar. The old
+admin form and hand-built calendar are removed. Migrate from the existing SQL
+database used by this deployment; the destination is Radicale's filesystem store.
+SQL schema migrations create account and import-checkpoint tables without calling
+Radicale. The network import is a separate, explicit management command.
+
+1. Before switching branches/deployments, stop event edits and back up PostgreSQL
+   (including `website_file`, which stores event images). Back up the entire
+   Radicale `calendar_data` volume too if it already has data. Do not use
+   `docker compose down -v`: that deletes persistent data.
+2. Deploy/build this branch using the **existing PostgreSQL volume/database**.
+   Startup runs SQL migrations and provisions Radicale. Keep the site in your
+   normal maintenance mode until the import and verification finish.
+3. Preview the import:
+
+   ```sh
+   docker compose -f docker-compose.prod.yml exec web python manage.py migrate_calendars --dry-run
+   ```
+
+4. Import all past and future event records:
+
+   ```sh
+   docker compose -f docker-compose.prod.yml exec web python manage.py migrate_calendars
+   ```
+
+   To carry over the old calendar's weekly SIG meeting overlays as real recurring
+   CalDAV events, explicitly choose a semester/start date, for example:
+
+   ```sh
+   docker compose -f docker-compose.prod.yml exec web python manage.py migrate_calendars --meeting-start 2026-08-24
+   ```
+
+   The first meeting falls on the configured weekday on/after that date. Each
+   schedule must have a valid weekday and start time. Meetings recur weekly
+   without an end date; use a native CalDAV client to set a semester end, holidays,
+   or exceptions. Missing event end times are preserved rather than invented.
+
+5. Verify event counts and times in `/admin/calendar/` and `/events/`, follow a
+   legacy `/events/<slug>/` link, and subscribe to `/events/calendar.ics` before
+   reopening editing. Check photos against the retained SQL file storage.
+
+Each source has a deterministic UID/resource and a SQL checkpoint with its source
+fingerprint and destination ETag. The command is safe to rerun: completed imports
+are skipped, interrupted uploads are recovered, and pre-existing or externally
+edited events are not overwritten. If a legacy SQL row changes after importing,
+the command reports a conflict. After review, `--update-existing` updates it only
+when its destination ETag still matches the original checkpoint. A deleted
+CalDAV event is not resurrected by a normal rerun. Source rows and image bytes
+are never deleted. Import errors exit nonzero; successful earlier rows stay
+checkpointed for resumption. Reuse the same `--meeting-start` on retries.
+
+The import preserves title, description, start time, location, SIG, kind, creation
+time, legacy slug, and image references. Stable legacy UIDs use
+`acm-event-<pk>@acmmanoa.org`, matching the subscribe-only feed's identities.
+Existing legacy event detail URLs are resolved from Radicale metadata.
+
+For rollback, stop calendar edits, retain/back up Radicale and SQL checkpoints,
+and redeploy the old branch against the untouched SQL archive. Events created or
+changed only in Radicale must be exported/reconciled before rollback; the importer
+is deliberately one-way. From cutover onward, back up **both PostgreSQL and the
+Radicale volume**. A database-only backup no longer includes live events.
+
+For local development use the same commands with `docker compose exec web`.
+
+## Checks
+
+```sh
+python -m pip install -r requirements.txt 'Radicale[bcrypt]==3.5.10' 'bcrypt==4.0.1'
+python manage.py test
+```
+
+The CalDAV integration tests launch a real, isolated Radicale process with a
+temporary filesystem. They are skipped if the optional Radicale test dependency
+is not installed. Docker Compose is required to validate the complete deployed
+PostgreSQL/nginx/container stack.
