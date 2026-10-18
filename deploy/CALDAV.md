@@ -190,6 +190,21 @@ For local development use the same commands with `docker compose exec web`.
 
 ## Checks
 
+### Preview data
+
+To populate a development calendar with two sample SIGs and eight clearly labeled
+`[DEMO]` events (including a past event, an all-day hackathon, and a weekly series):
+
+```sh
+docker compose exec web python manage.py seed_calendar_demo
+```
+
+Dates are relative to today in Honolulu. Use `--start-date YYYY-MM-DD` for a fixed
+preview date. Rerunning skips existing demo events, preserving edits and avoiding
+duplicates. This command is explicit and is never run during normal deployment.
+
+### Automated checks
+
 ```sh
 python -m pip install -r requirements-test.txt
 python manage.py test

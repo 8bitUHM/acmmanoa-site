@@ -260,3 +260,16 @@ class RadicaleIntegrationTest(TestCase):
         self.assertTrue(events[-1]['allDay'])
         self.assertEqual(events[-1]['start'], '2026-10-26')
         self.assertEqual(events[-1]['end'], '2026-10-27')
+
+    def test_demo_data_is_repeatable_and_includes_all_day_and_recurring_events(self):
+        output = StringIO()
+        call_command('seed_calendar_demo', start_date='2026-10-01', stdout=output)
+        self.assertIn('8 demo events created', output.getvalue())
+        output = StringIO()
+        call_command('seed_calendar_demo', start_date='2026-10-01', stdout=output)
+        self.assertIn('0 demo events created; 8 already present', output.getvalue())
+        self.assertEqual(SIGS.objects.filter(slug__startswith='demo-caldav-').count(), 2)
+        events = [event for event in self.query_events() if event['extendedProps']['resource'].startswith('demo-caldav-')]
+        self.assertTrue(any(event['allDay'] for event in events))
+        self.assertTrue(any(event['extendedProps']['recurring'] for event in events))
+        self.assertTrue(all(event['title'].startswith('[DEMO]') for event in events))
