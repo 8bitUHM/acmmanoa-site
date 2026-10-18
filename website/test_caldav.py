@@ -172,3 +172,11 @@ class RadicaleIntegrationTest(TestCase):
         response = Client().generic('PROPFIND', '/caldav/', body, content_type='application/xml', HTTP_AUTHORIZATION=auth, HTTP_DEPTH='0')
         self.assertEqual(response.status_code, 207, response.content)
         self.assertIn(b'/caldav/calendar-admin/', response.content)
+
+    def test_public_website_embeds_read_only_calendar(self):
+        public = Client()
+        response = public.get(reverse('events'), HTTP_HOST='acmmanoa.org', secure=True)
+        self.assertContains(response, 'src="/calendar/embed/"')
+        self.assertContains(response, 'https://acmmanoa.org/events/calendar.ics')
+        self.assertNotContains(response, 'cal-body')
+        self.assertEqual(public.get(reverse('home')).status_code, 200)
