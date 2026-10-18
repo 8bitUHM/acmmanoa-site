@@ -1,6 +1,9 @@
 {% extends "base.html" %}
 {% load static %}
 {% block title %}Events | ACM at UH Mānoa{% endblock %}
+{% block styles %}
+<link rel="stylesheet" href="{% static 'css/calendar-subscription.css' %}">
+{% endblock %}
 {% block content %}
 
 <!-- Subhero -->
@@ -9,10 +12,13 @@
     <div class="eyebrow">Events</div>
     <h1>Something's always happening.</h1>
     <p>Workshops, socials, talks, and more — from ACM and all of our SIGs.</p>
-    <a href="webcal://{{ request.get_host }}{% url 'events_calendar' %}" class="btn btn-primary">Subscribe to calendar</a>
-    <p>Get ACM and SIG event updates in your calendar app. You can also copy the <a href="{% url 'events_calendar' %}">iCalendar feed URL</a> into your app's subscription settings.</p>
+    <button type="button" id="calendar-subscribe" class="btn btn-primary calendar-subscribe" aria-haspopup="dialog" aria-controls="calendar-subscription">Subscribe to calendar</button>
+    <p>Get ACM and SIG event updates in your calendar app.</p>
+    <noscript><p>Copy the <a href="{{ calendar_feed_url }}">iCalendar feed URL</a> into your app's calendar subscription settings.</p></noscript>
   </div>
 </div>
+
+{% include 'components/calendar_subscription.html' %}
 
 <!-- Calendar -->
 <section>
@@ -99,6 +105,7 @@
 {% endblock %}
 
 {% block scripts %}
+<script src="{% static 'js/calendar-subscription.js' %}" defer></script>
 {{ events_data|json_script:"events-json" }}
 {{ sigs_data|json_script:"sigs-json" }}
 <script>

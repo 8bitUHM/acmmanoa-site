@@ -116,8 +116,15 @@ Production uses the same PostgreSQL-in-Docker pattern via `docker-compose.prod.y
 
 ## **Calendar Subscription**
 
-The Events page has a **Subscribe to calendar** link for Apple Calendar and other
-apps that support `webcal://` subscriptions. The public iCalendar feed is:
+The Events page's **Subscribe to calendar** button opens a software chooser with
+instructions for Google Calendar, Apple Calendar on Mac, Apple Calendar on iPhone
+or iPad, and Microsoft Outlook on Windows (new and classic). Each option links to
+official Google, Apple, or Microsoft help. A copyable feed URL is available, with
+manual selection if clipboard access is unavailable. Apple users can also launch
+Calendar directly using a `webcal://` link. Google users can open the official
+“From URL” settings page, then paste the feed URL.
+
+The public iCalendar feed is:
 
 ```text
 https://acmmanoa.org/events/calendar.ics

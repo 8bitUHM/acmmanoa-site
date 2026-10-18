@@ -91,10 +91,24 @@ class EventsCalendarTest(TestCase):
         self.assertEqual(response.content, b'')
         self.assertEqual(self.client.post(reverse('events_calendar')).status_code, 405)
 
-    def test_events_page_links_to_subscription_and_feed(self):
+    def test_events_page_offers_calendar_software_and_absolute_feed_url(self):
         response = self.client.get(reverse('events'), HTTP_HOST='acmmanoa.org', secure=True)
         self.assertContains(response, 'href="webcal://acmmanoa.org/events/calendar.ics"')
-        self.assertContains(response, 'href="/events/calendar.ics"')
+        self.assertContains(response, 'value="https://acmmanoa.org/events/calendar.ics"')
+        self.assertContains(response, 'aria-controls="calendar-subscription"')
+        for software in ['Google Calendar', 'Apple Calendar on Mac',
+                         'Apple Calendar on iPhone or iPad', 'Microsoft Outlook (Windows)']:
+            self.assertContains(response, software)
+        for official_site in ['https://support.google.com/calendar/answer/37100',
+                              'https://support.apple.com/102301',
+                              'https://learn.microsoft.com/en-us/troubleshoot/outlook/']:
+            self.assertContains(response, official_site)
+
+    def test_feed_url_respects_proxy_https_and_preview_host(self):
+        response = self.client.get(reverse('events'), HTTP_HOST='localhost:8000',
+                                   HTTP_X_FORWARDED_PROTO='https')
+        self.assertContains(response, 'value="https://localhost:8000/events/calendar.ics"')
+        self.assertContains(response, 'href="webcal://localhost:8000/events/calendar.ics"')
 
 class FileModelTest(TestCase):
     def setUp(self):
