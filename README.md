@@ -36,8 +36,8 @@ The project is organized into several components:
 - **Project root files:**
   - `manage.py`: Django’s command-line utility for administrative tasks.
   - `requirements.txt`: Contains project dependencies.
-  - `docker-compose.yml`: Local development stack (Postgres + Django).
-  - `docker-compose.prod.yml`: Production stack (Postgres + Gunicorn + nginx).
+   - `docker-compose.yml`: Local development stack (Postgres + Django + Radicale).
+   - `docker-compose.prod.yml`: Production stack (Postgres + Gunicorn + nginx + Radicale).
 
 ---
 

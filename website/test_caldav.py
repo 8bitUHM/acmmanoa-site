@@ -79,13 +79,14 @@ class RadicaleIntegrationTest(TestCase):
             port = listener.getsockname()[1]
         cls.config = override_settings(SECRET_KEY='integration-only', CALDAV_URL=f'http://127.0.0.1:{port}')
         cls.config.enable()
+        import bcrypt
         users = Path(cls.temp.name) / 'users'
-        users.write_text('calendar-admin:' + service_password() + '\n')
+        users.write_text('calendar-admin:' + bcrypt.hashpw(service_password().encode(), bcrypt.gensalt()).decode() + '\n')
         cls.log = (Path(cls.temp.name) / 'radicale.log').open('w+')
         cls.server = subprocess.Popen([
             sys.executable, '-m', 'radicale', '--config', '',
             '--server-hosts', f'127.0.0.1:{port}', '--auth-type', 'htpasswd',
-            '--auth-htpasswd-filename', str(users), '--auth-htpasswd-encryption', 'plain',
+            '--auth-htpasswd-filename', str(users), '--auth-htpasswd-encryption', 'bcrypt',
             '--storage-filesystem-folder', cls.temp.name + '/collections',
         ], stdout=cls.log, stderr=cls.log)
         for _ in range(100):
@@ -242,3 +243,20 @@ class RadicaleIntegrationTest(TestCase):
         self.assertEqual(len(events), 4)
         self.assertTrue(all(event['extendedProps']['recurring'] for event in events))
         self.assertEqual(events[0]['start'], '2026-10-06T04:00:00+00:00')
+
+    def test_all_day_dates_and_mixed_timezone_sorting(self):
+        records = [
+            {**self.event_data(), 'title': 'Later Honolulu', 'start': '2026-10-24T18:00:00-10:00', 'end': None},
+            {**self.event_data(), 'title': 'Earlier UTC', 'start': '2026-10-25T01:00:00+00:00', 'end': None},
+            {**self.event_data(), 'title': 'All-day date', 'start': '2026-10-26', 'end': '2026-10-27', 'allDay': True},
+        ]
+        resources = []
+        for data in records:
+            response = self.client.post(reverse('calendar_create'), json.dumps(data), content_type='application/json')
+            self.assertEqual(response.status_code, 201, response.content)
+            resources.append(response.json()['resource'])
+        events = [event for event in self.query_events() if event['extendedProps']['resource'] in resources]
+        self.assertEqual([event['title'] for event in events], ['Earlier UTC', 'Later Honolulu', 'All-day date'])
+        self.assertTrue(events[-1]['allDay'])
+        self.assertEqual(events[-1]['start'], '2026-10-26')
+        self.assertEqual(events[-1]['end'], '2026-10-27')

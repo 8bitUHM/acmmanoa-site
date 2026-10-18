@@ -64,10 +64,15 @@ def calendar_events(start, end):
                     'resource': resource, 'etag': etag, 'recurring': recurring,
                     'description': str(event.get('DESCRIPTION', '')),
                     'location': str(event.get('LOCATION', '')),
-                    'sig': sig_slug, 'kind': str(event.get('X-ACM-KIND', 'other')),
+                    'sig': sig.slug if sig else '', 'kind': str(event.get('X-ACM-KIND', 'other')),
                 },
             })
-    return sorted(result, key=lambda event: event['start'])
+    def start_timestamp(event):
+        start = datetime.fromisoformat(event['start'])
+        if timezone.is_naive(start):
+            start = timezone.make_aware(start)
+        return start.timestamp()
+    return sorted(result, key=start_timestamp)
 
 
 @require_safe

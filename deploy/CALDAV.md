@@ -10,7 +10,8 @@ of the website, calendar account password hashes, and the legacy event archive.
 1. Start the stack with `docker compose up --build` (production uses
    `docker compose -f docker-compose.prod.yml up -d --build`). Startup provisions
    the shared calendar automatically.
-2. Sign into Django admin and open **Website → Calendar** (`/admin/calendar/`).
+2. Sign into Django admin and open **Calendar** (`/admin/calendar/`) in the top
+   menu (also under Website in the sidebar when that app is visible).
    Staff need the **website | event | Can change event** permission; superusers
    already have it.
 3. Select a date/time to create an event or select an event to edit/delete it.

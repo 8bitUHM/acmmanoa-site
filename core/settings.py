@@ -260,6 +260,7 @@ JAZZMIN_SETTINGS = {
 
     # Links to put along the top menu
     "topmenu_links": [
+        {"name": "Calendar", "url": "calendar_admin", "permissions": ["website.change_event"]},
 
         # Url that gets reversed (Permissions can be added)
         {"name": "Home",  "url": "admin:index", "permissions": ["auth.view_user"]},
