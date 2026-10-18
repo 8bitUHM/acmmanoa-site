@@ -21,8 +21,13 @@ from django.conf import settings
 from db_file_storage.compat import url
 from db_file_storage import views as db_views
 from website.views import health
+from website.caldav_accounts import caldav_gateway
+from django.views.generic import RedirectView
 
 urlpatterns = [
+    path('.well-known/caldav', RedirectView.as_view(url='/caldav/', permanent=True)),
+    path('caldav/', caldav_gateway, name='caldav_root'),
+    path('caldav/<path:path>', caldav_gateway, name='caldav_gateway'),
     path('health/', health, name='health'),
     path('admin/', admin.site.urls),
     path('', include('website.urls')),

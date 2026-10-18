@@ -1,6 +1,15 @@
 from django.contrib import admin
 from django import forms
 from .models import *
+from .caldav_accounts import CalDAVAccountForm
+
+
+@admin.register(CalDAVAccount)
+class CalDAVAccountAdmin(admin.ModelAdmin):
+    form = CalDAVAccountForm
+    list_display = ('username', 'is_active', 'can_edit')
+    list_filter = ('is_active', 'can_edit')
+    search_fields = ('username',)
 
 # Register your models here.
 

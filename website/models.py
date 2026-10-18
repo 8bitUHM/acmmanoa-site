@@ -2,6 +2,21 @@ from django.db import models
 from datetime import datetime
 from django.core.validators import MaxLengthValidator, RegexValidator
 
+
+class CalDAVAccount(models.Model):
+    username = models.CharField(max_length=150, unique=True, validators=[RegexValidator(
+        r'^[a-zA-Z0-9_.@-]+$', 'Use letters, numbers, dots, @, underscores, or hyphens.',
+    )])
+    password_hash = models.CharField(max_length=128, editable=False)
+    is_active = models.BooleanField(default=True)
+    can_edit = models.BooleanField(default=False, help_text='Allow editing the shared public calendar.')
+
+    class Meta:
+        verbose_name = 'CalDAV account'
+
+    def __str__(self):
+        return self.username
+
 # Create your models here.
 class File(models.Model): 
     bytes = models.TextField()
