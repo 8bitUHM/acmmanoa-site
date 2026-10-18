@@ -201,7 +201,7 @@ class RadicaleIntegrationTest(TestCase):
         self.assertEqual(response.status_code, 412)
         feed = Client().get(reverse('events_calendar'))
         self.assertEqual(feed.status_code, 200)
-        self.assertIn('Updated', [str(event['SUMMARY']) for event in Calendar.from_ical(feed.content).walk('VEVENT')])
+        self.assertIn('[ACM] Updated', [str(event['SUMMARY']) for event in Calendar.from_ical(feed.content).walk('VEVENT')])
         etag = next(event['extendedProps']['etag'] for event in self.query_events() if event['extendedProps']['resource'] == resource)
         self.assertEqual(self.client.delete(url, HTTP_IF_MATCH=etag).status_code, 200)
         self.assertFalse(any(event['extendedProps']['resource'] == resource for event in self.query_events()))
@@ -487,6 +487,63 @@ class RadicaleIntegrationTest(TestCase):
         self.assertEqual(edited.status_code, 200, edited.content)
         self.assertEqual(dav_request('GET', host['path'] + resource)[0], 404)
         self.assertNotEqual(self.client.get(reverse('events_calendar'))['ETag'], combined['ETag'])
+
+    def test_selected_subscription_is_one_calendar_with_prefixed_titles_and_recurrence(self):
+        sig, algorithms = self.make_host('Algorithms', 'algorithms')
+        _, security = self.make_host('Security', 'security')
+        self.put_native(get_calendar(), 'acm.ics')
+        _, original, _ = self.put_native(algorithms, 'algorithms.ics', recurring=True)
+        self.put_native(security, 'excluded.ics')
+        url = reverse('events_calendar')
+        public = Client()
+        selected = public.get(url, {'calendars': 'acm,' + algorithms['key']})
+        self.assertEqual(selected.status_code, 200, selected.content)
+        self.assertEqual(selected.content.count(b'BEGIN:VCALENDAR'), 1)
+        parsed = Calendar.from_ical(selected.content)
+        self.assertEqual(str(parsed['X-WR-CALNAME']), 'ACM + Algorithms')
+        self.assertEqual({str(event['SUMMARY']) for event in parsed.walk('VEVENT')}, {
+            '[ACM] Native event', '[Algorithms] Native event', '[Algorithms] Rescheduled occurrence',
+        })
+        self.assertEqual(len(parsed.walk('VTIMEZONE')), 1)
+        self.assertTrue(any('RRULE' in event for event in parsed.walk('VEVENT')))
+        self.assertTrue(any('RECURRENCE-ID' in event for event in parsed.walk('VEVENT')))
+        self.assertEqual(fingerprint(dav_request('GET', algorithms['path'] + 'algorithms.ics')[1]), fingerprint(original))
+        reordered = public.get(url, {'calendars': [algorithms['key'], 'acm', algorithms['key']]})
+        self.assertEqual(reordered.content, selected.content)
+        self.assertEqual(reordered['ETag'], selected['ETag'])
+        self.assertEqual(public.get(url, {'calendars': 'acm,' + algorithms['key']},
+            HTTP_IF_NONE_MATCH=selected['ETag']).status_code, 304)
+        self.assertNotEqual(public.get(url)['ETag'], selected['ETag'])
+        single = public.get(url, {'calendars': algorithms['key']})
+        self.assertEqual(len(Calendar.from_ical(single.content).walk('VEVENT')), 2)
+        sig.name = 'Renamed Algorithms'
+        sig.save()
+        renamed = public.get(url, {'calendars': algorithms['key']})
+        self.assertIn('[Renamed Algorithms] Native event',
+            [str(event['SUMMARY']) for event in Calendar.from_ical(renamed.content).walk('VEVENT')])
+
+    def test_invalid_subscription_selections_do_not_fall_back_to_all_calendars(self):
+        for selection in ['', 'missing', 'acm,missing', 'acm,', ',acm', 'sig-999999']:
+            with self.subTest(selection=selection):
+                response = Client().get(reverse('events_calendar'), {'calendars': selection})
+                self.assertEqual(response.status_code, 400)
+                self.assertIn('no-store', response['Cache-Control'])
+
+    def test_prefix_preserves_inherited_recurring_titles_and_native_titles(self):
+        _, host = self.make_host('Algorithms', 'algorithms')
+        _, content, headers = self.put_native(host, 'inherited.ics', recurring=True)
+        without_override = content.replace(b'SUMMARY:Rescheduled occurrence\r\n', b'')
+        status, _, _ = dav_request('PUT', host['path'] + 'inherited.ics', without_override,
+            {'If-Match': headers['ETag'], 'Content-Type': 'text/calendar'})
+        self.assertIn(status, (200, 201, 204))
+        response = Client().get(reverse('events_calendar'), {'calendars': host['key']})
+        events = Calendar.from_ical(response.content).walk('VEVENT')
+        master = next(event for event in events if 'RECURRENCE-ID' not in event)
+        exception = next(event for event in events if 'RECURRENCE-ID' in event)
+        self.assertEqual(str(master['SUMMARY']), '[Algorithms] Native event')
+        self.assertNotIn('SUMMARY', exception)
+        native = dav_request('GET', host['path'] + 'inherited.ics')[1]
+        self.assertNotIn(b'[Algorithms]', native)
 
     def test_collection_controls_host_even_with_stale_metadata_and_same_filenames(self):
         _, first = self.make_host()

@@ -4,15 +4,38 @@
   var software = document.getElementById('calendar-software');
   var feed = document.getElementById('calendar-feed-url');
   var status = document.getElementById('calendar-copy-status');
+  var all = document.getElementById('calendar-all-hosts');
+  var choices = Array.from(dialog.querySelectorAll('input[name="subscription-calendar"]'));
+  var copy = document.getElementById('calendar-copy-url');
+  var selectionStatus = document.getElementById('calendar-selection-status');
 
-  document.getElementById('calendar-host').addEventListener('change', function (event) {
-    var url = new URL(event.target.value, window.location.origin);
-    feed.value = url.href;
-    dialog.querySelectorAll('a[href^="webcal:"]').forEach(function (link) {
-      link.href = 'webcal://' + url.host + url.pathname;
+  function updateFeed() {
+    var selected = choices.filter(function (choice) { return choice.checked; });
+    var url = new URL(feed.dataset.feedBase, window.location.origin);
+    all.checked = selected.length === choices.length;
+    all.indeterminate = selected.length > 0 && !all.checked;
+    if (!all.checked && selected.length) {
+      url.searchParams.set('calendars', selected.map(function (choice) { return choice.value; }).sort().join(','));
+    }
+    feed.value = selected.length ? url.href : '';
+    feed.disabled = copy.disabled = !selected.length;
+    selectionStatus.textContent = !selected.length ? 'Choose at least one calendar to subscribe.' : all.checked ?
+      'All calendars, including future calendars, will appear together as one calendar in your app.' :
+      selected.length + ' selected calendar' + (selected.length === 1 ? '' : 's') + ' will appear as one calendar in your app.';
+    dialog.querySelectorAll('[data-calendar-open]').forEach(function (link) {
+      link.hidden = !selected.length;
+      if (selected.length) link.href = 'webcal://' + url.host + url.pathname + url.search;
+      else link.removeAttribute('href');
     });
     status.textContent = '';
+  }
+
+  all.addEventListener('change', function () {
+    choices.forEach(function (choice) { choice.checked = all.checked; });
+    updateFeed();
   });
+  choices.forEach(function (choice) { choice.addEventListener('change', updateFeed); });
+  updateFeed();
 
   button.addEventListener('click', function () {
     dialog.showModal();
@@ -25,7 +48,7 @@
     status.textContent = '';
   });
 
-  document.getElementById('calendar-copy-url').addEventListener('click', async function () {
+  copy.addEventListener('click', async function () {
     try {
       await navigator.clipboard.writeText(feed.value);
       status.textContent = 'Feed URL copied. Paste it into your calendar app.';

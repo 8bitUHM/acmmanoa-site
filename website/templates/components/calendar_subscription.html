@@ -3,13 +3,16 @@
     <button class="btn btn-ghost" aria-label="Close calendar subscription">Close</button>
   </form>
   <h2 id="calendar-subscription-title">Subscribe to events</h2>
-  <p id="calendar-subscription-description">Which calendar software would you like to use?</p>
+  <p id="calendar-subscription-description">Choose which calendars to include in one subscription, then choose your calendar software.</p>
 
-  <label for="calendar-host">Events to subscribe to</label>
-  <select id="calendar-host">
-    <option value="{% url 'events_calendar' %}">All ACM and SIG events</option>
-    {% for host in calendar_hosts %}<option value="{% url 'host_calendar' host.key %}">{{ host.name }}</option>{% endfor %}
-  </select>
+  <fieldset class="calendar-hosts" aria-describedby="calendar-selection-status">
+    <legend>Calendars to include</legend>
+    <label class="calendar-host-choice"><input id="calendar-all-hosts" type="checkbox" checked> All calendars (including future calendars)</label>
+    <div class="calendar-host-options">
+      {% for host in calendar_hosts %}<label class="calendar-host-choice"><input type="checkbox" name="subscription-calendar" value="{{ host.key }}" checked> {{ host.name }}</label>{% endfor %}
+    </div>
+    <p id="calendar-selection-status" role="status" aria-live="polite">All calendars will appear together as one calendar in your app.</p>
+  </fieldset>
 
   <label for="calendar-software">Calendar software</label>
   <select id="calendar-software" autofocus>
@@ -42,7 +45,7 @@
       <li>Choose a name and color. Select <strong>iCloud</strong> as the location to see it on your other Apple devices, then click <strong>OK</strong>.</li>
     </ol>
     <div class="calendar-subscription-actions">
-      <a href="webcal://{{ request.get_host }}{% url 'events_calendar' %}" class="btn btn-primary">Open Apple Calendar</a>
+      <a href="webcal://{{ request.get_host }}{% url 'events_calendar' %}" data-calendar-open class="btn btn-primary">Open Apple Calendar</a>
       <a href="https://support.apple.com/102301" target="_blank" rel="noopener noreferrer">Official Apple instructions ↗</a>
     </div>
   </div>
@@ -56,7 +59,7 @@
       <li>Choose a name, color, and account, then tap <strong>Done</strong> or <strong>Add</strong>. Choose <strong>iCloud</strong> to see it on your other Apple devices.</li>
     </ol>
     <div class="calendar-subscription-actions">
-      <a href="webcal://{{ request.get_host }}{% url 'events_calendar' %}" class="btn btn-primary">Open Apple Calendar</a>
+      <a href="webcal://{{ request.get_host }}{% url 'events_calendar' %}" data-calendar-open class="btn btn-primary">Open Apple Calendar</a>
       <a href="https://support.apple.com/102301" target="_blank" rel="noopener noreferrer">Official Apple instructions ↗</a>
     </div>
   </div>
@@ -77,10 +80,10 @@
   <div class="calendar-subscription-feed">
     <label for="calendar-feed-url">Calendar feed URL</label>
     <div class="calendar-subscription-copy">
-      <input id="calendar-feed-url" type="url" value="{{ calendar_feed_url }}" readonly>
+      <input id="calendar-feed-url" type="url" value="{{ calendar_feed_url }}" data-feed-base="{{ calendar_feed_url }}" readonly>
       <button type="button" id="calendar-copy-url" class="btn btn-soft">Copy URL</button>
     </div>
     <p id="calendar-copy-status" role="status" aria-live="polite"></p>
   </div>
-   <p class="calendar-subscription-note">Subscribe to all events or one host calendar. This selection is independent of the filters on this page. Your calendar app controls how often updates appear.</p>
+   <p class="calendar-subscription-note">Selected calendars are combined into one calendar, with titles like [Algorithms] Event title. This selection is independent of the filters on this page. To change an existing subscription's selection, replace its URL in your app or remove it and subscribe again. Your app controls how often updates appear.</p>
 </dialog>

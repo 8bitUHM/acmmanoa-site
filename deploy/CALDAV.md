@@ -158,10 +158,26 @@ https://acmmanoa.org/events/calendars/acm.ics
 https://acmmanoa.org/events/calendars/sig-<database-id>.ics
 ```
 
-The subscription chooser lets users select **All ACM and SIG events** or one
-host. Each feed advertises its calendar name. The combined feed retains time
-zones and recurrence exceptions, and its ETag changes when any included calendar
-changes. The website still aggregates every host into one filterable view.
+The subscription chooser lets users check any combination of host calendars and
+copy one URL for a **single combined calendar** in their app. For example:
+
+```text
+https://acmmanoa.org/events/calendar.ics?calendars=acm,sig-4
+```
+
+The example includes ACM and the SIG with database ID 4. Calendar keys remain
+stable across renames. Empty or unknown selections return HTTP 400 rather than
+silently subscribing to everything. Selecting **All calendars** uses the plain
+URL and includes future calendars; a custom URL includes only its listed hosts.
+Apple Calendar links preserve the selection. To change an existing subscription,
+update its URL in the calendar app or remove it and subscribe using the new URL.
+
+All subscription feeds prefix event titles with the actual source calendar name,
+such as **[Algorithms] Actual event here** or **[ACM] General meeting**, without
+changing the native CalDAV event titles. Each feed advertises its calendar name.
+Combined feeds retain time zones and recurrence exceptions, and their ETag changes
+when included content changes. Subscription selection is independent of the
+website's display filters, which still aggregate all hosts.
 
 ## Upgrade from the single shared calendar
 

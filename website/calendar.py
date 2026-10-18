@@ -80,7 +80,16 @@ def calendar_events(start, end):
 def events_calendar(request, calendar_key=None):
     try:
         host = get_calendar(calendar_key) if calendar_key else None
-        body, headers = read_calendar(host)
+        if not calendar_key and 'calendars' in request.GET:
+            keys = {key for value in request.GET.getlist('calendars') for key in value.split(',')}
+            available = calendar_hosts()
+            if not keys or not keys <= {owner['key'] for owner in available}:
+                response = JsonResponse({'error': 'Select at least one existing calendar.'}, status=400)
+                response['Cache-Control'] = 'no-store'
+                return response
+            body, headers = read_calendar(hosts=[owner for owner in available if owner['key'] in keys])
+        else:
+            body, headers = read_calendar(host)
     except ValueError:
         raise Http404('Calendar not found')
     except CalendarUnavailable as error:

@@ -2,7 +2,7 @@
 {% load static %}
 {% block title %}Events | ACM at UH Mānoa{% endblock %}
 {% block styles %}
-<link rel="stylesheet" href="{% static 'css/calendar-subscription.css' %}">
+<link rel="stylesheet" href="{% static 'css/calendar-subscription.css' %}?v=selected-calendars-1">
 {% endblock %}
 {% block content %}
 <div class="subhero">
@@ -23,5 +23,5 @@
 </section>
 {% endblock %}
 {% block scripts %}
-<script src="{% static 'js/calendar-subscription.js' %}?v=host-calendars-1" defer></script>
+<script src="{% static 'js/calendar-subscription.js' %}?v=selected-calendars-1" defer></script>
 {% endblock %}

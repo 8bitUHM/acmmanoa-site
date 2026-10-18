@@ -17,3 +17,11 @@
 .air .calendar-subscription-copy input{flex:1 1 240px;}
 .air #calendar-copy-status{font-size:14px;margin-top:8px;}
 .air .calendar-subscription-note{font-size:14px;margin-top:20px;padding-top:16px;border-top:1px solid var(--line);}
+.air .calendar-hosts{margin-top:20px;padding:16px;border:1px solid var(--line);border-radius:12px;min-width:0;}
+.air .calendar-hosts legend{padding:0 6px;font-weight:600;}
+.air .calendar-subscription .calendar-host-choice{display:flex;align-items:center;gap:10px;margin:10px 0;font-weight:400;overflow-wrap:anywhere;}
+.air .calendar-subscription input[type="checkbox"]{width:20px;height:20px;flex:0 0 20px;padding:0;accent-color:var(--peri-d);}
+.air .calendar-host-options{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,200px),1fr));gap:0 12px;}
+.air #calendar-selection-status{font-size:14px;margin-top:12px;}
+.air .calendar-subscription button:disabled{opacity:.5;cursor:not-allowed;}
+.air .calendar-subscription [hidden]{display:none!important;}

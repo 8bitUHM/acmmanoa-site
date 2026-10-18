@@ -71,16 +71,23 @@ def ensure_calendars():
         ensure_calendar(host)
 
 
-def read_calendar(host=None):
+def read_calendar(host=None, *, hosts=None):
     from .calendar_hosts import calendar_hosts
     calendar = Calendar()
     calendar.add('prodid', '-//ACM at UH Manoa//CalDAV//EN')
     calendar.add('version', '2.0')
-    calendar.add('x-wr-calname', host['name'] if host else 'ACM and SIG events')
+    name = host['name'] if host else 'ACM and SIG events'
+    if hosts is not None:
+        name = ' + '.join(owner['name'] for owner in hosts)
+    calendar.add('x-wr-calname', name)
     components = set()
-    for owner in [host] if host else calendar_hosts():
+    owners = hosts if hosts is not None else [host] if host else calendar_hosts()
+    for owner in owners:
         for _, _, content in calendar_resources(owner):
             for component in Calendar.from_ical(content).subcomponents:
+                if component.name == 'VEVENT' and ('SUMMARY' in component or 'RECURRENCE-ID' not in component):
+                    title = str(component.get('SUMMARY', '(Untitled event)'))
+                    component['SUMMARY'] = f'[{owner["name"]}] {title}'
                 # Keep recurrence exceptions and time zones, without duplicate zones.
                 encoded = component.to_ical()
                 if component.name != 'VTIMEZONE' or encoded not in components:
