@@ -1,6 +1,56 @@
 from django.contrib import admin
 from django import forms
+from django.contrib.auth import get_user_model
+from django.contrib.auth.admin import UserAdmin
 from .models import *
+from .caldav_accounts import CalDAVAccountForm
+from .caldav import CalendarUnavailable, ensure_calendar
+from .calendar_hosts import calendar_hosts, get_calendar
+
+
+class CalendarEditGrantForm(forms.ModelForm):
+    calendar = forms.ChoiceField(
+        help_text='Allows editing this calendar only. Global edit access overrides individual grants.',
+    )
+
+    class Meta:
+        model = CalendarEditGrant
+        fields = ('calendar',)
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['calendar'].choices = [(host['key'], host['name']) for host in calendar_hosts()]
+
+
+class AccountCalendarGrantInline(admin.TabularInline):
+    model = CalendarEditGrant
+    form = CalendarEditGrantForm
+    fk_name = 'account'
+    fields = ('calendar',)
+    extra = 0
+    verbose_name_plural = 'Calendar editing grants'
+
+
+class UserCalendarGrantInline(AccountCalendarGrantInline):
+    fk_name = 'user'
+    verbose_name_plural = 'Calendar editing grants (superusers and users with Can change event have global access)'
+
+
+admin.site.unregister(get_user_model())
+
+
+@admin.register(get_user_model())
+class CalendarUserAdmin(UserAdmin):
+    inlines = [UserCalendarGrantInline]
+
+
+@admin.register(CalDAVAccount)
+class CalDAVAccountAdmin(admin.ModelAdmin):
+    form = CalDAVAccountForm
+    inlines = [AccountCalendarGrantInline]
+    list_display = ('username', 'is_active', 'can_edit')
+    list_filter = ('is_active', 'can_edit')
+    search_fields = ('username',)
 
 # Register your models here.
 
@@ -21,6 +71,13 @@ class SIGSAdmin(admin.ModelAdmin):
     form = SIGSForm
     inlines = [SIGSLeadershipInline]
     prepopulated_fields = { "slug": ["name"] }
+
+    def save_model(self, request, obj, form, change):
+        super().save_model(request, obj, form, change)
+        try:
+            ensure_calendar(get_calendar(f'sig-{obj.pk}'))
+        except CalendarUnavailable as error:
+            self.message_user(request, f'SIG saved. Calendar provisioning needs a retry: {error}', level='error')
     fieldsets = (
         ('Basic Information', {
             'fields': ('name', 'slug', 'expanded_name', 'about', 'logo')
@@ -46,24 +103,7 @@ class SIGSAdmin(admin.ModelAdmin):
 class CarouselImageAdmin(admin.ModelAdmin):
     pass
 
-@admin.register(Event)
-class EventAdmin(admin.ModelAdmin):
-    prepopulated_fields = {"slug": ["title"]}
-    list_display = ('title', 'event_date', 'sig', 'kind', 'location')
-    list_filter = ('sig', 'kind')
-    search_fields = ('title', 'description', 'location')
-    fieldsets = (
-        ('Event Details', {
-            'fields': ('title', 'slug', 'image', 'description')
-        }),
-        ('Schedule', {
-            'fields': ('event_date', 'location')
-        }),
-        ('Classification', {
-            'fields': ('sig', 'kind'),
-            'description': 'Optionally link to a SIG and categorize the event type.'
-        }),
-    )
+# Event remains an unregistered legacy archive for the resumable CalDAV migration.
 
 @admin.register(Sponsor)
 class SponsorAdmin(admin.ModelAdmin):

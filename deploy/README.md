@@ -1,6 +1,6 @@
 # Deploy to DigitalOcean (automated)
 
-This project ships with Docker Compose, nginx, PostgreSQL, and GitHub Actions for push-to-deploy on a VPS droplet.
+This project ships with Docker Compose, nginx, PostgreSQL, Radicale, and GitHub Actions for push-to-deploy on a VPS droplet.
 
 ## Architecture
 
@@ -8,8 +8,14 @@ PostgreSQL runs **inside Docker** on the same droplet (not an external/managed d
 
 ```text
 Internet → nginx:80 → gunicorn (web) → PostgreSQL (db container)
+                                  ↘ Radicale (private CalDAV service)
                 ↘ static/media volumes
 ```
+
+On `explore/caldav`, [complete the calendar migration](CALDAV.md#migrate-the-old-database-to-radicale)
+before reopening event editing. Back up both PostgreSQL and the `calendar_data`
+volume: live events are stored in Radicale, while accounts and legacy image bytes
+remain in PostgreSQL. Port 5232 is internal; external clients use `/caldav/` over HTTPS.
 
 Push to `main` runs tests, then SSHs into the droplet, extracts code, writes `.env`, and runs `deploy/deploy.sh`.
 

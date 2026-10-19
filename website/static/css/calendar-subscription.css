@@ -1,0 +1,27 @@
+.air .calendar-subscribe{margin:24px 0 14px;}
+.air .calendar-subscription{margin:auto;padding:28px;width:min(620px,calc(100% - 32px));max-height:calc(100dvh - 32px);overflow-y:auto;border:1px solid var(--line);border-radius:24px;background:var(--card);color:var(--ink);box-shadow:0 30px 90px rgba(27,29,41,.2);}
+.air .calendar-subscription::backdrop{background:rgba(27,29,41,.5);}
+.air .calendar-subscription-close{display:flex;justify-content:flex-end;margin-bottom:16px;}
+.air .calendar-subscription h2{font-size:30px;}
+.air .calendar-subscription h3{font-size:20px;margin-bottom:12px;}
+.air .calendar-subscription p{color:var(--soft);}
+.air .calendar-subscription label{display:block;font-weight:600;margin:20px 0 8px;}
+.air .calendar-subscription select,.air .calendar-subscription input{width:100%;min-width:0;padding:12px;border:1px solid var(--line);border-radius:12px;background:var(--bg);color:var(--ink);font:inherit;}
+.air .calendar-subscription :focus-visible{outline:3px solid var(--peri);outline-offset:3px;}
+.air .calendar-subscription-guide{margin-top:24px;}
+.air .calendar-subscription-guide ol{list-style:decimal;padding-left:24px;margin:12px 0;}
+.air .calendar-subscription-guide li+li{margin-top:10px;}
+.air .calendar-subscription-actions{display:flex;align-items:center;gap:16px;flex-wrap:wrap;margin-top:18px;}
+.air .calendar-subscription-actions a:not(.btn){color:var(--peri-d);text-decoration:underline;}
+.air .calendar-subscription-copy{display:flex;gap:10px;flex-wrap:wrap;}
+.air .calendar-subscription-copy input{flex:1 1 240px;}
+.air #calendar-copy-status{font-size:14px;margin-top:8px;}
+.air .calendar-subscription-note{font-size:14px;margin-top:20px;padding-top:16px;border-top:1px solid var(--line);}
+.air .calendar-hosts{margin-top:20px;padding:16px;border:1px solid var(--line);border-radius:12px;min-width:0;}
+.air .calendar-hosts legend{padding:0 6px;font-weight:600;}
+.air .calendar-subscription .calendar-host-choice{display:flex;align-items:center;gap:10px;margin:10px 0;font-weight:400;overflow-wrap:anywhere;}
+.air .calendar-subscription input[type="checkbox"]{appearance:auto;width:20px;height:20px;flex:0 0 20px;padding:0;border-radius:4px;accent-color:var(--peri-d);cursor:pointer;}
+.air .calendar-host-options{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,200px),1fr));gap:0 12px;}
+.air #calendar-selection-status{font-size:14px;margin-top:12px;}
+.air .calendar-subscription button:disabled{opacity:.5;cursor:not-allowed;}
+.air .calendar-subscription [hidden]{display:none!important;}

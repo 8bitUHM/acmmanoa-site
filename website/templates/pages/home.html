@@ -82,6 +82,7 @@
 </section>
 
 <!-- Upcoming Events -->
+{% if calendar_error %}<p class="wrap">The event calendar is temporarily unavailable. <a href="{% url 'events' %}">Try the Events page again.</a></p>{% endif %}
 {% if upcoming_events %}
 <section>
   <div class="wrap">
@@ -93,14 +94,14 @@
 
     <div class="events">
       {% for event in upcoming_events %}
-      <a class="ev" href="{% url 'event_detail' event.slug %}">
+      <a class="ev" href="{% url 'events' %}">
         <div class="date">
           <div class="d">{{ event.event_date|date:"j" }}</div>
           <div class="m">{{ event.event_date|date:"M"|upper }}</div>
         </div>
         <div class="body">
           <h4>{{ event.title }}</h4>
-          {% if event.location %}<p>{{ event.location }}</p>{% endif %}
+          {% if event.extendedProps.location %}<p>{{ event.extendedProps.location }}</p>{% endif %}
         </div>
         <div class="arrow">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>

@@ -1,0 +1,18 @@
+:root { color-scheme: light; font-family: system-ui, sans-serif; color: #17243b; }
+body { margin: 0; padding: 16px; background: #fff; }
+button, input, select, textarea { font: inherit; }
+button { cursor: pointer; padding: 8px 12px; }
+.filters, .actions { display: flex; flex-wrap: wrap; gap: 12px; margin: 16px 0; }
+.filters label { display: flex; align-items: center; gap: 5px; }
+.fc { --fc-button-bg-color: #315fca; --fc-button-border-color: #315fca; }
+.fc-event { cursor: pointer; }
+dialog { border: 1px solid #bbc9df; border-radius: 12px; max-width: 560px; width: calc(100% - 64px); max-height: 85vh; }
+dialog::backdrop { background: #13294b88; }
+#event-form > label { display: block; margin: 12px 0; }
+#event-form input:not([type=checkbox]), #event-form textarea, #event-form select { display: block; box-sizing: border-box; width: 100%; padding: 8px; }
+#event-status, #calendar-status { color: #9c2525; }
+@media (max-width: 600px) {
+  body { padding: 8px; }
+  .fc .fc-toolbar { flex-direction: column; gap: 10px; }
+  .fc .fc-toolbar-title { font-size: 1.3rem; }
+}

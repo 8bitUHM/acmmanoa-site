@@ -1,6 +1,14 @@
 from django.shortcuts import render, get_object_or_404
 from django.http import Http404, HttpResponse
+from django.urls import reverse
 from .models import *
+from datetime import timedelta
+from django.utils import timezone
+from django.utils.dateparse import parse_date, parse_datetime
+from .caldav import CalendarUnavailable, host_resources
+from .calendar_hosts import calendar_hosts
+from .calendar import calendar_events
+from icalendar import Calendar
 
 def health(request):
     return HttpResponse("healthy\n", content_type="text/plain")
@@ -10,14 +18,21 @@ def home(request):
     sigs = SIGS.objects.all()
     carousel_images = CarouselImage.objects.all().order_by('-created_at')
     questions = FAQ.objects.all().order_by('created_at')
-    # Get the 3 most recent upcoming events
-    from django.utils import timezone
-    upcoming_events = Event.objects.filter(event_date__gte=timezone.now().date()).order_by('event_date')[:3]
+    calendar_error = False
+    try:
+        now = timezone.now()
+        upcoming_events = calendar_events(now, now + timedelta(days=180))[:3]
+        for event in upcoming_events:
+            event['event_date'] = parse_datetime(event['start']) or parse_date(event['start'])
+    except CalendarUnavailable:
+        upcoming_events = []
+        calendar_error = True
     return render(request, 'pages/home.html', {
         "programs": sigs, 
         "carousel_images": carousel_images, 
         "questions": questions,
-        "upcoming_events": upcoming_events
+        "upcoming_events": upcoming_events,
+        "calendar_error": calendar_error,
     })
 
 def about(request):
@@ -30,45 +45,30 @@ def about(request):
     return render(request, 'pages/about.html', {"leaders": leaders, "president_name": president_name})
 
 def events(request):
-    from django.utils import timezone as dj_timezone
-
-    all_events = Event.objects.select_related('sig').order_by('event_date')
-    sigs = SIGS.objects.all()
-
-    events_data = []
-    for ev in all_events:
-        # Format in local TIME_ZONE (Pacific/Honolulu) so calendar days match admin
-        local_dt = dj_timezone.localtime(ev.event_date)
-        events_data.append({
-            'title': ev.title,
-            'slug': ev.slug,
-            'date': local_dt.strftime('%Y-%m-%d'),
-            'time': local_dt.strftime('%H:%M'),
-            'location': ev.location or '',
-            'kind': ev.kind,
-            'sig': ev.sig.slug if ev.sig else None,
-        })
-
-    sigs_data = []
-    for sig in sigs:
-        sigs_data.append({
-            'slug': sig.slug,
-            'name': sig.name,
-            'color': sig.primary_color,
-            'light': sig.get_light_color(),
-            'dark': sig.get_secondary_color(),
-            'meeting_day': sig.meeting_days or '',
-        })
-
     return render(request, 'pages/events.html', {
-        'sigs': sigs,
-        'events_data': events_data,
-        'sigs_data': sigs_data,
+        'calendar_feed_url': request.build_absolute_uri(reverse('events_calendar')),
+        'calendar_hosts': calendar_hosts(),
     })
 
 def event_detail(request, slug):
-    event = get_object_or_404(Event, slug=slug)
-    return render(request, 'pages/event_detail.html', {"event": event})
+    # Preserve legacy event URLs using metadata carried into Radicale.
+    try:
+        for _, _, _, content in host_resources():
+            for entry in Calendar.from_ical(content).walk('VEVENT'):
+                if str(entry.get('X-ACM-SLUG', '')) == slug:
+                    event = {
+                        'title': str(entry.get('SUMMARY', '')),
+                        'description': str(entry.get('DESCRIPTION', '')),
+                        'location': str(entry.get('LOCATION', '')),
+                        'event_date': entry.decoded('DTSTART'),
+                    }
+                    image_url = str(entry.get('X-ACM-IMAGE', ''))
+                    if image_url.startswith('/') and not image_url.startswith('//'):
+                        event['image'] = {'url': image_url}
+                    return render(request, 'pages/event_detail.html', {'event': event})
+    except CalendarUnavailable as error:
+        return HttpResponse(str(error), status=503)
+    raise Http404('Event not found')
 
 def sponsors(request):
     sponsors = Sponsor.objects.defer('created_at').all()

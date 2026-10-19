@@ -2,6 +2,18 @@
 # Usage: docker compose up --build
 
 services:
+  radicale:
+    build: ./deploy/radicale
+    restart: unless-stopped
+    env_file: .env
+    volumes:
+      - calendar_dev_data:/data
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:5232/.web/')"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
   db:
     image: postgres:15
     restart: unless-stopped
@@ -30,17 +42,22 @@ services:
       POSTGRES_HOST: db
       POSTGRES_PORT: 5432
       DEBUG: ${DEBUG:-1}
+      CALDAV_URL: http://radicale:5232
     ports:
       - "8000:8000"
     volumes:
       - .:/app
     depends_on:
+      radicale:
+        condition: service_healthy
       db:
         condition: service_healthy
     command: >
       sh -c "python manage.py migrate --noinput &&
+             python manage.py setup_calendar &&
              python manage.py collectstatic --noinput &&
              python manage.py runserver 0.0.0.0:8000"
 
 volumes:
+  calendar_dev_data:
   postgres_dev_data:

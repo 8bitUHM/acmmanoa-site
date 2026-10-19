@@ -170,6 +170,10 @@ LANGUAGE_CODE = 'en-us'
 
 TIME_ZONE = 'Pacific/Honolulu'
 
+# Radicale is private to the Compose network. Native clients use /caldav/.
+CALDAV_URL = os.getenv('CALDAV_URL', 'http://127.0.0.1:5232').rstrip('/')
+CALDAV_COLLECTION = '/calendar-admin/events/'
+
 USE_I18N = True
 
 USE_TZ = True
@@ -256,6 +260,7 @@ JAZZMIN_SETTINGS = {
 
     # Links to put along the top menu
     "topmenu_links": [
+        {"name": "Calendar", "url": "calendar_admin", "permissions": []},
 
         # Url that gets reversed (Permissions can be added)
         {"name": "Home",  "url": "admin:index", "permissions": ["auth.view_user"]},
@@ -301,6 +306,10 @@ JAZZMIN_SETTINGS = {
 
     # Custom links to append to app groups, keyed on app name
     "custom_links": {
+        "website": [{
+            "name": "Calendar", "url": "calendar_admin", "icon": "fas fa-calendar",
+            "permissions": [],
+        }],
         "books": [{
             "name": "Make Messages", 
             "url": "make_messages", 
@@ -358,4 +367,3 @@ TAILWIND_APP_NAME = 'theme'
 INTERNAL_IPS = [
     "127.0.0.1",
 ]
-
