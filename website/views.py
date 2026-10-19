@@ -1,5 +1,6 @@
 from django.shortcuts import render, get_object_or_404
 from django.http import Http404, HttpResponse
+from django.urls import reverse
 from .models import *
 
 def health(request):
@@ -64,6 +65,7 @@ def events(request):
         'sigs': sigs,
         'events_data': events_data,
         'sigs_data': sigs_data,
+        'calendar_feed_url': request.build_absolute_uri(reverse('events_calendar')),
     })
 
 def event_detail(request, slug):
