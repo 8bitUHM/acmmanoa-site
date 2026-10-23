@@ -9,7 +9,7 @@
     <!-- Desktop links -->
     <div class="nav-links">
       <a href="{% url 'about' %}" {% if request.path == '/about/' %}class="active"{% endif %}>About</a>
-      <a href="{% url 'sigs_index' %}" {% if '/sigs' in request.path %}class="active"{% endif %}>Programs</a>
+      <a href="{% url 'sigs_index' %}" {% if '/sigs' in request.path %}class="active"{% endif %}>SIGs</a>
       <a href="{% url 'events' %}" {% if '/events' in request.path %}class="active"{% endif %}>Events</a>
       <a href="{% url 'sponsors' %}" {% if request.path == '/sponsors/' %}class="active"{% endif %}>Sponsors</a>
       <a href="{% url 'icspace' %}" {% if request.path == '/icspace/' %}class="active"{% endif %}>ICSpace</a>
@@ -29,7 +29,7 @@
   <!-- Mobile menu -->
   <div class="nav-mobile-menu" id="nav-mobile-menu">
     <a href="{% url 'about' %}" {% if request.path == '/about/' %}class="active"{% endif %}>About</a>
-    <a href="{% url 'sigs_index' %}" {% if '/sigs' in request.path %}class="active"{% endif %}>Programs</a>
+    <a href="{% url 'sigs_index' %}" {% if '/sigs' in request.path %}class="active"{% endif %}>SIGs</a>
     <a href="{% url 'events' %}" {% if '/events' in request.path %}class="active"{% endif %}>Events</a>
     <a href="{% url 'sponsors' %}" {% if request.path == '/sponsors/' %}class="active"{% endif %}>Sponsors</a>
     <a href="{% url 'icspace' %}" {% if request.path == '/icspace/' %}class="active"{% endif %}>ICSpace</a>
