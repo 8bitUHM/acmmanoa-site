@@ -1,6 +1,27 @@
 {% extends "base.html" %}
 {% load static %}
 {% block title %}{% if sig %}{{ sig.name }}{% else %}Programs{% endif %} | ACM at UH Mānoa{% endblock %}
+{% block meta_description %}
+<meta name="description" content="{% if sig %}{{ sig.about|striptags|truncatechars:160 }}{% else %}Explore the different programs at ACM at UH Mānoa.{% endif %}">
+{% endblock %}
+{% block og_title %}
+<meta property="og:title" content="{% if sig %}{{ sig.name }}{% else %}Programs{% endif %} | ACM at UH Mānoa">
+{% endblock %}
+{% block og_description %}
+<meta property="og:description" content="{% if sig %}{{ sig.about|striptags|truncatechars:160 }}{% else %}Explore the different programs at ACM at UH Mānoa.{% endif %}">
+{% endblock %}
+{% block og_image %}
+<meta property="og:image" content="{% if sig %}{{ og_image_url }}{% else %}{{ default_og_image_url }}{% endif %}">
+{% endblock %}
+{% block twitter_title %}
+<meta name="twitter:title" content="{% if sig %}{{ sig.name }}{% else %}Programs{% endif %} | ACM at UH Mānoa">
+{% endblock %}
+{% block twitter_description %}
+<meta name="twitter:description" content="{% if sig %}{{ sig.about|striptags|truncatechars:160 }}{% else %}Explore the different programs at ACM at UH Mānoa.{% endif %}">
+{% endblock %}
+{% block twitter_image %}
+<meta name="twitter:image" content="{% if sig %}{{ og_image_url }}{% else %}{{ default_og_image_url }}{% endif %}">
+{% endblock %}
 
 {% if sig %}
 {% block styles %}

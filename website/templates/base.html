@@ -3,25 +3,64 @@
 <html lang="en">
 
 <head>
-    {% tailwind_css %}
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}ACM at UH Mānoa{% endblock %}</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="icon" type="image/x-icon" href="{% static 'website/acm_logo.png' %}">
-    <link rel="stylesheet" href="{% static 'css/air-theme.css' %}?v=20260903e">
-    {% block styles %}{% endblock %}
+  {% tailwind_css %}
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}ACM at UH Mānoa{% endblock %}</title>
+  {% block meta_description %}
+  <meta name="description"
+    content="The largest computer science student organization at the University of Hawaii at Manoa">
+  {% endblock %}
+
+  {% block og_title %}
+  <meta property="og:title" content="ACM at UH Mānoa">
+  {% endblock %}
+
+  {% block og_description %}
+  <meta property="og:description"
+    content="The largest computer science student organization at the University of Hawaii at Manoa">
+  {% endblock %}
+
+  {% block og_image %}
+  <meta property="og:image" content="{{ default_og_image_url }}">
+  {% endblock %}
+
+  {% block og_url %}
+  <meta property="og:url" content="{{ page_url }}">
+  {% endblock %}
+
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="ACM at UH Mānoa">
+  <meta name="twitter:card" content="summary_large_image">
+
+  {% block twitter_title %}
+  <meta name="twitter:title" content="ACM at UH Mānoa">
+  {% endblock %}
+
+  {% block twitter_description %}
+  <meta name="twitter:description"
+      content="The largest computer science student organization at the University of Hawaii at Manoa">
+  {% endblock %}
+
+  {% block twitter_image %}
+  <meta name="twitter:image" content="{{ default_og_image_url }}">
+  {% endblock %}
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/x-icon" href="{% static 'website/acm_logo.png' %}">
+  <link rel="stylesheet" href="{% static 'css/air-theme.css' %}?v=20260903e">
+  {% block styles %}{% endblock %}
 </head>
 
 <body class="air">
-    {% include "components/navbar.html" %}
-    {% block content %}{% endblock %}
-    {% include "components/footer.html" %}
+  {% include "components/navbar.html" %}
+  {% block content %}{% endblock %}
+  {% include "components/footer.html" %}
 
-    <!-- Mobile nav toggle -->
-    <script>
+  <!-- Mobile nav toggle -->
+  <script>
     (function(){
       var btn = document.getElementById('nav-mobile-btn');
       var menu = document.getElementById('nav-mobile-menu');
@@ -33,10 +72,10 @@
         });
       }
     })();
-    </script>
+  </script>
 
-    <!-- Accordion toggle -->
-    <script>
+  <!-- Accordion toggle -->
+  <script>
     document.querySelectorAll('.acc-btn').forEach(function(btn){
       btn.addEventListener('click', function(){
         var body = btn.nextElementSibling;
@@ -53,9 +92,9 @@
         }
       });
     });
-    </script>
+  </script>
 
-    {% block scripts %}{% endblock %}
+  {% block scripts %}{% endblock %}
 </body>
 
 </html>

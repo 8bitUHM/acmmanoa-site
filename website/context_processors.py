@@ -1,3 +1,6 @@
+from django.templatetags.static import static
+
+
 def sig_colors(request):
     """
     Context processor to provide SIG colors to templates.
@@ -25,3 +28,12 @@ def sig_colors(request):
     
     # Return empty dict if not on a SIG page or SIG not found
     return {'sig_colors': None}
+
+
+def social_meta(request):
+    logo_url = static('website/acm_logo.png')
+
+    return {
+        'default_og_image_url': request.build_absolute_uri(logo_url),
+        'page_url': request.build_absolute_uri(request.path)
+    }
