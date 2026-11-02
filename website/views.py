@@ -1,3 +1,4 @@
+from django.templatetags.static import static
 from django.shortcuts import render, get_object_or_404
 from django.http import Http404, HttpResponse
 from .models import *
@@ -68,7 +69,20 @@ def events(request):
 
 def event_detail(request, slug):
     event = get_object_or_404(Event, slug=slug)
-    return render(request, 'pages/event_detail.html', {"event": event})
+
+    if event.image:
+        og_image_url = request.build_absolute_uri(
+            event.image.url.replace('/download/', '/get/', 1)
+        )
+    else:
+        og_image_url = request.build_absolute_uri(
+            static('website/acm_logo.png')
+        )
+
+    return render(request, 'pages/event_detail.html', {
+        "event": event,
+        "og_image_url": og_image_url,
+    })
 
 def sponsors(request):
     sponsors = Sponsor.objects.defer('created_at').all()
@@ -83,6 +97,14 @@ def sigs_index(request):
 
 def sig_detail(request, slug):
     sig = get_object_or_404(SIGS, slug=slug)
+    if sig.logo:
+        og_image_url = request.build_absolute_uri(
+            sig.logo.url.replace('/download/', '/get/', 1)
+        )
+    else:
+        og_image_url = request.build_absolute_uri(
+            static('website/acm_logo.png')
+    )
     leadership = SIGSLeadership.objects.filter(sigs=sig).order_by('id')
     sig_colors = {
         'primary': sig.primary_color,
@@ -92,6 +114,7 @@ def sig_detail(request, slug):
     return render(request, 'pages/sigs.html', {
         "sig": sig, 
         "leadership": leadership,
+        "og_image_url": og_image_url,
         "sig_colors": sig_colors
     })
 

@@ -1,29 +1,70 @@
 {% extends "base.html" %}
 {% load static %}
 {% block title %}{{ event.title }} | ACM at UH Mānoa{% endblock %}
+{% block meta_description %}
+<meta name="description" content="{% if event.description %}{{ event.description|striptags|truncatechars:160 }}{% else %}Find out more about this ACM at UH Mānoa event.{% endif %}">
+{% endblock %}
+
+{% block og_title %}
+<meta property="og:title" content="{{ event.title }} | ACM at UH Mānoa">
+{% endblock %}
+
+{% block og_description %}
+<meta property="og:description" content="{% if event.description %}{{ event.description|striptags|truncatechars:160 }}{% else %}Find out more about this ACM at UH Mānoa event.{% endif %}">
+{% endblock %}
+
+{% block og_image %}
+<meta property="og:image" content="{{ og_image_url }}">
+{% endblock %}
+
+{% block twitter_title %}
+<meta name="twitter:title" content="{{ event.title }} | ACM at UH Mānoa">
+{% endblock %}
+
+{% block twitter_description %}
+<meta name="twitter:description" content="{% if event.description %}{{ event.description|striptags|truncatechars:160 }}{% else %}Find out more about this ACM at UH Mānoa event.{% endif %}">
+{% endblock %}
+
+{% block twitter_image %}
+<meta name="twitter:image" content="{{ og_image_url }}">
+{% endblock %}
+
 {% block content %}
 
 <!-- Event Hero -->
 <div class="sig-hero">
   <div class="wrap-wide">
     <a href="{% url 'events' %}" class="back">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M15 18l-6-6 6-6"/></svg>
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+        <path d="M15 18l-6-6 6-6" />
+      </svg>
       All events
     </a>
     <div class="ev-badge">ACM Mānoa Event</div>
     <h1>{{ event.title }}</h1>
     <div class="ev-chips">
       <span class="ev-chip">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+          <rect x="3" y="4" width="18" height="18" rx="2" />
+          <line x1="16" y1="2" x2="16" y2="6" />
+          <line x1="8" y1="2" x2="8" y2="6" />
+          <line x1="3" y1="10" x2="21" y2="10" />
+        </svg>
         {{ event.event_date|date:"l, F j, Y" }}
       </span>
       <span class="ev-chip">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+          <circle cx="12" cy="12" r="10" />
+          <polyline points="12 6 12 12 16 14" />
+        </svg>
         {{ event.event_date|time:"g:i A" }}
       </span>
       {% if event.location %}
       <span class="ev-chip">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+          <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z" />
+          <circle cx="12" cy="10" r="3" />
+        </svg>
         {{ event.location }}
       </span>
       {% endif %}
@@ -46,7 +87,12 @@
         <img src="{{ event.image.url }}" alt="{{ event.title }}">
         {% else %}
         <div class="ev-placeholder">
-          <svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+          <svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <rect x="3" y="4" width="18" height="18" rx="2" />
+            <line x1="16" y1="2" x2="16" y2="6" />
+            <line x1="8" y1="2" x2="8" y2="6" />
+            <line x1="3" y1="10" x2="21" y2="10" />
+          </svg>
         </div>
         {% endif %}
       </div>
@@ -64,7 +110,12 @@
         <div class="ev-info">
           <div class="ev-irow">
             <div class="ico">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                <rect x="3" y="4" width="18" height="18" rx="2" />
+                <line x1="16" y1="2" x2="16" y2="6" />
+                <line x1="8" y1="2" x2="8" y2="6" />
+                <line x1="3" y1="10" x2="21" y2="10" />
+              </svg>
             </div>
             <div>
               <div class="k">When</div>
@@ -74,7 +125,10 @@
           {% if event.location %}
           <div class="ev-irow">
             <div class="ico">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z" />
+                <circle cx="12" cy="10" r="3" />
+              </svg>
             </div>
             <div>
               <div class="k">Where</div>
@@ -84,7 +138,12 @@
           {% endif %}
           <div class="ev-irow">
             <div class="ico">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" />
+                <circle cx="9" cy="7" r="4" />
+                <path d="M23 21v-2a4 4 0 00-3-3.87" />
+                <path d="M16 3.13a4 4 0 010 7.75" />
+              </svg>
             </div>
             <div>
               <div class="k">Hosted by</div>
@@ -104,8 +163,10 @@
       <h2>See you there?</h2>
       <p>Join our Discord to RSVP, ask questions, and connect with other attendees before the event.</p>
       <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
-        <a href="https://discord.gg/RvuXUadKTg" target="_blank" rel="noopener" class="btn btn-white btn-lg">Join Discord</a>
-        <a href="{% url 'events' %}" class="btn btn-ghost btn-lg" style="color:#fff;border-color:rgba(255,255,255,.4);">All events</a>
+        <a href="https://discord.gg/RvuXUadKTg" target="_blank" rel="noopener" class="btn btn-white btn-lg">Join
+          Discord</a>
+        <a href="{% url 'events' %}" class="btn btn-ghost btn-lg"
+          style="color:#fff;border-color:rgba(255,255,255,.4);">All events</a>
       </div>
     </div>
   </div>
